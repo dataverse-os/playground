@@ -1,0 +1,38 @@
+{
+  "name": "demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && vite preview",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@dataverse/communicator": "^1.0.17",
+    "@dataverse/dataverse-components": "^0.2.1",
+    "@dataverse/dataverse-kernel": "^1.0.35",
+    "@dataverse/runtime-connector": "^1.0.2",
+    "@reduxjs/toolkit": "1.9.0",
+    "buffer": "^6.0.3",
+    "framer-motion": "^9.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "redux": "4.2.0",
+    "redux-logger": "3.0.6",
+    "redux-persist": "6.0.0",
+    "redux-state-sync": "3.1.4",
+    "styled-components": "5.3.6"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@types/redux-logger": "3.0.9",
+    "@types/redux-state-sync": "3.1.5",
+    "@types/styled-components": "5.1.26",
+    "@vitejs/plugin-react": "^3.1.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "typescript": "^4.6.4",
+    "vite": "^4.1.1"
+  }
+}
