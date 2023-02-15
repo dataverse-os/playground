@@ -8,9 +8,6 @@ export const Container = styled.div`
 `;
 
 export const HeaderWrapper = styled.nav`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   height: 52px;
   padding: 0 10px;
   background-color: white;
@@ -40,7 +37,7 @@ export const PublishPostWrapper = styled.aside`
 export const DisplayPostWrapper = styled.aside`
   position: relative;
   width: calc(50% - 162px);
-  height: calc(100% - 50px);
+  height: calc(100% - 80px);
   display: flex;
   align-items: center;
   flex-direction: column;

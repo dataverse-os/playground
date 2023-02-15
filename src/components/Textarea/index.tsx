@@ -57,6 +57,7 @@ const Textarea: React.FC<InputProps> = ({
       onBlur={onBlur}
       onClick={onClick}
       onKeyDown={onKeyDown}
+      autoFocus
     />
   );
 };

@@ -32,4 +32,5 @@ export const InputBox = styled.textarea<{
   border: none;
   outline: none;
   white-space: nowrap;
+  
 `;
