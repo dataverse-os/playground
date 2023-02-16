@@ -28,7 +28,7 @@ const Button: React.FC<ButtonProps> = ({
         onClick?.();
       }}
     >
-      {loading ? <Loading /> : children}
+      {loading ? <Loading size={"small"} /> : children}
     </ButtonContainerWrap>
   );
 };

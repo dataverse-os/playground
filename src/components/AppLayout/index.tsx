@@ -1,4 +1,5 @@
-import DisplayPost from "../DisplayPost";
+import { useEffect } from "react";
+import DisplayFolder from "../DisplayFolder";
 import PublishPost from "../PublishPost";
 import Header from "./Header";
 import {
@@ -20,7 +21,7 @@ const Layout: React.FC = (): React.ReactElement => {
           <PublishPost />
         </PublishPostWrapper>
         <DisplayPostWrapper>
-          <DisplayPost />
+          <DisplayFolder />
         </DisplayPostWrapper>
       </BodyWrapper>
     </Container>

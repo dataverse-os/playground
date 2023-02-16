@@ -4,7 +4,6 @@ export const Wrapper = styled.div``;
 
 export const ButtonWapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  justify-content: space-between;
   margin-top: 10px;
 `;

@@ -1,3 +1,4 @@
+import { LitKit } from "@/types";
 import {
   DecryptionConditionsTypes,
   ModelNames,
@@ -70,7 +71,6 @@ export const newLitKey = async ({
     decryptionConditions,
     decryptionConditionsType,
   });
-  console.log(encryptedSymmetricKey);
 
   return {
     encryptedSymmetricKey,
@@ -81,29 +81,31 @@ export const newLitKey = async ({
 
 export const encryptWithLit = async ({
   did,
+  address,
   content,
-  encryptedSymmetricKey,
-  decryptionConditions,
-  decryptionConditionsType,
+  litKit,
 }: {
   did: string;
+  address: string;
   content: string;
-  encryptedSymmetricKey: string;
-  decryptionConditions: any[];
-  decryptionConditionsType: DecryptionConditionsTypes;
+  litKit?: LitKit;
 }) => {
+  if (!litKit) {
+    litKit = await newLitKey({
+      did,
+      address,
+    });
+  }
+
   const { encryptedContent } = await runtimeConnector.encryptWithLit({
     did,
     appName,
     modelNames,
     content,
-    encryptedSymmetricKey,
-    decryptionConditions,
-    decryptionConditionsType,
+    ...litKit,
   });
-  console.log(encryptedContent);
 
-  return encryptedContent;
+  return { encryptedContent, litKit };
 };
 
 export const decryptWithLit = async ({
@@ -136,6 +138,5 @@ export const decryptWithLit = async ({
             DecryptionConditionsTypes.AccessControlCondition,
         }),
   });
-  console.log(content);
   return content;
 };

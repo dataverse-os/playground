@@ -1,5 +1,6 @@
 import {
   Apps,
+  DecryptionConditionsTypes,
   FileType,
   MirrorFile,
   ModelNames,
@@ -59,22 +60,19 @@ export const createPublicPostStream = async ({
 
 export const createPrivatePostStream = async ({
   did,
-  address,
+  encryptedContent,
+  litKit,
 }: {
   did: string;
-  address: string;
+  encryptedContent: string;
+  litKit: {
+    encryptedSymmetricKey: string;
+    decryptionConditions: any[];
+    decryptionConditionsType: DecryptionConditionsTypes;
+  };
 }) => {
-  const litKit = await newLitKey({
-    did,
-    address,
-  });
-
-  const encryptedContent = await encryptWithLit({
-    did,
-    content: "a post",
-    ...litKit,
-  });
-
+  console.log({ encryptedContent });
+  console.log({ litKit });
   const streamObject = await runtimeConnector.createStream({
     did,
     appName,
@@ -148,11 +146,14 @@ export const updatePostStreamsToPrivateContent = async ({
     });
   }
 
-  streamContent.content = await encryptWithLit({
+  const { encryptedContent } = await encryptWithLit({
     did,
-    content: "update my post -- private" + new Date().toISOString(), //private
-    ...litKit,
-  }); //private
+    address,
+    content: "update my post -- private" + new Date().toISOString(),
+    litKit,
+  });
+
+  streamContent.content = encryptedContent;
 
   const streams = await runtimeConnector.updateStreams({
     streamsRecord: {

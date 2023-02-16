@@ -10,16 +10,18 @@ import {
 
 import { postSlice } from "./post/slice";
 import { identitySlice } from "./identity/slice";
+import { folderSlice } from "./folder/slice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["post", "identity"],
+  whitelist: ["identity"],
 };
 
 const rootReducer = combineReducers({
   identity: identitySlice.reducer,
   post: postSlice.reducer,
+  folder: folderSlice.reducer,
 });
 
 // 使用persistReducer强化reducer,persistReducer(config, reducer)

@@ -22,14 +22,9 @@ export const connectIdentity = createAsyncThunk(
 export const identitySlice = createSlice({
   name: "post",
   initialState,
-  reducers: {
-    // setTweetUrl: (state, action: PayloadAction<string>) => {
-    //   state.tweetUrl = action.payload;
-    // },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(connectIdentity.fulfilled, (state, action) => {
-      console.log(action);
       state.did = action.payload;
     });
   },

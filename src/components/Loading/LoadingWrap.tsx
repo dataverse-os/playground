@@ -1,6 +1,10 @@
 import styled from "styled-components";
 
 export const LoadingWrap = styled.div<{ size: number }>`
+  .circle {
+    display: flex;
+  }
+
   .iconSpinner {
     pointer-events: none;
     width: ${(props) => props.size}px;

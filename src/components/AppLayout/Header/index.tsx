@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { connectIdentity } from "@/state/identity/slice";
-import { didAbbreviation } from "@/utils/didAbbreviation";
+import { didAbbreviation } from "@/utils/didAndAddress";
 import { Brand, Wrapper } from "./styled";
 
 const Header = (): React.ReactElement => {
