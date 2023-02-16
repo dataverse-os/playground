@@ -1,21 +1,60 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { useEffect } from "react";
-import { Wrapper, PostWapper } from "./styled";
-import { displayDefaultFolder } from "@/state/folder/slice";
+import { useCallback, useEffect, useRef } from "react";
+import { displayDefaultFolder, folderSlice } from "@/state/folder/slice";
+// @ts-ignore
+import JSONFormatter from "json-formatter-js";
 import { appName } from "@/sdk";
-import { ModelNames } from "@dataverse/runtime-connector";
+import {
+  FileType,
+  Mirror,
+  MirrorFile,
+  ModelNames,
+} from "@dataverse/runtime-connector";
+import { Wrapper, PostWapper, ButtonWrapper } from "./styled";
+import Button from "../Button";
+import { decryptPost } from "@/state/post/slice";
+import Modal from "../Modal";
+import React from "react";
 
 export interface PublishPostProps {}
 
 const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
-  const folder = useSelector((state) => state.folder.folder);
-  const did = useSelector((state) => state.identity.did);
-
   const dispatch = useAppDispatch();
+  const did = useSelector((state) => state.identity.did);
+  const folder = useSelector((state) => state.folder.folder);
+  const currentMirror = useSelector((state) => state.folder.currentMirror);
 
   useEffect(() => {
     dispatch(displayDefaultFolder(did));
   }, [did]);
+
+  const openDecryptionModel = (mirror: Mirror) => {
+    dispatch(folderSlice.actions.setCurrentMirror(mirror));
+  };
+
+  useEffect(() => {
+    if (currentMirror) {
+      const myJSON = currentMirror.mirrorFile.decryptionConditions;
+      const formatter = new JSONFormatter(myJSON);
+      document
+        .querySelector(`#${currentMirror.mirrorId} .childrenContainer`)
+        ?.appendChild(formatter.render());
+      formatter.openAtDepth(Infinity);
+    } else {
+    }
+  }, [currentMirror]);
+
+  const closeDecryptionModel = () => {
+    if (!currentMirror) {
+      return;
+    }
+    document.querySelector(`.json-formatter-open`)?.remove();
+    dispatch(folderSlice.actions.setCurrentMirror());
+  };
+
+  const decrypt = () => {
+    dispatch(decryptPost({ did, mirrorFile: currentMirror?.mirrorFile! }));
+  };
 
   return (
     <Wrapper>
@@ -26,8 +65,29 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
             mirror.mirrorFile.modelName === ModelNames.post
               ? mirror.mirrorFile.content.content
               : mirror.mirrorFile.contentId}
+            {mirror.mirrorFile.fileType === FileType.Private &&
+              !mirror.mirrorFile.isDecryptedSuccessfully && (
+                <ButtonWrapper>
+                  <Button
+                    loading={mirror.mirrorFile.isDecrypting}
+                    onClick={() => openDecryptionModel(mirror)}
+                  >
+                    Decrypt
+                  </Button>
+                </ButtonWrapper>
+              )}
           </PostWapper>
         ))}
+      <Modal
+        id={currentMirror?.mirrorId}
+        title="Conditions"
+        mask
+        width={800}
+        controlVisible={!!currentMirror}
+        showCloseButton
+        onOk={decrypt}
+        onCancel={closeDecryptionModel}
+      ></Modal>
     </Wrapper>
   );
 };

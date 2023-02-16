@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import DisplayFolder from "../DisplayFolder";
+import Modal from "../Modal";
 import PublishPost from "../PublishPost";
 import Header from "./Header";
 import {

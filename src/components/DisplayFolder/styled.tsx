@@ -23,3 +23,9 @@ export const PostWapper = styled.div<{ marginTop: number | string }>`
   border: 1px solid #e9e9e9;
   border-radius: 12px;
 `;
+
+export const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;

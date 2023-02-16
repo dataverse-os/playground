@@ -8,6 +8,8 @@ import {
 export interface CustomMirrorFile extends MirrorFile {
   appName?: string;
   modelName?: string;
+  isDecrypting?: boolean;
+  isDecryptedSuccessfully?: boolean;
 }
 export type CustomMirror = Omit<Mirror, "mirrorFile"> & {
   mirrorFile: CustomMirrorFile;

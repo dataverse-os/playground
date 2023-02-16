@@ -14,6 +14,7 @@ specifiers:
   '@vitejs/plugin-react': ^3.1.0
   buffer: ^6.0.3
   framer-motion: ^9.0.2
+  json-formatter-js: ^2.3.4
   react: ^18.2.0
   react-dom: ^18.2.0
   react-redux: 8.0.5
@@ -34,6 +35,7 @@ dependencies:
   '@reduxjs/toolkit': 1.9.0_k4ae6lp43ej6mezo3ztvx6pykq
   buffer: 6.0.3
   framer-motion: 9.0.2_biqbaboplfbrettd7655fr4n2y
+  json-formatter-js: 2.3.4
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-redux: 8.0.5_jwva55srevpec5wnp2vp35m3vy
@@ -6166,6 +6168,10 @@ packages:
 
   /json-buffer/3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
+    dev: false
+
+  /json-formatter-js/2.3.4:
+    resolution: {integrity: sha512-gmAzYRtPRmYzeAT4T7+t3NhTF89JOAIioCVDddl9YDb3ls3kWcskirafw/MZGJaRhEU6fRimGJHl7CC7gaAI2Q==}
     dev: false
 
   /json-parse-even-better-errors/2.3.1:

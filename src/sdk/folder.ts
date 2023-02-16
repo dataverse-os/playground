@@ -91,6 +91,8 @@ export const decryptPost = async ({
   address: string;
   mirrorFile: CustomMirrorFile;
 }) => {
+  mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
+
   if (!(mirrorFile.contentType! in IndexFileContentType)) {
     if (
       mirrorFile.fileType === FileType.Private &&
@@ -103,32 +105,17 @@ export const decryptPost = async ({
         mirrorFile.appName === appName &&
         mirrorFile.modelName === ModelNames.post
       ) {
-        try {
-          console.log({
-            did,
-            address,
-            encryptedContent: mirrorFile.content.content,
-            ...(mirrorFile.fileKey
-              ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-              : {
-                  encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-                }),
-          });
-          const content = await decryptWithLit({
-            did,
-            address,
-            encryptedContent: mirrorFile.content.content,
-            ...(mirrorFile.fileKey
-              ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-              : {
-                  encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-                }),
-          });
-          mirrorFile.content.content = content;
-        } catch (error) {
-          console.log({ mirrorFile });
-          console.log({ error });
-        }
+        const content = await decryptWithLit({
+          did,
+          address,
+          encryptedContent: mirrorFile.content.content,
+          ...(mirrorFile.fileKey
+            ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
+            : {
+                encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
+              }),
+        });
+        mirrorFile.content.content = content;
       }
     }
   }

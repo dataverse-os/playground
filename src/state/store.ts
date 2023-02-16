@@ -15,7 +15,7 @@ import { folderSlice } from "./folder/slice";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["identity"],
+  whitelist: ["identity", "folder"],
 };
 
 const rootReducer = combineReducers({

@@ -38,7 +38,8 @@ export const ButtonContainerWrap = styled.div<{
     props.type === "text" &&
     css`
       color: black;
-      background-color: black;
+      background-color: white;
+      border: none;
     `}
 
     transition: box-shadow 0.1s;

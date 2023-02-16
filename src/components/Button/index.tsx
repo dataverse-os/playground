@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { CSSProperties } from "styled-components";
 import Loading from "../Loading";
 import { ButtonContainerWrap } from "./style";
 
@@ -11,6 +12,7 @@ export interface ButtonProps extends ButtonType {
   children?: ReactNode;
   cssStyle?: any;
   onClick?: () => void;
+  style?: CSSProperties;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({
   loading,
   children,
   onClick,
+  style,
 }) => {
   return (
     <ButtonContainerWrap
@@ -27,6 +30,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={() => {
         onClick?.();
       }}
+      style={style}
     >
       {loading ? <Loading size={"small"} /> : children}
     </ButtonContainerWrap>
