@@ -7,12 +7,12 @@ import { Frame, GlobalStyle } from "./styled";
 const App: React.FC = () => {
   return (
     <Provider store={rootStore.store}>
-      <PersistGate persistor={rootStore.persistor}>
+      {/* <PersistGate persistor={rootStore.persistor}> */}
         <Frame>
           <GlobalStyle />
           <AppLayout />
         </Frame>
-      </PersistGate>
+      {/* </PersistGate> */}
     </Provider>
   );
 };

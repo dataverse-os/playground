@@ -37,7 +37,7 @@ const middlewares: Array<Middleware> = [createStateSyncMiddleware()];
 // );
 
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   devTools: true,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
