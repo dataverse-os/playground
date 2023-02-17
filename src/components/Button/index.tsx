@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { CSSProperties } from "styled-components";
+import { CSSProperties, FlattenSimpleInterpolation } from "styled-components";
 import Loading from "../Loading";
 import { ButtonContainerWrap } from "./style";
 
@@ -10,9 +10,8 @@ export interface ButtonProps extends ButtonType {
   width?: number | string;
   loading?: boolean;
   children?: ReactNode;
-  cssStyle?: any;
   onClick?: () => void;
-  style?: CSSProperties;
+  css?: FlattenSimpleInterpolation;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -21,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   loading,
   children,
   onClick,
-  style,
+  css,
 }) => {
   return (
     <ButtonContainerWrap
@@ -30,7 +29,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={() => {
         onClick?.();
       }}
-      style={style}
+      css={css}
     >
       {loading ? <Loading size={"small"} /> : children}
     </ButtonContainerWrap>

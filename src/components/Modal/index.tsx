@@ -5,6 +5,7 @@ import { ModalWrap } from "./ModalWrap";
 import usePortal from "@/utils/usePortal";
 import { uuid } from "@/utils/uuid";
 import { useClickOutside } from "@/utils/useClickOutSide";
+import { FlattenSimpleInterpolation } from "styled-components";
 
 export interface ModalProps {
   title?: string;
@@ -21,6 +22,7 @@ export interface ModalProps {
   portal?: boolean;
   parentId?: string;
   mask?: boolean;
+  cssStyle?: FlattenSimpleInterpolation;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -38,6 +40,7 @@ const Modal: React.FC<ModalProps> = ({
   parentId = "root",
   trigger,
   mask = false,
+  cssStyle,
 }) => {
   const [visible, setVisible] = useState(controlVisible);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -88,7 +91,7 @@ const Modal: React.FC<ModalProps> = ({
 
   const target = usePortal(parentId);
   const elements = (
-    <ModalWrap visible={visible} mask={mask} width={width}>
+    <ModalWrap visible={visible} mask={mask} width={width} cssStyle={cssStyle}>
       <div id={id} className="maskContainer">
         <div className="modalContainer" ref={modalRef}>
           <div className="headerContainer">

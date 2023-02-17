@@ -1,9 +1,10 @@
 import { pixelProofing } from "@/utils/pixelProofing";
-import styled, { css } from "styled-components";
+import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 
 export const ButtonContainerWrap = styled.div<{
   width: number | string;
   type: string;
+  css?: FlattenSimpleInterpolation;
 }>`
   display: flex;
   align-items: center;
@@ -51,4 +52,5 @@ export const ButtonContainerWrap = styled.div<{
         background-color: rgba(18, 19, 18, 0.04);
       `}
   }
+  ${(props) => props.css}
 `;

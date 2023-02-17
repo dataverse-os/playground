@@ -10,11 +10,19 @@ import {
   MirrorFile,
   ModelNames,
 } from "@dataverse/runtime-connector";
-import { Wrapper, PostWapper, ButtonWrapper } from "./styled";
+import {
+  Wrapper,
+  PostWapper,
+  ButtonWrapper,
+  Content,
+  Title,
+  ContentWrapper,
+} from "./styled";
 import Button from "../Button";
 import { decryptPost } from "@/state/post/slice";
 import Modal from "../Modal";
 import React from "react";
+import { css } from "styled-components";
 
 export interface PublishPostProps {}
 
@@ -58,26 +66,34 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
 
   return (
     <Wrapper>
-      {folder &&
-        folder.mirrors.map((mirror, index) => (
-          <PostWapper key={mirror.mirrorId} marginTop={index === 0 ? 0 : 24}>
-            {mirror.mirrorFile.appName === appName &&
-            mirror.mirrorFile.modelName === ModelNames.post
-              ? mirror.mirrorFile.content.content
-              : mirror.mirrorFile.contentId}
-            {mirror.mirrorFile.fileType === FileType.Private &&
-              !mirror.mirrorFile.isDecryptedSuccessfully && (
-                <ButtonWrapper>
-                  <Button
-                    loading={mirror.mirrorFile.isDecrypting}
-                    onClick={() => openDecryptionModel(mirror)}
-                  >
-                    Decrypt
-                  </Button>
-                </ButtonWrapper>
-              )}
-          </PostWapper>
-        ))}
+      <Title>File Stream</Title>
+      <ContentWrapper>
+        <Content>
+          {folder &&
+            folder.mirrors.map((mirror, index) => (
+              <PostWapper
+                key={mirror.mirrorId}
+                marginTop={index === 0 ? 0 : 24}
+              >
+                {mirror.mirrorFile.appName === appName &&
+                mirror.mirrorFile.modelName === ModelNames.post
+                  ? mirror.mirrorFile.content.content
+                  : mirror.mirrorFile.contentId}
+                {mirror.mirrorFile.fileType === FileType.Private &&
+                  !mirror.mirrorFile.isDecryptedSuccessfully && (
+                    <ButtonWrapper>
+                      <Button
+                        loading={mirror.mirrorFile.isDecrypting}
+                        onClick={() => openDecryptionModel(mirror)}
+                      >
+                        Decrypt
+                      </Button>
+                    </ButtonWrapper>
+                  )}
+              </PostWapper>
+            ))}
+        </Content>
+      </ContentWrapper>
       <Modal
         id={currentMirror?.mirrorId}
         title="Conditions"
@@ -87,6 +103,12 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
         showCloseButton
         onOk={decrypt}
         onCancel={closeDecryptionModel}
+        cssStyle={css`
+          .headerContainer {
+            font-size: 24px;
+            font-weight: 500;
+          }
+        `}
       ></Modal>
     </Wrapper>
   );

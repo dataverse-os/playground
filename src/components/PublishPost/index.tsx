@@ -1,6 +1,6 @@
 import Button from "../Button";
 import Textarea from "../Textarea";
-import { Wrapper, ButtonWapper } from "./styled";
+import { Wrapper, ButtonWapper, Title, Content } from "./styled";
 import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useState } from "react";
@@ -38,19 +38,24 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
 
   return (
     <Wrapper>
-      <Textarea
-        value={encryptedContent || content}
-        height={250}
-        onChange={textareaOnChange}
-      />
-      <ButtonWapper>
-        <Button loading={isEncrypting} onClick={encrypt}>
-          {isEncryptedSuccessfully ? "Encrypted" : "Encrypt"}
-        </Button>
-        <Button loading={isPublishingPost} onClick={post}>
-          Publish a post
-        </Button>
-      </ButtonWapper>
+      <Title>Social Stream</Title>
+      <Content>
+        <Textarea
+          value={encryptedContent || content}
+          width={300}
+          height={300}
+          placeholder="Write something"
+          onChange={textareaOnChange}
+        />
+        <ButtonWapper>
+          <Button loading={isEncrypting} onClick={encrypt}>
+            {isEncryptedSuccessfully ? "Encrypted" : "Encrypt"}
+          </Button>
+          <Button loading={isPublishingPost} onClick={post}>
+            Publish a post
+          </Button>
+        </ButtonWapper>
+      </Content>
     </Wrapper>
   );
 };

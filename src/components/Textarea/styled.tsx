@@ -1,11 +1,12 @@
 import { pixelProofing } from "@/utils/pixelProofing";
-import styled from "styled-components";
+import styled, { FlattenSimpleInterpolation } from "styled-components";
 
 export const InputBox = styled.textarea<{
   height: number | string;
   width: number | string;
   center: boolean;
   fontSize: number | string;
+  css?: FlattenSimpleInterpolation;
 }>`
   width: ${(props) =>
     typeof props.width === "number"
@@ -32,4 +33,5 @@ export const InputBox = styled.textarea<{
   border: none;
   outline: none;
   word-break: break-all;
+  ${(props) => props.css}
 `;

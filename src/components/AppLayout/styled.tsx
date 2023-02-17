@@ -22,7 +22,7 @@ export const BodyWrapper = styled.div`
 `;
 
 export const PublishPostWrapper = styled.aside`
-  width: 50%;
+  flex: 1;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -36,7 +36,7 @@ export const PublishPostWrapper = styled.aside`
 
 export const DisplayPostWrapper = styled.aside`
   position: relative;
-  width: calc(50% - 162px);
+  flex: 1;
   height: calc(100% - 80px);
   display: flex;
   align-items: center;

@@ -1,15 +1,17 @@
 import React, { useRef } from "react";
+import { FlattenSimpleInterpolation } from "styled-components";
 import { InputBox } from "./styled";
 
 export interface InputProps {
-  width?: string;
+  width?: number | string;
+  height?: number | string;
   value?: string;
   center?: boolean;
   fontSize?: string;
   placeholder?: string;
   content?: React.MutableRefObject<string>;
-  height?: number | string;
   readOnly?: boolean;
+  css?: FlattenSimpleInterpolation;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement, Element>) => void;
@@ -31,6 +33,7 @@ const Textarea: React.FC<InputProps> = ({
   content,
   value,
   readOnly = false,
+  css,
   onChange,
   onKeyDown,
   onBlur,
@@ -52,6 +55,7 @@ const Textarea: React.FC<InputProps> = ({
       placeholder={placeholder}
       value={value}
       readOnly={readOnly}
+      css={css}
       onInput={handleChange}
       onChange={onChange}
       onBlur={onBlur}

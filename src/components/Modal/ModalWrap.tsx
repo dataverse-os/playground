@@ -1,9 +1,10 @@
-import styled from "styled-components";
+import styled, { FlattenSimpleInterpolation } from "styled-components";
 
 export const ModalWrap = styled.div<{
   width: number;
   visible: boolean;
   mask: boolean;
+  cssStyle?: FlattenSimpleInterpolation;
 }>`
   .modalContainer {
     width: ${(props) => `${props.width}px`};
@@ -15,6 +16,7 @@ export const ModalWrap = styled.div<{
       0 9px 28px 8px rgb(0 0 0 / 5%);
     pointer-events: auto;
     padding: 20px 24px;
+    ${(props) => props.cssStyle}
   }
 
   .maskContainer {
@@ -47,7 +49,7 @@ export const ModalWrap = styled.div<{
     justify-content: space-between;
     display: flex;
     font-size: 20px;
-    
+
     .placeholder {
       width: 40px;
     }
