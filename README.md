@@ -1,7 +1,8 @@
 # dataverse-playground
 
-## Install Dataverse extension from Google App Store 
-The link is: https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead
+## Install Dataverse extension from Google App Store
+
+The link is: <a href="https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead" target="_blank">https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead</a>
 
 ## Install dependencies
 
