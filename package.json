@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dataverse/dataverse-kernel": "latest",
     "@dataverse/runtime-connector": "latest",
     "@reduxjs/toolkit": "1.9.0",
     "buffer": "^6.0.3",

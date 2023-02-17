@@ -1,11 +1,11 @@
 import {
   Apps,
-  Browser,
+  Extension,
   ModelNames,
   RuntimeConnector,
 } from "@dataverse/runtime-connector";
 
-export let runtimeConnector: RuntimeConnector = new RuntimeConnector(Browser);
+export let runtimeConnector: RuntimeConnector = new RuntimeConnector(Extension);
 export const appName = Apps.dTwitter;
 export const modelName = ModelNames.post;
 export const modelNames = [ModelNames.post];

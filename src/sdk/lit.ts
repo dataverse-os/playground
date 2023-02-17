@@ -2,7 +2,7 @@ import { LitKit } from "@/types";
 import {
   DecryptionConditionsTypes,
   ModelNames,
-} from "@dataverse/dataverse-kernel";
+} from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
 
 export const generateAccessControlConditions = async ({

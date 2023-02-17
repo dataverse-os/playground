@@ -1,5 +1,8 @@
 # dataverse-playground
 
+## Install Dataverse extension from Google App Store 
+The link is: https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead
+
 ## Install dependencies
 
 ```bash

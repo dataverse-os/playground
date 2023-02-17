@@ -1,4 +1,4 @@
-import { METAMASK, CRYPTO_WALLET_TYPE } from "@dataverse/dataverse-kernel";
+import { CRYPTO_WALLET_TYPE, METAMASK } from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
 
 export const connectWallet = async () => {

@@ -71,7 +71,6 @@ export const readMyDefaultFolder = async (did: string) => {
       // await decryptPost({ did, address, mirrorFile: mirror.mirrorFile });
     })
   );
-  console.log({ folder });
 
   const sortedMirrors = Object.values(folder.mirrors as Mirrors).sort(
     (mirrorA, mirrorB) =>

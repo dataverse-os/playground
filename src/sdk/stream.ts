@@ -4,7 +4,7 @@ import {
   FileType,
   MirrorFile,
   ModelNames,
-} from "@dataverse/dataverse-kernel";
+} from "@dataverse/runtime-connector";
 import {
   runtimeConnector,
   appName,
@@ -71,8 +71,6 @@ export const createPrivatePostStream = async ({
     decryptionConditionsType: DecryptionConditionsTypes;
   };
 }) => {
-  console.log({ encryptedContent });
-  console.log({ litKit });
   const streamObject = await runtimeConnector.createStream({
     did,
     appName,

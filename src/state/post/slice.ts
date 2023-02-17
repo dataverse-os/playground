@@ -52,7 +52,6 @@ export const decryptPost = createAsyncThunk(
       address,
       mirrorFile,
     });
-    console.log({ _decryptPost: res });
     return res;
   }
 );
