@@ -22,8 +22,8 @@ export const loadStream = async (streamId: string) => {
 export const loadMyPostStreamsByModel = async (did: string) => {
   const streams = await runtimeConnector.loadStreamsByModel({
     did,
-    appName: Apps.dTwitter,
-    modelName: ModelNames.post,
+    appName,
+    modelName,
   });
 
   const streamList: { streamId: string; streamContent: any }[] = [];
@@ -47,14 +47,15 @@ export const createPublicPostStream = async ({
 }) => {
   const streamObject = await runtimeConnector.createStream({
     did,
-    appName: Apps.dTwitter,
-    modelName: ModelNames.post,
+    appName,
+    modelName,
     streamContent: {
       appVersion,
       content,
     },
     fileType: FileType.Public,
   });
+
   return streamObject;
 };
 
