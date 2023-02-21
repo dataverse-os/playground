@@ -11,7 +11,7 @@ import {
 } from "@dataverse/runtime-connector";
 import { runtimeConnector, appName } from ".";
 import { getAppNameAndModelNameByModelId } from "./appRegistry";
-import { decryptWithLit } from "./lit";
+import { decryptWithLit } from "./encryptionAndDecryption";
 
 export const readOthersFolders = async (did: string) => {
   const othersFolders = await runtimeConnector.readFolders({

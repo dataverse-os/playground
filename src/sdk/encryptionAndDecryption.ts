@@ -16,11 +16,7 @@ export const generateAccessControlConditions = async ({
     appName,
     modelName: ModelNames.post,
   });
-  const chain = await runtimeConnector.getChainFromLitAuthSig({
-    did,
-    appName,
-    modelNames,
-  });
+  const chain = await runtimeConnector.getChainFromDID(did);
   const conditions: any[] = [
     {
       contractAddress: "",

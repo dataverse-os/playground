@@ -1,4 +1,4 @@
-import { encryptWithLit } from "@/sdk/lit";
+import { encryptWithLit } from "@/sdk/encryptionAndDecryption";
 import { decryptPost as _decryptPost } from "@/sdk/folder";
 import {
   createPrivatePostStream,

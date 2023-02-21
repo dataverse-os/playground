@@ -12,7 +12,7 @@ import {
   modelName,
   appVersion,
 } from ".";
-import { newLitKey, encryptWithLit } from "./lit";
+import { newLitKey, encryptWithLit } from "./encryptionAndDecryption";
 
 export const loadStream = async (streamId: string) => {
   const stream = await runtimeConnector.loadStream(streamId);
