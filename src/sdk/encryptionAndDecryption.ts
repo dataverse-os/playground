@@ -1,65 +1,16 @@
 import { LitKit } from "@/types";
-import {
-  DecryptionConditionsTypes,
-  ModelNames,
-} from "@dataverse/runtime-connector";
+import { DecryptionConditionsTypes } from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
-
-export const generateAccessControlConditions = async ({
-  did,
-  address,
-}: {
-  did: string;
-  address: string;
-}) => {
-  const modelId = await runtimeConnector.getModelIdByAppNameAndModelName({
-    appName,
-    modelName: ModelNames.post,
-  });
-  const chain = await runtimeConnector.getChainFromDID(did);
-  const conditions: any[] = [
-    {
-      contractAddress: "",
-      standardContractType: "",
-      chain,
-      method: "",
-      parameters: [":userAddress"],
-      returnValueTest: {
-        comparator: "=",
-        value: `${address}`,
-      },
-    },
-    { operator: "and" },
-    {
-      contractAddress: "",
-      standardContractType: "SIWE",
-      chain,
-      method: "",
-      parameters: [":resources"],
-      returnValueTest: {
-        comparator: "contains",
-        value: `ceramic://*?model=${modelId}`,
-      },
-    },
-  ];
-
-  return conditions;
-};
 
 export const newLitKey = async ({
   did,
-  address,
+  decryptionConditions,
+  decryptionConditionsType,
 }: {
   did: string;
-  address: string;
+  decryptionConditions: any[];
+  decryptionConditionsType: DecryptionConditionsTypes;
 }) => {
-  const decryptionConditions = await generateAccessControlConditions({
-    did,
-    address,
-  });
-  const decryptionConditionsType =
-    DecryptionConditionsTypes.AccessControlCondition;
-
   const { encryptedSymmetricKey } = await runtimeConnector.newLitKey({
     did,
     appName,
@@ -77,27 +28,18 @@ export const newLitKey = async ({
 
 export const encryptWithLit = async ({
   did,
-  address,
-  content,
+  contentToBeEncrypted,
   litKit,
 }: {
   did: string;
-  address: string;
-  content: string;
-  litKit?: LitKit;
+  contentToBeEncrypted: string;
+  litKit: LitKit;
 }) => {
-  if (!litKit) {
-    litKit = await newLitKey({
-      did,
-      address,
-    });
-  }
-
   const { encryptedContent } = await runtimeConnector.encryptWithLit({
     did,
     appName,
     modelNames,
-    content,
+    content: contentToBeEncrypted,
     ...litKit,
   });
 
@@ -106,15 +48,17 @@ export const encryptWithLit = async ({
 
 export const decryptWithLit = async ({
   did,
-  address,
   encryptedContent,
   encryptedSymmetricKey,
+  decryptionConditions,
+  decryptionConditionsType,
   symmetricKeyInBase16Format,
 }: {
   did: string;
-  address: string;
   encryptedContent: string;
   encryptedSymmetricKey?: string;
+  decryptionConditions?: any[];
+  decryptionConditionsType?: DecryptionConditionsTypes;
   symmetricKeyInBase16Format?: string;
 }) => {
   const { content } = await runtimeConnector.decryptWithLit({
@@ -126,12 +70,8 @@ export const decryptWithLit = async ({
       ? { symmetricKeyInBase16Format }
       : {
           encryptedSymmetricKey,
-          decryptionConditions: await generateAccessControlConditions({
-            did,
-            address,
-          }),
-          decryptionConditionsType:
-            DecryptionConditionsTypes.AccessControlCondition,
+          decryptionConditions,
+          decryptionConditionsType,
         }),
   });
   return content;

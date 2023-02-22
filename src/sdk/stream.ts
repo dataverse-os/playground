@@ -86,14 +86,18 @@ export const createPrivatePostStream = async ({
   return streamObject;
 };
 
-export const updatePostStreamsToPublicContent = async (
-  mirrorFile: MirrorFile
-) => {
+export const updatePostStreamsToPublicContent = async ({
+  content,
+  mirrorFile,
+}: {
+  content: string;
+  mirrorFile: MirrorFile;
+}) => {
   if (!mirrorFile) return;
   const { contentId: streamId, content: streamContent } = mirrorFile;
   if (!streamId || !streamContent) return;
 
-  streamContent.content = "update my post -- public" + new Date().toISOString(); //public
+  streamContent.content = content; //public content
 
   const streams = await runtimeConnector.updateStreams({
     streamsRecord: {
@@ -107,7 +111,7 @@ export const updatePostStreamsToPublicContent = async (
   return streams;
 };
 
-export const updatePostStreamsToPrivateContent = async ({
+export const updatePostStreamsWithAccessControlConditions = async ({
   did,
   address,
   mirrorFile,
@@ -117,52 +121,192 @@ export const updatePostStreamsToPrivateContent = async ({
   mirrorFile: MirrorFile;
 }) => {
   if (!mirrorFile) return;
-  const { contentId: streamId, content: streamContent } = mirrorFile;
+  const {
+    contentId: streamId,
+    content: streamContent,
+    datatokenId,
+  } = mirrorFile;
   if (!streamId || !streamContent) return;
+  console.log({ datatokenId });
+  console.log({ mirrorFile });
 
   let litKit;
 
-  const {
-    encryptedSymmetricKey,
-    decryptionConditions,
-    decryptionConditionsType,
-  } = mirrorFile;
+  let decryptionConditions: any[];
+  let decryptionConditionsType: DecryptionConditionsTypes;
 
-  if (
-    encryptedSymmetricKey &&
-    decryptionConditions &&
-    decryptionConditionsType
-  ) {
-    litKit = {
-      encryptedSymmetricKey,
-      decryptionConditions,
-      decryptionConditionsType,
-    };
-  } else {
-    litKit = await newLitKey({
+  if (!datatokenId) {
+    decryptionConditions = await generateAccessControlConditions({
       did,
       address,
     });
+    decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
+
+    mirrorFile.fileType = FileType.Private;
+  } else {
+    decryptionConditions = await generateUnifiedAccessControlConditions({
+      did,
+      address,
+      datatokenId,
+    });
+    decryptionConditionsType =
+      DecryptionConditionsTypes.UnifiedAccessControlCondition;
+
+    mirrorFile.fileType = FileType.Datatoken;
   }
+
+  litKit = await newLitKey({
+    did,
+    decryptionConditions,
+    decryptionConditionsType,
+  });
 
   const { encryptedContent } = await encryptWithLit({
     did,
-    address,
-    content: "update my post -- private" + new Date().toISOString(),
+    contentToBeEncrypted: mirrorFile.content.content,
     litKit,
   });
 
   streamContent.content = encryptedContent;
 
-  const streams = await runtimeConnector.updateStreams({
+  await runtimeConnector.updateStreams({
     streamsRecord: {
       [streamId]: {
         streamContent: streamContent,
-        fileType: FileType.Private,
+        fileType: mirrorFile.fileType,
+        ...(datatokenId && { datatokenId: mirrorFile.datatokenId }),
         ...litKit,
       },
     },
     syncImmediately: true,
   });
-  return streams;
+
+  mirrorFile.content.content = encryptedContent;
+  mirrorFile.fileKey = undefined;
+  mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
+  mirrorFile.decryptionConditions = litKit.decryptionConditions;
+  mirrorFile.decryptionConditionsType = litKit.decryptionConditionsType;
+
+  return mirrorFile;
+};
+
+export const generateAccessControlConditions = async ({
+  did,
+  address,
+}: {
+  did: string;
+  address: string;
+}) => {
+  const modelId = await runtimeConnector.getModelIdByAppNameAndModelName({
+    appName,
+    modelName: ModelNames.post,
+  });
+  const chain = await runtimeConnector.getChainFromDID(did);
+  const conditions: any[] = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: `${address}`,
+      },
+    },
+    { operator: "and" },
+    {
+      contractAddress: "",
+      standardContractType: "SIWE",
+      chain,
+      method: "",
+      parameters: [":resources"],
+      returnValueTest: {
+        comparator: "contains",
+        value: `ceramic://*?model=${modelId}`,
+      },
+    },
+  ];
+
+  return conditions;
+};
+
+export const generateUnifiedAccessControlConditions = async ({
+  did,
+  address,
+  datatokenId,
+}: {
+  did: string;
+  address: string;
+  datatokenId: string;
+}) => {
+  const modelId = await runtimeConnector.getModelIdByAppNameAndModelName({
+    appName,
+    modelName: ModelNames.post,
+  });
+  const chain = await runtimeConnector.getChainFromDID(did);
+
+  const conditions: any = [
+    {
+      conditionType: "evmBasic",
+      contractAddress: "",
+      standardContractType: "SIWE",
+      chain,
+      method: "",
+      parameters: [":resources"],
+      returnValueTest: {
+        comparator: "contains",
+        value: `ceramic://*?model=${modelId}`,
+      },
+    },
+  ];
+  conditions.push({ operator: "and" });
+  const unifiedAccessControlConditions = [
+    {
+      contractAddress: datatokenId,
+      conditionType: "evmContract",
+      functionName: "canUnlock",
+      functionParams: [":userAddress", datatokenId],
+      functionAbi: {
+        inputs: [
+          {
+            internalType: "address",
+            name: "user",
+            type: "address",
+          },
+        ],
+        name: "isCollected",
+        outputs: [
+          {
+            internalType: "bool",
+            name: "",
+            type: "bool",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      chain,
+      returnValueTest: {
+        key: "",
+        comparator: "=",
+        value: "true",
+      },
+    },
+    { operator: "or" },
+    {
+      conditionType: "evmBasic",
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: `${address}`,
+      },
+    },
+  ];
+  conditions.push(unifiedAccessControlConditions);
+  return conditions;
 };

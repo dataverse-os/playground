@@ -5,6 +5,7 @@ import { displayDefaultFolder, folderSlice } from "@/state/folder/slice";
 import JSONFormatter from "json-formatter-js";
 import { appName } from "@/sdk";
 import {
+  Currency,
   FileType,
   Mirror,
   MirrorFile,
@@ -23,6 +24,8 @@ import { decryptPost } from "@/state/post/slice";
 import Modal from "../Modal";
 import React from "react";
 import { css } from "styled-components";
+import { buyFile, monetizeFile } from "@/state/file/slice";
+import { CustomMirrorFile } from "@/types";
 
 export interface PublishPostProps {}
 
@@ -61,7 +64,18 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
   };
 
   const decrypt = () => {
+    if (currentMirror?.mirrorFile?.isDecrypting) return;
     dispatch(decryptPost({ did, mirrorFile: currentMirror?.mirrorFile! }));
+  };
+
+  const monetize = (mirrorFile: CustomMirrorFile) => {
+    if (mirrorFile.isMonetizing) return;
+    dispatch(monetizeFile({ did, mirrorFile }));
+  };
+
+  const buy = (mirrorFile: CustomMirrorFile) => {
+    if (mirrorFile?.isBuying) return;
+    dispatch(buyFile({ did, mirrorFile }));
   };
 
   return (
@@ -79,17 +93,38 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
                 mirror.mirrorFile.modelName === ModelNames.post
                   ? mirror.mirrorFile.content.content
                   : mirror.mirrorFile.contentId}
-                {mirror.mirrorFile.fileType === FileType.Private &&
-                  !mirror.mirrorFile.isDecryptedSuccessfully && (
-                    <ButtonWrapper>
+                <ButtonWrapper>
+                  {mirror.mirrorFile.fileType === FileType.Private &&
+                    !mirror.mirrorFile.isDecryptedSuccessfully && (
                       <Button
                         loading={mirror.mirrorFile.isDecrypting}
+                        css={css`
+                          margin-right: 20px;
+                        `}
                         onClick={() => openDecryptionModel(mirror)}
                       >
                         Decrypt
                       </Button>
-                    </ButtonWrapper>
-                  )}
+                    )}
+                  {mirror.mirrorFile.fileType !== FileType.Datatoken &&
+                    !mirror.mirrorFile.isMonetizedSuccessfully && (
+                      <Button
+                        loading={mirror.mirrorFile.isMonetizing}
+                        onClick={() => monetize(mirror.mirrorFile)}
+                      >
+                        Monetize
+                      </Button>
+                    )}
+                  {mirror.mirrorFile.fileType === FileType.Datatoken &&
+                    !mirror.mirrorFile.isBoughtSuccessfully && (
+                      <Button
+                        loading={mirror.mirrorFile.isBuying}
+                        onClick={() => buy(mirror.mirrorFile)}
+                      >
+                        Buy
+                      </Button>
+                    )}
+                </ButtonWrapper>
               </PostWapper>
             ))}
         </Content>

@@ -27,8 +27,6 @@ export const readMyFolders = async (did: string) => {
     appName,
   });
 
-  const address = getAddressFromDid(did);
-
   await Promise.all(
     Object.values(folders).map((folder) => {
       return Promise.all(
@@ -62,9 +60,7 @@ export const readMyDefaultFolder = async (did: string) => {
     did,
     appName,
   });
-
-  const address = getAddressFromDid(did);
-
+  console.log({ folders: JSON.parse(JSON.stringify(folder)) });
   await Promise.all(
     Object.values(folder.mirrors as Mirrors).map(async (mirror) => {
       await rebuildMirrorFile(mirror.mirrorFile);
@@ -83,18 +79,16 @@ export const readMyDefaultFolder = async (did: string) => {
 
 export const decryptPost = async ({
   did,
-  address,
   mirrorFile,
 }: {
   did: string;
-  address: string;
   mirrorFile: CustomMirrorFile;
 }) => {
   mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
-
+  
   if (!(mirrorFile.contentType! in IndexFileContentType)) {
     if (
-      mirrorFile.fileType === FileType.Private &&
+      mirrorFile.fileType !== FileType.Public &&
       (mirrorFile.fileKey ||
         (mirrorFile.encryptedSymmetricKey &&
           mirrorFile.decryptionConditions &&
@@ -104,17 +98,22 @@ export const decryptPost = async ({
         mirrorFile.appName === appName &&
         mirrorFile.modelName === ModelNames.post
       ) {
-        const content = await decryptWithLit({
-          did,
-          address,
-          encryptedContent: mirrorFile.content.content,
-          ...(mirrorFile.fileKey
-            ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-            : {
-                encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-              }),
-        });
-        mirrorFile.content.content = content;
+        try {
+          const content = await decryptWithLit({
+            did,
+            encryptedContent: mirrorFile.content.content,
+            ...(mirrorFile.fileKey
+              ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
+              : {
+                  encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
+                  decryptionConditions: mirrorFile.decryptionConditions,
+                  decryptionConditionsType: mirrorFile.decryptionConditionsType,
+                }),
+          });
+          mirrorFile.content.content = content;
+        } catch (error) {
+          console.log({ error });
+        }
       }
     }
   }

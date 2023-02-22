@@ -10,6 +10,10 @@ export interface CustomMirrorFile extends MirrorFile {
   modelName?: string;
   isDecrypting?: boolean;
   isDecryptedSuccessfully?: boolean;
+  isMonetizing?: boolean;
+  isMonetizedSuccessfully?: boolean;
+  isBuying?: boolean;
+  isBoughtSuccessfully?: boolean;
 }
 export type CustomMirror = Omit<Mirror, "mirrorFile"> & {
   mirrorFile: CustomMirrorFile;

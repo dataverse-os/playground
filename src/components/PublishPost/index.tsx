@@ -27,11 +27,19 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
 
   const encrypt = async () => {
     if (isEncrypting || isEncryptedSuccessfully) return;
+    if (!did) {
+      alert("Please connect identity first.");
+      return;
+    }
     dispatch(encryptPost({ did, content }));
   };
 
   const post = async () => {
     if (isPublishingPost) return;
+    if (!did) {
+      alert("Please connect identity first.");
+      return;
+    }
     await dispatch(publishPost({ did, content, encryptedContent, litKit }));
     dispatch(displayDefaultFolder(did));
   };

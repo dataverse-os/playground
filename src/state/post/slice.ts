@@ -1,13 +1,18 @@
-import { encryptWithLit } from "@/sdk/encryptionAndDecryption";
+import { encryptWithLit, newLitKey } from "@/sdk/encryptionAndDecryption";
 import { decryptPost as _decryptPost } from "@/sdk/folder";
 import {
   createPrivatePostStream,
   createPublicPostStream,
+  generateAccessControlConditions,
   loadMyPostStreamsByModel,
 } from "@/sdk/stream";
 import { CustomMirrorFile, LitKit } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
-import { MirrorFile, StreamObject } from "@dataverse/runtime-connector";
+import {
+  DecryptionConditionsTypes,
+  MirrorFile,
+  StreamObject,
+} from "@dataverse/runtime-connector";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface Props {
@@ -32,7 +37,27 @@ export const encryptPost = createAsyncThunk(
   "post/encryptPost",
   async ({ did, content }: { did: string; content: string }) => {
     const address = getAddressFromDid(did);
-    const res = await encryptWithLit({ did, address, content });
+
+    const decryptionConditions = await generateAccessControlConditions({
+      did,
+      address,
+    });
+
+    const decryptionConditionsType =
+      DecryptionConditionsTypes.AccessControlCondition;
+
+    const litKit = await newLitKey({
+      did,
+      decryptionConditions,
+      decryptionConditionsType,
+    });
+
+    const res = await encryptWithLit({
+      did,
+      contentToBeEncrypted: content,
+      litKit,
+    });
+
     return res;
   }
 );
@@ -46,10 +71,8 @@ export const decryptPost = createAsyncThunk(
     did: string;
     mirrorFile: CustomMirrorFile;
   }) => {
-    const address = getAddressFromDid(did);
     const res = await _decryptPost({
       did,
-      address,
       mirrorFile,
     });
     return res;

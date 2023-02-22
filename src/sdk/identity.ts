@@ -6,7 +6,6 @@ export const connectWallet = async () => {
     name: METAMASK,
     type: CRYPTO_WALLET_TYPE,
   });
-  console.log(address);
   return address;
 };
 
@@ -16,17 +15,15 @@ export const connectIdentity = async () => {
     appName,
     modelNames,
   });
-  console.log(did);
   return did;
 };
 
 export const createNewDID = async () => {
-  const { currentDid, createdDidList } = await runtimeConnector.createNewDID({
+  const { currentDID, createdDIDList } = await runtimeConnector.createNewDID({
     name: METAMASK,
     type: CRYPTO_WALLET_TYPE,
   });
-  console.log({ currentDid, createdDidList });
-  return { currentDid, createdDidList };
+  return { currentDID, createdDIDList };
 };
 
 export const switchDID = async (did: string) => {
