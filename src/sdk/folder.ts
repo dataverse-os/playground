@@ -31,7 +31,7 @@ export const readMyFolders = async (did: string) => {
     Object.values(folders).map((folder) => {
       return Promise.all(
         Object.values(folder.mirrors as Mirrors).map(async (mirror) => {
-          await rebuildMirrorFile(mirror.mirrorFile);
+          await rebuildMirrorFile(mirror.mirrorFile as CustomMirrorFile);
           // await decryptPost({ did, address, mirrorFile: mirror.mirrorFile });
         })
       );
@@ -60,19 +60,23 @@ export const readMyDefaultFolder = async (did: string) => {
     did,
     appName,
   });
-  console.log({ folders: JSON.parse(JSON.stringify(folder)) });
+
   await Promise.all(
     Object.values(folder.mirrors as Mirrors).map(async (mirror) => {
-      await rebuildMirrorFile(mirror.mirrorFile);
+      await rebuildMirrorFile(mirror.mirrorFile as CustomMirrorFile);
       // await decryptPost({ did, address, mirrorFile: mirror.mirrorFile });
     })
   );
 
-  const sortedMirrors = Object.values(folder.mirrors as Mirrors).sort(
-    (mirrorA, mirrorB) =>
-      Date.parse(mirrorB.mirrorFile.updatedAt!) -
-      Date.parse(mirrorA.mirrorFile.updatedAt!)
-  );
+  const sortedMirrors = Object.values(folder.mirrors as Mirrors)
+    .sort(
+      (mirrorA, mirrorB) =>
+        Date.parse(mirrorB.mirrorFile.updatedAt!) -
+        Date.parse(mirrorA.mirrorFile.updatedAt!)
+    )
+    .filter(
+      (mirror) => !(mirror.mirrorFile.contentType! in IndexFileContentType)
+    );
 
   return { ...folder, mirrors: sortedMirrors };
 };
@@ -85,36 +89,70 @@ export const decryptPost = async ({
   mirrorFile: CustomMirrorFile;
 }) => {
   mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
-  
-  if (!(mirrorFile.contentType! in IndexFileContentType)) {
+
+  if (
+    mirrorFile.fileType !== FileType.Public &&
+    (mirrorFile.fileKey ||
+      (mirrorFile.encryptedSymmetricKey &&
+        mirrorFile.decryptionConditions &&
+        mirrorFile.decryptionConditionsType))
+  ) {
     if (
-      mirrorFile.fileType !== FileType.Public &&
-      (mirrorFile.fileKey ||
-        (mirrorFile.encryptedSymmetricKey &&
-          mirrorFile.decryptionConditions &&
-          mirrorFile.decryptionConditionsType))
+      mirrorFile.appName === appName &&
+      mirrorFile.modelName === ModelNames.post
     ) {
-      if (
-        mirrorFile.appName === appName &&
-        mirrorFile.modelName === ModelNames.post
-      ) {
-        try {
-          const content = await decryptWithLit({
-            did,
-            encryptedContent: mirrorFile.content.content,
-            ...(mirrorFile.fileKey
-              ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-              : {
-                  encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-                  decryptionConditions: mirrorFile.decryptionConditions,
-                  decryptionConditionsType: mirrorFile.decryptionConditionsType,
-                }),
-          });
-          mirrorFile.content.content = content;
-        } catch (error) {
-          console.log({ error });
-        }
+      try {
+        const content = await decryptWithLit({
+          did,
+          encryptedContent: mirrorFile.content.content,
+          ...(mirrorFile.fileKey
+            ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
+            : {
+                encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
+                decryptionConditions: mirrorFile.decryptionConditions,
+                decryptionConditionsType: mirrorFile.decryptionConditionsType,
+              }),
+        });
+
+        mirrorFile.content.content = content;
+      } catch (error) {
+        console.log({ error });
       }
+    }
+  }
+  return mirrorFile;
+};
+
+export const decryptFile = async ({
+  did,
+  mirrorFile,
+}: {
+  did: string;
+  mirrorFile: CustomMirrorFile;
+}) => {
+  mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
+  if (
+    mirrorFile.fileType !== FileType.Public &&
+    (mirrorFile.fileKey ||
+      (mirrorFile.encryptedSymmetricKey &&
+        mirrorFile.decryptionConditions &&
+        mirrorFile.decryptionConditionsType))
+  ) {
+    try {
+      const content = await decryptWithLit({
+        did,
+        encryptedContent: mirrorFile.contentId!,
+        ...(mirrorFile.fileKey
+          ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
+          : {
+              encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
+              decryptionConditions: mirrorFile.decryptionConditions,
+              decryptionConditionsType: mirrorFile.decryptionConditionsType,
+            }),
+      });
+      mirrorFile.contentId = content;
+    } catch (error) {
+      console.log({ error });
     }
   }
   return mirrorFile;

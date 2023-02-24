@@ -10,10 +10,11 @@ export const connectWallet = async () => {
 };
 
 export const connectIdentity = async () => {
+  await connectWallet();
+  await runtimeConnector.switchNetwork(137);
   const did = await runtimeConnector.connectIdentity({
     wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
     appName,
-    modelNames,
   });
   return did;
 };

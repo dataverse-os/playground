@@ -1,5 +1,5 @@
 import { encryptWithLit, newLitKey } from "@/sdk/encryptionAndDecryption";
-import { decryptPost as _decryptPost } from "@/sdk/folder";
+import { decryptFile, decryptPost as _decryptPost } from "@/sdk/folder";
 import {
   createPrivatePostStream,
   createPublicPostStream,
@@ -10,6 +10,7 @@ import { CustomMirrorFile, LitKit } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   DecryptionConditionsTypes,
+  IndexFileContentType,
   MirrorFile,
   StreamObject,
 } from "@dataverse/runtime-connector";
@@ -71,7 +72,14 @@ export const decryptPost = createAsyncThunk(
     did: string;
     mirrorFile: CustomMirrorFile;
   }) => {
-    const res = await _decryptPost({
+    if (!(mirrorFile.contentType in IndexFileContentType)) {
+      const res = await _decryptPost({
+        did,
+        mirrorFile,
+      });
+      return res;
+    }
+    const res = await decryptFile({
       did,
       mirrorFile,
     });

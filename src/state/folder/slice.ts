@@ -36,7 +36,7 @@ export const folderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(displayDefaultFolder.fulfilled, (state, action) => {
-      state.folder = action.payload;
+      state.folder = action.payload as CustomFolder;
     });
 
     //decryptPostListener

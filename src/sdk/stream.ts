@@ -1,7 +1,9 @@
+import { CustomMirrorFile } from "@/types";
 import {
   Apps,
   DecryptionConditionsTypes,
   FileType,
+  IndexFileContentType,
   MirrorFile,
   ModelNames,
 } from "@dataverse/runtime-connector";
@@ -118,7 +120,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
 }: {
   did: string;
   address: string;
-  mirrorFile: MirrorFile;
+  mirrorFile: CustomMirrorFile;
 }) => {
   if (!mirrorFile) return;
   const {
@@ -126,9 +128,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
     content: streamContent,
     datatokenId,
   } = mirrorFile;
-  if (!streamId || !streamContent) return;
-  console.log({ datatokenId });
-  console.log({ mirrorFile });
+  if (!streamId) return;
 
   let litKit;
 
@@ -163,7 +163,10 @@ export const updatePostStreamsWithAccessControlConditions = async ({
 
   const { encryptedContent } = await encryptWithLit({
     did,
-    contentToBeEncrypted: mirrorFile.content.content,
+    contentToBeEncrypted:
+      mirrorFile.contentType in IndexFileContentType
+        ? mirrorFile.contentId
+        : mirrorFile.content.content,
     litKit,
   });
 
@@ -172,7 +175,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   await runtimeConnector.updateStreams({
     streamsRecord: {
       [streamId]: {
-        streamContent: streamContent,
+        streamContent,
         fileType: mirrorFile.fileType,
         ...(datatokenId && { datatokenId: mirrorFile.datatokenId }),
         ...litKit,
@@ -182,7 +185,83 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   });
 
   mirrorFile.content.content = encryptedContent;
+
   mirrorFile.fileKey = undefined;
+  mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
+  mirrorFile.decryptionConditions = litKit.decryptionConditions;
+  mirrorFile.decryptionConditionsType = litKit.decryptionConditionsType;
+
+  return mirrorFile;
+};
+
+export const updateFileStreamsWithAccessControlConditions = async ({
+  did,
+  address,
+  mirrorFile,
+}: {
+  did: string;
+  address: string;
+  mirrorFile: CustomMirrorFile;
+}) => {
+  if (!mirrorFile) return;
+  const { contentId, indexFileId, datatokenId } = mirrorFile;
+  if (!contentId) return;
+
+  let litKit;
+
+  let decryptionConditions: any[];
+  let decryptionConditionsType: DecryptionConditionsTypes;
+
+  if (!datatokenId) {
+    decryptionConditions = await generateAccessControlConditions({
+      did,
+      address,
+    });
+    decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
+
+    mirrorFile.fileType = FileType.Private;
+  } else {
+    decryptionConditions = await generateUnifiedAccessControlConditions({
+      did,
+      address,
+      datatokenId,
+    });
+    decryptionConditionsType =
+      DecryptionConditionsTypes.UnifiedAccessControlCondition;
+
+    mirrorFile.fileType = FileType.Datatoken;
+  }
+
+  litKit = await newLitKey({
+    did,
+    decryptionConditions,
+    decryptionConditionsType,
+  });
+
+  const { encryptedContent } = await encryptWithLit({
+    did,
+    contentToBeEncrypted:
+      mirrorFile.contentType in IndexFileContentType
+        ? mirrorFile.contentId
+        : mirrorFile.content.content,
+    litKit,
+  });
+
+  const res = await runtimeConnector.updateMirror({
+    did,
+    appName,
+    mirrorId: indexFileId,
+    fileInfo: {
+      fileType: mirrorFile.fileType,
+      contentId: encryptedContent,
+      ...(datatokenId && { datatokenId }),
+      ...litKit,
+    },
+    syncImmediately: true,
+  });
+
+  mirrorFile.contentId = encryptedContent;
+  mirrorFile.fileKey = res.currentMirror.mirrorFile.fileKey;
   mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
   mirrorFile.decryptionConditions = litKit.decryptionConditions;
   mirrorFile.decryptionConditionsType = litKit.decryptionConditionsType;

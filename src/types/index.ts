@@ -1,11 +1,13 @@
 import {
   DecryptionConditionsTypes,
+  IndexFileContentType,
   Mirror,
   MirrorFile,
   StructuredFolder,
 } from "@dataverse/runtime-connector";
 
 export interface CustomMirrorFile extends MirrorFile {
+  contentType: IndexFileContentType | string;
   appName?: string;
   modelName?: string;
   isDecrypting?: boolean;

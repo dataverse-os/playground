@@ -18,6 +18,8 @@ import {
   Content,
   Title,
   ContentWrapper,
+  Link,
+  LinkWrapper,
 } from "./styled";
 import Button from "../Button";
 import { decryptPost } from "@/state/post/slice";
@@ -25,7 +27,7 @@ import Modal from "../Modal";
 import React from "react";
 import { css } from "styled-components";
 import { buyFile, monetizeFile } from "@/state/file/slice";
-import { CustomMirrorFile } from "@/types";
+import { CustomMirror, CustomMirrorFile } from "@/types";
 
 export interface PublishPostProps {}
 
@@ -39,7 +41,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
     dispatch(displayDefaultFolder(did));
   }, [did]);
 
-  const openDecryptionModel = (mirror: Mirror) => {
+  const openDecryptionModel = (mirror: CustomMirror) => {
     dispatch(folderSlice.actions.setCurrentMirror(mirror));
   };
 
@@ -117,18 +119,27 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
                     )}
                   {mirror.mirrorFile.fileType === FileType.Datatoken &&
                     !mirror.mirrorFile.isBoughtSuccessfully && (
-                      <Button
-                        loading={mirror.mirrorFile.isBuying}
-                        onClick={() => buy(mirror.mirrorFile)}
-                      >
-                        Buy
-                      </Button>
+                      <>
+                        <Button
+                          loading={mirror.mirrorFile.isBuying}
+                          onClick={() => buy(mirror.mirrorFile)}
+                        >
+                          Buy
+                        </Button>
+                        {/* {mirror.mirrorFile.} */}
+                      </>
                     )}
                 </ButtonWrapper>
               </PostWapper>
             ))}
         </Content>
+        <LinkWrapper>
+          <Link href="https://d3kl77fsqciqs4.cloudfront.net/" target="_blank">
+            View on DataverseOS File System.
+          </Link>
+        </LinkWrapper>
       </ContentWrapper>
+
       <Modal
         id={currentMirror?.mirrorId}
         title="Conditions"

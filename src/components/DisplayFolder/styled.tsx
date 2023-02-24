@@ -22,8 +22,8 @@ export const Content = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  width: 400px;
-  height: 600px;
+  width: 50%;
+  height: 40vh;
   margin: auto;
   padding: 40px;
   overflow-y: auto;
@@ -52,4 +52,18 @@ export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
+`;
+export const LinkWrapper = styled.a`
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  right: 0; */
+  margin: auto;
+  display: flex;
+  justify-content: center;
+`;
+
+export const Link = styled.a`
+  font-size: 24px;
+  
 `;
