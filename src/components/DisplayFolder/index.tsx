@@ -133,13 +133,12 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
               </PostWapper>
             ))}
         </Content>
-        <LinkWrapper>
-          <Link href="https://d3kl77fsqciqs4.cloudfront.net/" target="_blank">
-            View on DataverseOS File System.
-          </Link>
-        </LinkWrapper>
       </ContentWrapper>
-
+      <LinkWrapper>
+        <Link href="https://d3kl77fsqciqs4.cloudfront.net/" target="_blank">
+          View on DataverseOS File System.
+        </Link>
+      </LinkWrapper>
       <Modal
         id={currentMirror?.mirrorId}
         title="Conditions"

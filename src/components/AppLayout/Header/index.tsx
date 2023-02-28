@@ -10,7 +10,7 @@ const Header = (): React.ReactElement => {
 
   return (
     <Wrapper>
-      <Brand>Dataverse</Brand>
+      <Brand>Playground</Brand>
       <Button
         onClick={() => {
           dispatch(connectIdentity());

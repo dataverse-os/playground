@@ -11,7 +11,7 @@ export const HeaderWrapper = styled.nav`
   height: 52px;
   padding: 0 10px;
   background-color: white;
-  box-shadow: 0 2px 4px 0 rgba(40, 54, 61, 0.18);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 export const BodyWrapper = styled.div`
@@ -30,14 +30,12 @@ export const PublishPostWrapper = styled.aside`
   z-index: 1;
   overflow: hidden;
   padding: 40px;
-  border-right: 1px solid #f0efee;
-  box-shadow: 1px 2px 12px rgba(40, 54, 61, 0.08);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 export const DisplayPostWrapper = styled.aside`
   position: relative;
   flex: 1;
-  height: calc(100% - 80px);
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -46,5 +44,4 @@ export const DisplayPostWrapper = styled.aside`
   overflow: hidden;
   padding: 40px;
   border-right: 1px solid #f0efee;
-  box-shadow: 1px 2px 12px rgba(40, 54, 61, 0.08);
 `;

@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
   width: 100%;
+  height: 100%;
 `;
 
 export const Title = styled.div`
@@ -15,6 +16,7 @@ export const Title = styled.div`
 export const ContentWrapper = styled.div`
   position: relative;
   width: 100%;
+  height: calc(100% - 135px);
 `;
 
 export const Content = styled.div`
@@ -23,7 +25,7 @@ export const Content = styled.div`
   left: 0;
   right: 0;
   width: 50%;
-  height: 40vh;
+  height: calc(100% - 100px);
   margin: auto;
   padding: 40px;
   overflow-y: auto;
@@ -65,5 +67,4 @@ export const LinkWrapper = styled.a`
 
 export const Link = styled.a`
   font-size: 24px;
-  
 `;

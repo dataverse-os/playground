@@ -5,6 +5,7 @@ import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useState } from "react";
 import { displayDefaultFolder } from "@/state/folder/slice";
+import { css } from "styled-components";
 
 export interface PublishPostProps {}
 
@@ -50,10 +51,12 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       <Content>
         <Textarea
           value={encryptedContent || content}
-          width={300}
-          height={300}
           placeholder="Write something"
           onChange={textareaOnChange}
+          css={css`
+            width: 100%;
+            height: calc(100% - 50px)
+          `}
         />
         <ButtonWapper>
           <Button loading={isEncrypting} onClick={encrypt}>
