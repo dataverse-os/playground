@@ -3,7 +3,7 @@ import Textarea from "../Textarea";
 import { Wrapper, ButtonWapper, Title, Content } from "./styled";
 import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { displayDefaultFolder } from "@/state/folder/slice";
 import { css } from "styled-components";
 
