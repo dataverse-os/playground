@@ -1,25 +1,28 @@
-import { readMyDefaultFolder } from "@/sdk/folder";
-import { CustomFolder, CustomMirror } from "@/types";
+import { readMyDefaultFolder, readMyFolders, readMyPosts } from "@/sdk/folder";
+import { CustomFolder, CustomMirror, CustomMirrors } from "@/types";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { decryptPost } from "../post/slice";
 import { decryptPost as _decryptPost } from "@/sdk/folder";
 import { buyFile, monetizeFile } from "../file/slice";
+import { IndexFileContentType } from "@dataverse/runtime-connector";
+import { getModelIdByAppNameAndModelName } from "@/sdk/appRegistry";
+import { modelName } from "@/sdk";
 
 interface Props {
-  folder?: CustomFolder;
+  posts: CustomMirrors;
   currentMirror?: CustomMirror;
 }
 
 const initialState: Props = {
-  folder: undefined,
+  posts: [],
   currentMirror: undefined,
 };
 
 export const displayDefaultFolder = createAsyncThunk(
-  "folder/readMyDefaultFolder",
+  "folder/readMyPosts",
   async (did: string) => {
-    const res = await readMyDefaultFolder(did);
-    return res;
+    const posts = await readMyPosts(did);
+    return posts;
   }
 );
 
@@ -36,12 +39,12 @@ export const folderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(displayDefaultFolder.fulfilled, (state, action) => {
-      state.folder = action.payload as CustomFolder;
+      state.posts = action.payload as CustomMirrors;
     });
 
     //decryptPostListener
     builder.addCase(decryptPost.pending, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,
@@ -51,7 +54,7 @@ export const folderSlice = createSlice({
       });
     });
     builder.addCase(decryptPost.fulfilled, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.payload.indexFileId) {
           mirror.mirrorFile = {
             ...action.payload,
@@ -62,7 +65,7 @@ export const folderSlice = createSlice({
       });
     });
     builder.addCase(decryptPost.rejected, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,
@@ -76,7 +79,7 @@ export const folderSlice = createSlice({
 
     //monetizeFileListener
     builder.addCase(monetizeFile.pending, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,
@@ -87,7 +90,7 @@ export const folderSlice = createSlice({
     });
     builder.addCase(monetizeFile.fulfilled, (state, action) => {
       console.log({ payload: action.payload });
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.payload?.indexFileId) {
           mirror.mirrorFile = {
             ...action.payload,
@@ -98,7 +101,7 @@ export const folderSlice = createSlice({
       });
     });
     builder.addCase(monetizeFile.rejected, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,
@@ -112,7 +115,7 @@ export const folderSlice = createSlice({
 
     //buyFileListener
     builder.addCase(buyFile.pending, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,
@@ -122,7 +125,7 @@ export const folderSlice = createSlice({
       });
     });
     builder.addCase(buyFile.fulfilled, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.payload,
@@ -133,7 +136,7 @@ export const folderSlice = createSlice({
       });
     });
     builder.addCase(buyFile.rejected, (state, action) => {
-      state.folder?.mirrors.find((mirror) => {
+      state.posts.find((mirror) => {
         if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,

@@ -34,7 +34,7 @@ export interface PublishPostProps {}
 const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
-  const folder = useSelector((state) => state.folder.folder);
+  const posts = useSelector((state) => state.folder.posts);
   const currentMirror = useSelector((state) => state.folder.currentMirror);
 
   useEffect(() => {
@@ -85,53 +85,46 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
       <Title>File Stream</Title>
       <ContentWrapper>
         <Content>
-          {folder &&
-            folder.mirrors.map((mirror, index) => (
-              <PostWapper
-                key={mirror.mirrorId}
-                marginTop={index === 0 ? 0 : 24}
-              >
-                {mirror.mirrorFile.appName === appName &&
-                mirror.mirrorFile.modelName === ModelNames.post
-                  ? mirror.mirrorFile.content.content
-                  : mirror.mirrorFile.contentId}
-                <ButtonWrapper>
-                  {mirror.mirrorFile.fileType === FileType.Private &&
-                    !mirror.mirrorFile.isDecryptedSuccessfully && (
+          {posts.map((mirror, index) => (
+            <PostWapper key={mirror.mirrorId} marginTop={index === 0 ? 0 : 24}>
+              {mirror.mirrorFile.content.content}
+              <ButtonWrapper>
+                {mirror.mirrorFile.fileType === FileType.Private &&
+                  !mirror.mirrorFile.isDecryptedSuccessfully && (
+                    <Button
+                      loading={mirror.mirrorFile.isDecrypting}
+                      css={css`
+                        margin-right: 20px;
+                      `}
+                      onClick={() => openDecryptionModel(mirror)}
+                    >
+                      Decrypt
+                    </Button>
+                  )}
+                {mirror.mirrorFile.fileType !== FileType.Datatoken &&
+                  !mirror.mirrorFile.isMonetizedSuccessfully && (
+                    <Button
+                      loading={mirror.mirrorFile.isMonetizing}
+                      onClick={() => monetize(mirror.mirrorFile)}
+                    >
+                      Monetize
+                    </Button>
+                  )}
+                {mirror.mirrorFile.fileType === FileType.Datatoken &&
+                  !mirror.mirrorFile.isBoughtSuccessfully && (
+                    <>
                       <Button
-                        loading={mirror.mirrorFile.isDecrypting}
-                        css={css`
-                          margin-right: 20px;
-                        `}
-                        onClick={() => openDecryptionModel(mirror)}
+                        loading={mirror.mirrorFile.isBuying}
+                        onClick={() => buy(mirror.mirrorFile)}
                       >
-                        Decrypt
+                        Buy
                       </Button>
-                    )}
-                  {mirror.mirrorFile.fileType !== FileType.Datatoken &&
-                    !mirror.mirrorFile.isMonetizedSuccessfully && (
-                      <Button
-                        loading={mirror.mirrorFile.isMonetizing}
-                        onClick={() => monetize(mirror.mirrorFile)}
-                      >
-                        Monetize
-                      </Button>
-                    )}
-                  {mirror.mirrorFile.fileType === FileType.Datatoken &&
-                    !mirror.mirrorFile.isBoughtSuccessfully && (
-                      <>
-                        <Button
-                          loading={mirror.mirrorFile.isBuying}
-                          onClick={() => buy(mirror.mirrorFile)}
-                        >
-                          Buy
-                        </Button>
-                        {/* {mirror.mirrorFile.} */}
-                      </>
-                    )}
-                </ButtonWrapper>
-              </PostWapper>
-            ))}
+                      {/* {mirror.mirrorFile.} */}
+                    </>
+                  )}
+              </ButtonWrapper>
+            </PostWapper>
+          ))}
         </Content>
       </ContentWrapper>
       <LinkWrapper>

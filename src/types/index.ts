@@ -17,9 +17,12 @@ export interface CustomMirrorFile extends MirrorFile {
   isBuying?: boolean;
   isBoughtSuccessfully?: boolean;
 }
+
 export type CustomMirror = Omit<Mirror, "mirrorFile"> & {
   mirrorFile: CustomMirrorFile;
 };
+
+export type CustomMirrors = CustomMirror[];
 
 export type CustomFolder = Omit<StructuredFolder, "mirrors"> & {
   mirrors: CustomMirror[];
