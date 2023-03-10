@@ -15,11 +15,10 @@ export const ButtonContainerWrap = styled.div<{
   white-space: pre;
   text-align: center;
   box-sizing: border-box;
-  border: solid 2px black;
-  border-radius: 6px;
+  border-radius: 10px;
   white-space: nowrap;
-  height: 40px;
-  padding: 4px 15px;
+  height: 45px;
+  padding: 12px 42px;
   width: fit-content;
   min-width: ${(props) =>
     typeof props.width === "number"
@@ -31,7 +30,7 @@ export const ButtonContainerWrap = styled.div<{
     props.type === "primary" &&
     css`
       color: rgb(255, 255, 255);
-      background-color: black;
+      background-color: #007AFF;
     `}
 
   // text
@@ -44,13 +43,5 @@ export const ButtonContainerWrap = styled.div<{
     `}
 
     transition: box-shadow 0.1s;
-
-  :hover {
-    ${(props) =>
-      props.type !== "text" &&
-      css`
-        background-color: rgba(18, 19, 18, 0.04);
-      `}
-  }
   ${(props) => props.css}
 `;

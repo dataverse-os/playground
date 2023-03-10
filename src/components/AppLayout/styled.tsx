@@ -9,9 +9,8 @@ export const Container = styled.div`
 
 export const HeaderWrapper = styled.nav`
   height: 52px;
-  padding: 0 10px;
   background-color: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 export const BodyWrapper = styled.div`

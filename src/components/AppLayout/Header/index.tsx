@@ -2,7 +2,7 @@ import Button from "@/components/Button";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { connectIdentity } from "@/state/identity/slice";
 import { didAbbreviation } from "@/utils/didAndAddress";
-import { Brand, Wrapper } from "./styled";
+import { Brand, HeaderRightRender, Wrapper } from "./styled";
 
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
@@ -11,13 +11,16 @@ const Header = (): React.ReactElement => {
   return (
     <Wrapper>
       <Brand>Playground</Brand>
-      <Button
-        onClick={() => {
-          dispatch(connectIdentity());
-        }}
-      >
-        {didAbbreviation(did) || "Connect identity"}
-      </Button>
+      <HeaderRightRender>
+        <Button
+          type="primary"
+          onClick={() => {
+            dispatch(connectIdentity());
+          }}
+        >
+          {didAbbreviation(did) || "Sign in"}
+        </Button>
+      </HeaderRightRender>
     </Wrapper>
   );
 };
