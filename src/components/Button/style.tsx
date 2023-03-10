@@ -44,4 +44,9 @@ export const ButtonContainerWrap = styled.div<{
 
     transition: box-shadow 0.1s;
   ${(props) => props.css}
+  font-family: Poppins-SemiBold;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 20px;
 `;
