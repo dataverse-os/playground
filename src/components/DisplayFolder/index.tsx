@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { displayDefaultFolder, folderSlice } from "@/state/folder/slice";
 // @ts-ignore
 import JSONFormatter from "json-formatter-js";
-import { appName } from "@/sdk";
+import { appName, oldAppVersion } from "@/sdk";
 import {
   Currency,
   FileType,
@@ -27,7 +27,9 @@ import Modal from "../Modal";
 import React from "react";
 import { css } from "styled-components";
 import { buyFile, monetizeFile } from "@/state/file/slice";
-import { CustomMirror, CustomMirrorFile } from "@/types";
+import { CustomMirror, CustomMirrorFile, PostContent, PostType } from "@/types";
+import Text from "./Text";
+import Image from "./Images";
 
 export interface PublishPostProps {}
 
@@ -79,7 +81,28 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
     if (mirrorFile?.isBuying) return;
     dispatch(buyFile({ did, mirrorFile }));
   };
+  console.log(posts);
 
+  const showContent = (mirrorFile: CustomMirrorFile) => {
+    if (mirrorFile.content.appVersion === oldAppVersion) {
+      return mirrorFile.content.content as unknown as string;
+    }
+    if (mirrorFile.fileType === FileType.Public) {
+      return (mirrorFile.content.content.postContent as PostContent)?.text;
+    }
+    if (mirrorFile.fileType === FileType.Private) {
+      if (mirrorFile.isDecryptedSuccessfully) {
+        return (mirrorFile.content.content.postContent as PostContent)?.text;
+      }
+      return mirrorFile.content.content.postContent as string;
+    }
+    if (mirrorFile.fileType === FileType.Datatoken) {
+      if (mirrorFile.isBoughtSuccessfully) {
+        return (mirrorFile.content.content.postContent as PostContent)?.text;
+      }
+      return mirrorFile.content.content.postContent as string;
+    }
+  };
   return (
     <Wrapper>
       <Title>File Stream</Title>
@@ -87,7 +110,8 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
         <Content>
           {posts.map((mirror, index) => (
             <PostWapper key={mirror.mirrorId} marginTop={index === 0 ? 0 : 24}>
-              {mirror.mirrorFile.content.content}
+              <Text mirrorFile={mirror.mirrorFile} />
+              <Image mirrorFile={mirror.mirrorFile} />
               <ButtonWrapper>
                 {mirror.mirrorFile.fileType === FileType.Private &&
                   !mirror.mirrorFile.isDecryptedSuccessfully && (
@@ -128,7 +152,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
         </Content>
       </ContentWrapper>
       <LinkWrapper>
-        <Link href="https://d3kl77fsqciqs4.cloudfront.net/" target="_blank">
+        <Link href="https://dataverse-os.com/finder" target="_blank">
           View on DataverseOS File System.
         </Link>
       </LinkWrapper>

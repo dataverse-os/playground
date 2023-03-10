@@ -6,6 +6,7 @@ import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useState } from "react";
 import { displayDefaultFolder } from "@/state/folder/slice";
 import { css } from "styled-components";
+import { PostType } from "@/types";
 
 export interface PublishPostProps {}
 
@@ -32,7 +33,16 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       alert("Please connect identity first.");
       return;
     }
-    dispatch(encryptPost({ did, content }));
+    dispatch(
+      encryptPost({
+        did,
+        postContent: {
+          text: content,
+          images: [],
+          videos: [],
+        },
+      })
+    );
   };
 
   const post = async () => {
@@ -41,7 +51,20 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       alert("Please connect identity first.");
       return;
     }
-    await dispatch(publishPost({ did, content, encryptedContent, litKit }));
+    await dispatch(
+      publishPost({
+        did,
+        postContent: {
+          text: content,
+          images: [
+            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
+          ],
+          videos: [],
+        },
+        encryptedContent,
+        litKit,
+      })
+    );
     dispatch(displayDefaultFolder(did));
   };
 
@@ -55,7 +78,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
           onChange={textareaOnChange}
           css={css`
             width: 100%;
-            height: calc(100% - 50px)
+            height: calc(100% - 50px);
           `}
         />
         <ButtonWapper>

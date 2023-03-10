@@ -1,12 +1,8 @@
-import { readMyDefaultFolder, readMyFolders, readMyPosts } from "@/sdk/folder";
-import { CustomFolder, CustomMirror, CustomMirrors } from "@/types";
+import { readMyPosts } from "@/sdk/folder";
+import { CustomMirror, CustomMirrors } from "@/types";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { decryptPost } from "../post/slice";
-import { decryptPost as _decryptPost } from "@/sdk/folder";
 import { buyFile, monetizeFile } from "../file/slice";
-import { IndexFileContentType } from "@dataverse/runtime-connector";
-import { getModelIdByAppNameAndModelName } from "@/sdk/appRegistry";
-import { modelName } from "@/sdk";
 
 interface Props {
   posts: CustomMirrors;

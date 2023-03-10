@@ -24,10 +24,11 @@ specifiers:
   rollup-plugin-node-polyfills: ^0.2.1
   styled-components: 5.3.6
   typescript: ^4.6.4
+  uint8arrays: 3.1.0
   vite: ^4.1.1
 
 dependencies:
-  '@dataverse/runtime-connector': 1.0.15
+  '@dataverse/runtime-connector': 1.0.19
   '@reduxjs/toolkit': 1.9.0_k4ae6lp43ej6mezo3ztvx6pykq
   buffer: 6.0.3
   framer-motion: 9.0.2_biqbaboplfbrettd7655fr4n2y
@@ -40,6 +41,7 @@ dependencies:
   redux-persist: 6.0.0_react@18.2.0+redux@4.2.0
   redux-state-sync: 3.1.4
   styled-components: 5.3.6_biqbaboplfbrettd7655fr4n2y
+  uint8arrays: 3.1.0
 
 devDependencies:
   '@types/react': 18.0.28
@@ -309,8 +311,8 @@ packages:
       uuid: 9.0.0
     dev: false
 
-  /@dataverse/runtime-connector/1.0.15:
-    resolution: {integrity: sha512-d4szCMpx8+o3q3GTzGN/3ntdQ0JVGdQYgn6Idla/xsjldaR34kDdmvtGC407i8XiBma4XnJnUMlaUHbzTPRdgg==}
+  /@dataverse/runtime-connector/1.0.19:
+    resolution: {integrity: sha512-MWK8lxLXhcUj8XxOrelH/PL3gToQ0ktC5NV4eslWuVYgk1qJX9kEINif2+jbaOrQV8tX67+8nK4blsE7ynUcLg==}
     dependencies:
       '@dataverse/communicator': 1.0.20
       ethers: 5.6.9
@@ -1767,6 +1769,10 @@ packages:
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
 
+  /multiformats/9.9.0:
+    resolution: {integrity: sha512-HoMUjhH9T8DDBNT+6xzkrd9ga/XiBI4xLr58LJACwK6G3HTOPeMz4nB4KJs33L2BelrIJa7P0VuNaVF3hMYfjg==}
+    dev: false
+
   /nano-time/1.0.0:
     resolution: {integrity: sha512-flnngywOoQ0lLQOTRNexn2gGSNuM9bKj9RZAWSzhQ+UJYaAFG9bac4DW9VHjUAzrOaIcajHybCTHe/bkvozQqA==}
     dependencies:
@@ -2076,6 +2082,12 @@ packages:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+
+  /uint8arrays/3.1.0:
+    resolution: {integrity: sha512-ei5rfKtoRO8OyOIor2Rz5fhzjThwIHJZ3uyDPnDHTXbP0aMQ1RN/6AI5B5d9dBxJOU+BvOAk7ZQ1xphsX8Lrog==}
+    dependencies:
+      multiformats: 9.9.0
+    dev: false
 
   /unload/2.2.0:
     resolution: {integrity: sha512-B60uB5TNBLtN6/LsgAf3udH9saB5p7gqJwcFfbOEZ8BcBHnGwCf6G/TGiEqkRAxX7zAFIUtzdrXQSdL3Q/wqNA==}

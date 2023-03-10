@@ -1,4 +1,4 @@
-import { CustomMirrorFile } from "@/types";
+import { CustomMirrorFile, PostType } from "@/types";
 import {
   Apps,
   DecryptionConditionsTypes,
@@ -63,11 +63,11 @@ export const createPublicPostStream = async ({
 
 export const createPrivatePostStream = async ({
   did,
-  encryptedContent,
+  content,
   litKit,
 }: {
   did: string;
-  encryptedContent: string;
+  content: string;
   litKit: {
     encryptedSymmetricKey: string;
     decryptionConditions: any[];
@@ -80,7 +80,7 @@ export const createPrivatePostStream = async ({
     modelName,
     streamContent: {
       appVersion,
-      content: encryptedContent,
+      content,
     },
     fileType: FileType.Private,
     ...litKit,
@@ -143,6 +143,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
     decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
 
     mirrorFile.fileType = FileType.Private;
+    streamContent.content.postType = PostType.Private;
   } else {
     decryptionConditions = await generateUnifiedAccessControlConditions({
       did,
@@ -153,6 +154,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
       DecryptionConditionsTypes.UnifiedAccessControlCondition;
 
     mirrorFile.fileType = FileType.Datatoken;
+    streamContent.content.postType = PostType.Datatoken;
   }
 
   litKit = await newLitKey({
@@ -165,17 +167,21 @@ export const updatePostStreamsWithAccessControlConditions = async ({
     did,
     contentToBeEncrypted:
       mirrorFile.contentType in IndexFileContentType
-        ? mirrorFile.contentId
-        : mirrorFile.content.content,
+        ? mirrorFile.contentId!
+        : (mirrorFile.content.content.postContent as string),
     litKit,
   });
 
-  streamContent.content = encryptedContent;
+  streamContent.content.postContent = encryptedContent;
+  streamContent.content.updatedAt = new Date().toISOString();
 
   await runtimeConnector.updateStreams({
     streamsRecord: {
       [streamId]: {
-        streamContent,
+        streamContent: {
+          appVersion: streamContent.appVersion,
+          content: JSON.stringify(streamContent.content),
+        },
         fileType: mirrorFile.fileType,
         ...(datatokenId && { datatokenId: mirrorFile.datatokenId }),
         ...litKit,
@@ -184,7 +190,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
     syncImmediately: true,
   });
 
-  mirrorFile.content.content = encryptedContent;
+  mirrorFile.content.content.postContent = encryptedContent;
 
   mirrorFile.fileKey = undefined;
   mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
@@ -240,10 +246,7 @@ export const updateFileStreamsWithAccessControlConditions = async ({
 
   const { encryptedContent } = await encryptWithLit({
     did,
-    contentToBeEncrypted:
-      mirrorFile.contentType in IndexFileContentType
-        ? mirrorFile.contentId
-        : mirrorFile.content.content,
+    contentToBeEncrypted: mirrorFile.contentId!,
     litKit,
   });
 

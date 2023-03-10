@@ -10,6 +10,7 @@ export interface CustomMirrorFile extends MirrorFile {
   contentType: IndexFileContentType | string;
   appName?: string;
   modelName?: string;
+  content: { appVersion: string; content: Post };
   isDecrypting?: boolean;
   isDecryptedSuccessfully?: boolean;
   isMonetizing?: boolean;
@@ -32,4 +33,27 @@ export interface LitKit {
   encryptedSymmetricKey: string;
   decryptionConditions: any[];
   decryptionConditionsType: DecryptionConditionsTypes;
+}
+
+export enum PostType {
+  Public,
+  Private,
+  Datatoken,
+}
+
+export interface PostContent {
+  text: string;
+  images?: string[];
+  videos?: string[];
+}
+
+export interface Post {
+  postContent: PostContent | string;
+  postType: PostType;
+  options: {
+    lockedImagesNum?: number;
+    lockedVideosNum?: number;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
