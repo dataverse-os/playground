@@ -6,8 +6,9 @@ import {
   generateAccessControlConditions,
   loadMyPostStreamsByModel,
 } from "@/sdk/stream";
-import { CustomMirrorFile, LitKit } from "@/types";
+import { CustomMirrorFile, LitKit, Post, PostContent, PostType } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
+import { encode } from "@/utils/encodeAndDecode";
 import {
   DecryptionConditionsTypes,
   IndexFileContentType,
@@ -36,7 +37,7 @@ const initialState: Props = {
 
 export const encryptPost = createAsyncThunk(
   "post/encryptPost",
-  async ({ did, content }: { did: string; content: string }) => {
+  async ({ did, postContent }: { did: string; postContent: PostContent }) => {
     const address = getAddressFromDid(did);
 
     const decryptionConditions = await generateAccessControlConditions({
@@ -55,7 +56,7 @@ export const encryptPost = createAsyncThunk(
 
     const res = await encryptWithLit({
       did,
-      contentToBeEncrypted: content,
+      contentToBeEncrypted: JSON.stringify(postContent),
       litKit,
     });
 
@@ -91,22 +92,30 @@ export const publishPost = createAsyncThunk(
   "post/publishPost",
   async ({
     did,
-    content,
+    postContent,
     encryptedContent,
     litKit,
   }: {
     did: string;
-    content: string;
+    postContent: PostContent;
     encryptedContent?: string;
     litKit?: LitKit;
   }) => {
+    const post = {
+      postContent: litKit ? encryptedContent : postContent,
+      createdAt: new Date().toISOString(),
+      postType: litKit ? PostType.Private : PostType.Public,
+    };
+
+    const content = JSON.stringify(post);
+
     let res;
     if (!litKit) {
       res = await createPublicPostStream({ did, content });
     } else {
       res = await createPrivatePostStream({
         did,
-        encryptedContent: encryptedContent!,
+        content,
         litKit,
       });
     }

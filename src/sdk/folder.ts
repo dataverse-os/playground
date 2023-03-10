@@ -1,5 +1,6 @@
-import { CustomMirrorFile } from "@/types";
+import { CustomMirrorFile, Post } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
+import { decode } from "@/utils/encodeAndDecode";
 import {
   FileType,
   FolderType,
@@ -70,6 +71,11 @@ export const readMyPosts = async (did: string) => {
     .map((folder) =>
       Object.values(folder.mirrors as Mirrors).filter((mirror) => {
         if (mirror.mirrorFile.contentType === postModelId) {
+          try {
+            mirror.mirrorFile.content.content = JSON.parse(
+              mirror.mirrorFile.content.content
+            );
+          } catch (error) {}
           return true;
         }
       })
@@ -129,7 +135,7 @@ export const decryptPost = async ({
     try {
       const content = await decryptWithLit({
         did,
-        encryptedContent: mirrorFile.content.content,
+        encryptedContent: mirrorFile.content.content.postContent as string,
         ...(mirrorFile.fileKey
           ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
           : {
@@ -139,7 +145,7 @@ export const decryptPost = async ({
             }),
       });
 
-      mirrorFile.content.content = content;
+      mirrorFile.content.content.postContent = JSON.parse(content);
     } catch (error) {
       console.log({ error });
     }

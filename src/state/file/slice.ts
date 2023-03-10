@@ -3,7 +3,7 @@ import {
   updateFileStreamsWithAccessControlConditions,
   updatePostStreamsWithAccessControlConditions,
 } from "@/sdk/stream";
-import { CustomMirrorFile } from "@/types";
+import { CustomMirrorFile, PostContent } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   Currency,
@@ -35,34 +35,57 @@ export const monetizeFile = createAsyncThunk(
     if (!(mirrorFile.contentType in IndexFileContentType)) {
       let contentToBeEncrypted: string;
 
+      mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
+
       if (mirrorFile.isDecryptedSuccessfully) {
+        mirrorFile.content.content.options = {
+          lockedImagesNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).images?.length,
+          lockedVideosNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).videos?.length,
+        };
         contentToBeEncrypted =
           mirrorFile.contentType in IndexFileContentType
-            ? mirrorFile.contentId
-            : mirrorFile.content.content;
+            ? mirrorFile.contentId!
+            : JSON.stringify(mirrorFile.content.content.postContent);
       } else if (mirrorFile.fileType === FileType.Private) {
         const res = await decryptPost({
           did,
           mirrorFile,
         });
+        mirrorFile.content.content.options = {
+          lockedImagesNum: (res.content.content.postContent as PostContent)
+            .images?.length,
+          lockedVideosNum: (res.content.content.postContent as PostContent)
+            .videos?.length,
+        };
         contentToBeEncrypted =
           mirrorFile.contentType in IndexFileContentType
-            ? res.contentId
-            : res.content.content;
+            ? res.contentId!
+            : JSON.stringify(res.content.content.postContent);
       } else {
+        mirrorFile.content.content.options = {
+          lockedImagesNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).images?.length,
+          lockedVideosNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).videos?.length,
+        };
         contentToBeEncrypted =
           mirrorFile.contentType in IndexFileContentType
-            ? mirrorFile.contentId
-            : mirrorFile.content.content;
+            ? mirrorFile.contentId!
+            : JSON.stringify(mirrorFile.content.content.postContent);
       }
 
-      mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
       mirrorFile.datatokenId = datatokenId;
 
       if (mirrorFile.contentType in IndexFileContentType) {
         mirrorFile.contentId = contentToBeEncrypted;
       } else {
-        mirrorFile.content.content = contentToBeEncrypted;
+        mirrorFile.content.content.postContent = contentToBeEncrypted;
       }
 
       const res = await updatePostStreamsWithAccessControlConditions({

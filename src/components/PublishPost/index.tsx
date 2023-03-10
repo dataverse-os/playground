@@ -10,6 +10,8 @@ import AccountStatus from "../AccountStatus";
 import imgIcon from '@/assets/icons/img.svg';
 import lockIcon from '@/assets/icons/lock.svg';
 import { FlexRow } from "../App/styled";
+import { PostType } from "@/types";
+
 
 export interface PublishPostProps { }
 
@@ -36,7 +38,18 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
       alert("Please connect identity first.");
       return;
     }
-    dispatch(encryptPost({ did, content }));
+    dispatch(
+      encryptPost({
+        did,
+        postContent: {
+          text: content,
+          images: [
+            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
+          ],
+          videos: [],
+        },
+      })
+    );
   };
 
   const post = async () => {
@@ -45,7 +58,20 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
       alert("Please connect identity first.");
       return;
     }
-    await dispatch(publishPost({ did, content, encryptedContent, litKit }));
+    await dispatch(
+      publishPost({
+        did,
+        postContent: {
+          text: content,
+          images: [
+            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
+          ],
+          videos: [],
+        },
+        encryptedContent,
+        litKit,
+      })
+    );
     dispatch(displayDefaultFolder(did));
   };
 
@@ -57,7 +83,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
           value={encryptedContent || content}
           placeholder="what's happening?"
           onChange={textareaOnChange}
-          width={'100%'}
+          width={"100%"}
           height={147}
         />
         <ButtonWapper>
