@@ -37,14 +37,15 @@ export const monetizeFile = createAsyncThunk(
 
       mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
 
-      mirrorFile.content.content.options = {
-        lockedImagesNum: (mirrorFile.content.content.postContent as PostContent)
-          .images?.length,
-        lockedVideosNum: (mirrorFile.content.content.postContent as PostContent)
-          .videos?.length,
-      };
-
       if (mirrorFile.isDecryptedSuccessfully) {
+        mirrorFile.content.content.options = {
+          lockedImagesNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).images?.length,
+          lockedVideosNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).videos?.length,
+        };
         contentToBeEncrypted =
           mirrorFile.contentType in IndexFileContentType
             ? mirrorFile.contentId!
@@ -54,11 +55,25 @@ export const monetizeFile = createAsyncThunk(
           did,
           mirrorFile,
         });
+        mirrorFile.content.content.options = {
+          lockedImagesNum: (res.content.content.postContent as PostContent)
+            .images?.length,
+          lockedVideosNum: (res.content.content.postContent as PostContent)
+            .videos?.length,
+        };
         contentToBeEncrypted =
           mirrorFile.contentType in IndexFileContentType
             ? res.contentId!
             : JSON.stringify(res.content.content.postContent);
       } else {
+        mirrorFile.content.content.options = {
+          lockedImagesNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).images?.length,
+          lockedVideosNum: (
+            mirrorFile.content.content.postContent as PostContent
+          ).videos?.length,
+        };
         contentToBeEncrypted =
           mirrorFile.contentType in IndexFileContentType
             ? mirrorFile.contentId!

@@ -21,6 +21,9 @@ const Layout: React.FC = (): React.ReactElement => {
         <PublishPostWrapper>
           <PublishPost />
         </PublishPostWrapper>
+        <DisplayPostWrapper>
+          <DisplayFolder />
+        </DisplayPostWrapper>
       </BodyWrapper>
     </Container>
   );

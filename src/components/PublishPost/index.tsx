@@ -38,7 +38,9 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         did,
         postContent: {
           text: content,
-          images: [],
+          images: [
+            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
+          ],
           videos: [],
         },
       })
@@ -75,7 +77,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
           value={encryptedContent || content}
           placeholder="what's happening?"
           onChange={textareaOnChange}
-          width={'100%'}
+          width={"100%"}
           height={147}
         />
         <ButtonWapper>
