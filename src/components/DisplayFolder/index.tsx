@@ -128,7 +128,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
         </Content>
       </ContentWrapper>
       <LinkWrapper>
-        <Link href="https://d3kl77fsqciqs4.cloudfront.net/" target="_blank">
+        <Link href="https://dataverse-os.com/finder" target="_blank">
           View on DataverseOS File System.
         </Link>
       </LinkWrapper>
