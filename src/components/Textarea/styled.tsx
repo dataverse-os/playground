@@ -26,12 +26,19 @@ export const InputBox = styled.textarea<{
       ? `${props.fontSize}px`
       : pixelProofing(props.fontSize)};
   box-sizing: border-box;
-  background: rgb(248, 247, 247);
+  background: #F6F6F6;
   border-radius: 6px;
   resize: none;
-  padding: 10px;
+  padding: 1rem 1.5rem;
   border: none;
   outline: none;
   word-break: break-all;
+  font-family: Poppins-SemiBold;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  color: #999999;
+
   ${(props) => props.css}
 `;

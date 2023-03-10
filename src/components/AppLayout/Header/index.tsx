@@ -15,14 +15,14 @@ const Header = (): React.ReactElement => {
       <HeaderRightRender>
         <Button
           css={css`
-            margin-right: 9px;
+            margin-right: -30px;
           `}
         >
           Home
         </Button>
         <Button
           css={css`
-            margin-right: 9px;
+            margin-right: 12px;
           `}
         >
           My posts

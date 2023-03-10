@@ -1,16 +1,8 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  max-width: 80%;
-  height: calc(100% - 80px);
-
-  @media screen and (min-width: 1280px) {
-    width: 65%;
-  }
-
-  @media screen and (min-width: 2048px) {
-    width: 55%;
-  }
+  max-width: 100%;
+  width: calc(50% - 0.6875rem);
 `;
 
 export const Title = styled.div`
@@ -21,15 +13,11 @@ export const Title = styled.div`
 `;
 
 export const Content = styled.div`
-  border: solid 2px black;
-  border-radius: 20px;
-  padding: 40px;
-  height: calc(100% - 20vh);
-
-  @media screen and (min-width: 1280px) {
-    height: 45vh;
-  }
-
+  background: #FFFFFF;
+  border: 1px solid #E9E9E9;
+  border-radius: 12px;
+  padding: 27px 26px;
+  max-width: calc(50vw - 3.35rem);
 `;
 
 export const ButtonWapper = styled.div`

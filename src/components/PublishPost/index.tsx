@@ -47,16 +47,13 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
 
   return (
     <Wrapper>
-      <Title>Social Stream</Title>
       <Content>
         <Textarea
           value={encryptedContent || content}
-          placeholder="Write something"
+          placeholder="what's happening?"
           onChange={textareaOnChange}
-          css={css`
-            width: 100%;
-            height: calc(100% - 50px)
-          `}
+          width={'100%'}
+          height={147}
         />
         <ButtonWapper>
           <Button loading={isEncrypting} onClick={encrypt}>
