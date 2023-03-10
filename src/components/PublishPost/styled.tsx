@@ -17,11 +17,14 @@ export const Content = styled.div`
   border: 1px solid #E9E9E9;
   border-radius: 12px;
   padding: 27px 26px;
+  padding-bottom: 21px;
   max-width: calc(50vw - 3.35rem);
 `;
 
 export const ButtonWapper = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 15px;
+  justify-items: center;
+  align-items: center;
 `;

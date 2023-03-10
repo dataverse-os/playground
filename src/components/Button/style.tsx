@@ -31,18 +31,29 @@ export const ButtonContainerWrap = styled.div<{
     css`
       color: rgb(255, 255, 255);
       background-color: #007AFF;
-    `}
+  `}
 
   // text
-    ${(props) =>
+  ${(props) =>
     props.type === "text" &&
     css`
       color: black;
       background-color: white;
       border: none;
-    `}
+  `}
 
-    transition: box-shadow 0.1s;
+  // icon
+  ${(props) =>
+    props.type === "icon" &&
+    css`
+      width: 1.75rem;
+      height: 1.75rem;
+      min-width: 1.75rem;
+      border: none;
+      padding: 0;
+  `}
+
+  transition: box-shadow 0.1s;
   ${(props) => props.css}
   font-family: Poppins-SemiBold;
   font-style: normal;

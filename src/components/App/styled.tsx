@@ -78,3 +78,9 @@ export const Frame = styled.div`
   max-width: 100%;
   margin: 0;
 `;
+
+export const FlexRow = styled.div`
+  display: flex;
+  align-items: center;
+  align-content: center;
+`

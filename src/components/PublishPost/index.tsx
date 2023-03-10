@@ -6,10 +6,14 @@ import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useState } from "react";
 import { displayDefaultFolder } from "@/state/folder/slice";
 import { css } from "styled-components";
+import AccountStatus from "../AccountStatus";
+import imgIcon from '@/assets/icons/img.svg';
+import lockIcon from '@/assets/icons/lock.svg';
+import { FlexRow } from "../App/styled";
 
-export interface PublishPostProps {}
+export interface PublishPostProps { }
 
-const PublishPost: React.FC<PublishPostProps> = ({}) => {
+const PublishPost: React.FC<PublishPostProps> = ({ }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
@@ -48,6 +52,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   return (
     <Wrapper>
       <Content>
+        <AccountStatus name={'test.eth'} avatar={""} />
         <Textarea
           value={encryptedContent || content}
           placeholder="what's happening?"
@@ -56,12 +61,27 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
           height={147}
         />
         <ButtonWapper>
-          <Button loading={isEncrypting} onClick={encrypt}>
+          <FlexRow>
+            <Button type="icon" width={'1.75rem'} >
+              <img src={imgIcon} />
+            </Button>
+            <Button type="icon" width={'1.75rem'} css={css`margin-left:26px;`} >
+              <img src={lockIcon} />
+            </Button>
+          </FlexRow>
+
+          {/* <Button loading={isEncrypting} onClick={encrypt}>
             {isEncryptedSuccessfully ? "Encrypted" : "Encrypt"}
-          </Button>
-          <Button loading={isPublishingPost} onClick={post}>
-            Publish a post
-          </Button>
+          </Button> */}
+          <FlexRow>
+            <Button type="primary" loading={isPublishingPost} onClick={post} width={'1.4375rem'} css={css`
+              border-radius: 8px;
+              padding: 0.3rem 2rem;
+            `}>
+              Post
+            </Button>
+          </FlexRow>
+
         </ButtonWapper>
       </Content>
     </Wrapper>
