@@ -1,11 +1,16 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect } from "react";
 import { displayPostList } from "@/state/post/slice";
-import { Wrapper, PostWapper } from "./styled";
+import { ButtonWapper, Content, Wrapper } from "../PublishPost/styled";
+import { css } from "styled-components";
+import AccountStatus from "../AccountStatus";
+import { FlexRow } from "../App/styled";
+import Button from "../Button";
+import Textarea from "../Textarea";
 
-export interface PublishPostProps {}
+export interface PublishPostProps { }
 
-const DisplayPost: React.FC<PublishPostProps> = ({}) => {
+const DisplayPost: React.FC<PublishPostProps> = ({ }) => {
   const postList = useSelector((state) => state.post.postList);
   const did = useSelector((state) => state.identity.did);
 
@@ -17,12 +22,10 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
 
   return (
     <Wrapper>
-      {postList.map((post, index) => (
-        <PostWapper key={post?.streamId} marginTop={index === 0 ? 0 : 24}>
-          {post?.streamContent?.content?.content ||
-            post?.streamContent?.content}
-        </PostWapper>
-      ))}
+      <Content>
+        <AccountStatus name={'test.eth'} avatar={""} />
+
+      </Content>
     </Wrapper>
   );
 };

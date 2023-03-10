@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import DisplayFolder from "../DisplayFolder";
+import DisplayPost from "../DisplayPost";
 import Modal from "../Modal";
 import PublishPost from "../PublishPost";
 import Header from "./Header";
@@ -20,6 +21,11 @@ const Layout: React.FC = (): React.ReactElement => {
       <BodyWrapper>
         <PublishPostWrapper>
           <PublishPost />
+          <DisplayPost />
+          <DisplayPost />
+          <DisplayPost />
+          <DisplayPost />
+          <DisplayPost />
         </PublishPostWrapper>
       </BodyWrapper>
     </Container>

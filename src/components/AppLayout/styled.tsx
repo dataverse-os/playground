@@ -19,8 +19,9 @@ export const BodyWrapper = styled.div`
   padding: ${padding};
   height: calc(100% - 3.35rem);
   display: flex;
-  flex-direction: row;
+  flex-flow: column wrap;
   margin-top: 3.35rem;
+  height: 100vh;
 `;
 
 export const PublishPostWrapper = styled.aside`
