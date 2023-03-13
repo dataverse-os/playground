@@ -13,7 +13,7 @@ import React from "react";
 import { buyFile, monetizeFile } from "@/state/file/slice";
 import { CustomMirror, CustomMirrorFile, PostContent } from "@/types";
 import Text from './Text'
-
+import Images from './Images'
 
 interface DisplayPostItemProps {
   mirror: CustomMirror
@@ -94,6 +94,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ mirror }) => {
       <Content>
         <AccountStatus name={didAbbreviation(did) ?? ''} avatar={""} />
         <Text mirrorFile={mirror.mirrorFile} />
+        <Images mirrorFile={mirror.mirrorFile} />
       </Content>
     </Wrapper>
   )

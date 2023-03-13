@@ -13,7 +13,7 @@ import {
 } from "@dataverse/runtime-connector";
 import {
   Wrapper,
-  PostWapper,
+  PostWrapper,
   ButtonWrapper,
   Content,
   Title,
@@ -109,7 +109,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
       <ContentWrapper>
         <Content>
           {posts.map((mirror, index) => (
-            <PostWapper key={mirror.mirrorId} marginTop={index === 0 ? 0 : 24}>
+            <PostWrapper key={mirror.mirrorId} marginTop={index === 0 ? 0 : 24}>
               <Text mirrorFile={mirror.mirrorFile} />
               <Image mirrorFile={mirror.mirrorFile} />
               <ButtonWrapper>
@@ -147,7 +147,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
                     </>
                   )}
               </ButtonWrapper>
-            </PostWapper>
+            </PostWrapper>
           ))}
         </Content>
       </ContentWrapper>
