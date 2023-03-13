@@ -12,6 +12,7 @@ import { postSlice } from "./post/slice";
 import { identitySlice } from "./identity/slice";
 import { folderSlice } from "./folder/slice";
 import { fileSlice } from "./file/slice";
+import { privacySettingsSlice } from "./privacySettings/slice";
 
 const persistConfig = {
   key: "root",
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   post: postSlice.reducer,
   folder: folderSlice.reducer,
   file: fileSlice.reducer,
+  privacySettings: privacySettingsSlice.reducer,
 });
 
 // 使用persistReducer强化reducer,persistReducer(config, reducer)

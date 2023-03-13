@@ -5,8 +5,7 @@ import { ButtonWapper, Content, Wrapper } from "../PublishPost/styled";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
 import { FlexRow } from "../App/styled";
-import Button from "../Button";
-import Textarea from "../Textarea";
+import Textarea from "../BaseComponents/Textarea";
 
 export interface PublishPostProps { }
 
