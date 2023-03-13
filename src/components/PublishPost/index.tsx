@@ -1,5 +1,6 @@
-import Textarea from "../BaseComponents/Textarea";
-import { Wrapper, ButtonWapper, Title, Content } from "./styled";
+import Button from "@/components/BaseComponents/Button";
+import Textarea from "@/components/BaseComponents/Textarea";
+import { Wrapper, ButtonWrapper, Title, Content } from "./styled";
 import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useState } from "react";
@@ -10,7 +11,6 @@ import imgIcon from "@/assets/icons/img.svg";
 import lockIcon from "@/assets/icons/lock.svg";
 import { FlexRow } from "../App/styled";
 import { PostType } from "@/types";
-import Button from "../BaseComponents/Button";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import PrivacySettings from "../PrivacySettings";
 
@@ -91,7 +91,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
           width={"100%"}
           height={147}
         />
-        <ButtonWapper>
+        <ButtonWrapper>
           <FlexRow>
             <Button type="icon" width={"1.75rem"}>
               <img src={imgIcon} />
@@ -125,7 +125,8 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
               Post
             </Button>
           </FlexRow>
-        </ButtonWapper>
+
+        </ButtonWrapper>
       </Content>
       <PrivacySettings></PrivacySettings>
     </Wrapper>
