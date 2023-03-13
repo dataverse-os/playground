@@ -26,16 +26,22 @@ export const BodyWrapper = styled.div`
 
 export const PublishPostWrapper = styled.aside`
   flex: 1;
-  display: flex;
   align-items: flex-start;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: flex;
+  flex-flow: column wrap;
   flex-shrink: 0;
   z-index: 1;
   overflow: hidden;
-  justify-content: space-between;
+  justify-content: flex-start;
   max-width: 100%;
   margin: 0;
+  &::before,
+  ::after {
+    content: "";
+    flex-basis: 100%;
+    width: 0;
+    order: 1;
+  }
 `;
 
 export const DisplayPostWrapper = styled.aside`
