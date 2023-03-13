@@ -1,12 +1,10 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect } from "react";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
-import { ButtonWapper, Content, Wrapper } from "../PublishPost/styled";
+import { Content, Wrapper } from "../PublishPost/styled";
 import { css } from "styled-components";
 import Modal from "../BaseComponents/Modal";
 import CheckBox from "../BaseComponents/CheckBox";
-import RadioButton from "../BaseComponents/RadioButton";
-import RadioGroup from "../BaseComponents/RadioGroup";
 
 export interface PublishPostProps {}
 
@@ -45,10 +43,10 @@ const PrivacySettings: React.FC<PublishPostProps> = ({}) => {
             }
           `}
         >
-          <RadioGroup>
+          {/* <RadioGroup>
             <RadioButton label="1"></RadioButton>
             <RadioButton label="2"></RadioButton>
-          </RadioGroup>
+          </RadioGroup> */}
         </Modal>
       </Content>
     </Wrapper>
