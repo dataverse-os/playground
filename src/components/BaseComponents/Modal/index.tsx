@@ -5,7 +5,7 @@ import { ModalWrap } from "./ModalWrap";
 import usePortal from "@/utils/usePortal";
 import { uuid } from "@/utils/uuid";
 import { useClickOutside } from "@/utils/useClickOutSide";
-import { FlattenSimpleInterpolation } from "styled-components";
+import { css, FlattenSimpleInterpolation } from "styled-components";
 
 export interface ModalProps {
   title?: string;
@@ -104,6 +104,9 @@ const Modal: React.FC<ModalProps> = ({
                 }}
                 width={20}
                 type={"text"}
+                css={css`
+                  padding: 0;
+                `}
               >
                 X
               </Button>
@@ -121,9 +124,9 @@ const Modal: React.FC<ModalProps> = ({
           <div className="footerContainer">
             <Button
               onClick={() => {
-                handleClose();
                 onOk?.();
               }}
+              type="gray"
             >
               ok
             </Button>

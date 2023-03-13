@@ -4,7 +4,7 @@ import Loading from "../Loading";
 import { ButtonContainerWrap } from "./style";
 
 export interface ButtonType {
-  type?: "primary" | "ghost" | "link" | "text" | "default" | "icon";
+  type?: "primary" | "ghost" | "link" | "text" | "default" | "icon" | "gray";
 }
 export interface ButtonProps extends ButtonType {
   width?: number | string;

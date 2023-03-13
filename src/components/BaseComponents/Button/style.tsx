@@ -30,8 +30,8 @@ export const ButtonContainerWrap = styled.div<{
     props.type === "primary" &&
     css`
       color: rgb(255, 255, 255);
-      background-color: #007AFF;
-  `}
+      background-color: #007aff;
+    `}
 
   // text
   ${(props) =>
@@ -40,7 +40,7 @@ export const ButtonContainerWrap = styled.div<{
       color: black;
       background-color: white;
       border: none;
-  `}
+    `}
 
   // icon
   ${(props) =>
@@ -51,7 +51,16 @@ export const ButtonContainerWrap = styled.div<{
       min-width: 1.75rem;
       border: none;
       padding: 0;
-  `}
+    `}
+
+  ${(props) =>
+    props.type === "gray" &&
+    css`
+      background-color: #f8f7f7;
+      padding: 0;
+      height: 30px;
+      border-radius: 6px;
+    `}
 
   transition: box-shadow 0.1s;
   ${(props) => props.css}

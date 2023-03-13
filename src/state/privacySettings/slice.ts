@@ -1,4 +1,5 @@
 import { PostType } from "@/types";
+import { Currency } from "@dataverse/runtime-connector";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface Props {
@@ -7,19 +8,19 @@ interface Props {
 }
 
 interface Settings {
-  type: PostType.Private;
-  currecy: undefined;
-  price: undefined;
-  supply: undefined;
+  type: PostType;
+  currency?: Currency;
+  amount?: number;
+  collectLimit?: number;
 }
 
 const initialState: Props = {
   modalVisible: false,
   settings: {
     type: PostType.Private,
-    currecy: undefined,
-    price: undefined,
-    supply: undefined,
+    currency: undefined,
+    amount: undefined,
+    collectLimit: undefined,
   },
 };
 
@@ -31,6 +32,7 @@ export const privacySettingsSlice = createSlice({
       state.modalVisible = action.payload;
     },
     setSettings: (state, action: PayloadAction<Settings>) => {
+      console.log(action.payload)
       state.settings = action.payload;
     },
   },
