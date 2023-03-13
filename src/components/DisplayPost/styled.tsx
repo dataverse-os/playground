@@ -11,6 +11,12 @@ export const Wrapper = styled.div`
   overflow-y: auto;
 `;
 
+export const TextWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+
 export const PostWapper = styled.div<{ marginTop: number | string }>`
   display: flex;
   flex-direction: column;
