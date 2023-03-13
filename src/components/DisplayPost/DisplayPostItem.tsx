@@ -1,5 +1,4 @@
 import AccountStatus from "../AccountStatus";
-import { DisplayPostItemProps } from "./types";
 import { didAbbreviation } from "@/utils/didAndAddress";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect } from "react";
@@ -7,17 +6,23 @@ import { displayMyPosts, folderSlice } from "@/state/folder/slice";
 // @ts-ignore
 import JSONFormatter from "json-formatter-js";
 import { oldAppVersion } from "@/sdk";
-import { FileType } from "@dataverse/runtime-connector";
+import { FileType, StreamObject } from "@dataverse/runtime-connector";
 import { Wrapper, Content } from "@/components/PublishPost/styled";
 import { decryptPost } from "@/state/post/slice";
 import React from "react";
 import { buyFile, monetizeFile } from "@/state/file/slice";
 import { CustomMirror, CustomMirrorFile, PostContent } from "@/types";
+import Text from './Text'
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ stream }) => {
+
+interface DisplayPostItemProps {
+  mirror: CustomMirror
+}
+
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ mirror }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
-  const posts = useSelector((state) => state.folder.posts);
+
   const currentMirror = useSelector((state) => state.folder.currentMirror);
 
   useEffect(() => {
@@ -62,7 +67,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ stream }) => {
     if (mirrorFile?.isBuying) return;
     dispatch(buyFile({ did, mirrorFile }));
   };
-  console.log(posts);
 
   const showContent = (mirrorFile: CustomMirrorFile) => {
     if (mirrorFile.content.appVersion === oldAppVersion) {
@@ -89,6 +93,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ stream }) => {
     <Wrapper>
       <Content>
         <AccountStatus name={didAbbreviation(did) ?? ''} avatar={""} />
+        <Text mirrorFile={mirror.mirrorFile} />
       </Content>
     </Wrapper>
   )

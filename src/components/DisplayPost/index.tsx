@@ -3,23 +3,24 @@ import { useEffect } from "react";
 import { displayPostList } from "@/state/post/slice";
 import { uuid } from "@/utils/uuid";
 import DisplayPostItem from "./DisplayPostItem";
+import { displayMyPosts } from "@/state/folder/slice";
 
 export interface PublishPostProps { }
 
 const DisplayPost: React.FC<PublishPostProps> = ({ }) => {
-  const postList = useSelector((state) => state.post.postList);
+  const posts = useSelector((state) => state.folder.posts);
   const did = useSelector((state) => state.identity.did);
-  console.log(postList)
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(displayPostList(did));
+    dispatch(displayMyPosts(did));
   }, [did]);
 
   return (
     <>
-      {postList.map((stream, index) => (
-        <DisplayPostItem stream={stream} key={uuid()} />
+      {posts.map((mirror, index) => (
+        <DisplayPostItem mirror={mirror} key={'mirror' + index} />
       ))}
     </>
   );
