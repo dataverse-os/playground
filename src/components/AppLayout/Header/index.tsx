@@ -1,4 +1,4 @@
-import Button from "@/components/Button";
+import Button from "@/components/BaseComponents/Button";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { connectIdentity } from "@/state/identity/slice";
 import { didAbbreviation } from "@/utils/didAndAddress";

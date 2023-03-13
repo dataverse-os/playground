@@ -4,7 +4,7 @@ import {
   createPrivatePostStream,
   createPublicPostStream,
   generateAccessControlConditions,
-  loadMyPostStreamsByModel,
+  loadMyPostStreams,
 } from "@/sdk/stream";
 import { CustomMirrorFile, LitKit, Post, PostContent, PostType } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
@@ -126,7 +126,7 @@ export const publishPost = createAsyncThunk(
 export const displayPostList = createAsyncThunk(
   "post/displayPostList",
   async (did: string) => {
-    const res = await loadMyPostStreamsByModel(did);
+    const res = await loadMyPostStreams(did);
     return res;
   }
 );

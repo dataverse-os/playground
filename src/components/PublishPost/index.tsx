@@ -1,5 +1,5 @@
-import Button from "../Button";
-import Textarea from "../Textarea";
+import Button from "@/components/BaseComponents/Button";
+import Textarea from "@/components/BaseComponents/Textarea";
 import { Wrapper, ButtonWrapper, Title, Content } from "./styled";
 import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
@@ -7,15 +7,17 @@ import { useEffect, useState } from "react";
 import { displayMyPosts } from "@/state/folder/slice";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
-import imgIcon from '@/assets/icons/img.svg';
-import lockIcon from '@/assets/icons/lock.svg';
+import imgIcon from "@/assets/icons/img.svg";
+import lockIcon from "@/assets/icons/lock.svg";
 import { FlexRow } from "../App/styled";
 import { PostType } from "@/types";
 import { didAbbreviation } from "@/utils/didAndAddress";
+import { privacySettingsSlice } from "@/state/privacySettings/slice";
+import PrivacySettings from "../PrivacySettings";
 
-export interface PublishPostProps { }
+export interface PublishPostProps {}
 
-const PublishPost: React.FC<PublishPostProps> = ({ }) => {
+const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
@@ -75,6 +77,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
     dispatch(displayMyPosts(did));
   };
 
+  const openPrivacySettings = () => {
+    dispatch(privacySettingsSlice.actions.setModalVisible(true));
+  };
+
   return (
     <Wrapper>
       <Content>
@@ -88,10 +94,17 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
         />
         <ButtonWrapper>
           <FlexRow>
-            <Button type="icon" width={'1.75rem'} >
+            <Button type="icon" width={"1.75rem"}>
               <img src={imgIcon} />
             </Button>
-            <Button type="icon" width={'1.75rem'} css={css`margin-left:26px;`} >
+            <Button
+              type="icon"
+              width={"1.75rem"}
+              css={css`
+                margin-left: 26px;
+              `}
+              onClick={openPrivacySettings}
+            >
               <img src={lockIcon} />
             </Button>
           </FlexRow>
@@ -100,16 +113,23 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
             {isEncryptedSuccessfully ? "Encrypted" : "Encrypt"}
           </Button> */}
           <FlexRow>
-            <Button type="primary" loading={isPublishingPost} onClick={post} width={'1.4375rem'} css={css`
-              border-radius: 8px;
-              padding: 0.3rem 2rem;
-            `}>
+            <Button
+              type="primary"
+              loading={isPublishingPost}
+              onClick={post}
+              width={"1.4375rem"}
+              css={css`
+                border-radius: 8px;
+                padding: 0.3rem 2rem;
+              `}
+            >
               Post
             </Button>
           </FlexRow>
 
         </ButtonWrapper>
       </Content>
+      <PrivacySettings></PrivacySettings>
     </Wrapper>
   );
 };

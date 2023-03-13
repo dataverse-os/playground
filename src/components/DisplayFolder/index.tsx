@@ -21,15 +21,15 @@ import {
   Link,
   LinkWrapper,
 } from "./styled";
-import Button from "../Button";
 import { decryptPost } from "@/state/post/slice";
-import Modal from "../Modal";
 import React from "react";
 import { css } from "styled-components";
 import { buyFile, monetizeFile } from "@/state/file/slice";
 import { CustomMirror, CustomMirrorFile, PostContent, PostType } from "@/types";
 import Text from "./Text";
 import Image from "./Images";
+import Button from "../BaseComponents/Button";
+import Modal from "../BaseComponents/Modal";
 
 export interface PublishPostProps {}
 

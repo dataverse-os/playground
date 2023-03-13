@@ -21,9 +21,27 @@ export const loadStream = async (streamId: string) => {
   return stream;
 };
 
-export const loadMyPostStreamsByModel = async (did: string) => {
-  const streams = await runtimeConnector.loadStreamsByModel({
+export const loadMyPostStreams = async (did: string) => {
+  const streams = await runtimeConnector.loadStreamsByModelAndDID({
     did,
+    appName,
+    modelName,
+  });
+
+  const streamList: { streamId: string; streamContent: any }[] = [];
+
+  Object.entries(streams).forEach(([streamId, streamContent]) => {
+    streamList.push({
+      streamId,
+      streamContent,
+    });
+  });
+
+  return streamList;
+};
+
+export const loadAllPostStreams = async (did: string) => {
+  const streams = await runtimeConnector.loadStreamsByModel({
     appName,
     modelName,
   });
