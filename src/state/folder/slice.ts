@@ -14,7 +14,7 @@ const initialState: Props = {
   currentMirror: undefined,
 };
 
-export const displayDefaultFolder = createAsyncThunk(
+export const displayMyPosts = createAsyncThunk(
   "folder/readMyPosts",
   async (did: string) => {
     const posts = await readMyPosts(did);
@@ -34,7 +34,7 @@ export const folderSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(displayDefaultFolder.fulfilled, (state, action) => {
+    builder.addCase(displayMyPosts.fulfilled, (state, action) => {
       state.posts = action.payload as CustomMirrors;
     });
 

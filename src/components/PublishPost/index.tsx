@@ -4,7 +4,7 @@ import { Wrapper, ButtonWapper, Title, Content } from "./styled";
 import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useState } from "react";
-import { displayDefaultFolder } from "@/state/folder/slice";
+import { displayMyPosts } from "@/state/folder/slice";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
 import imgIcon from '@/assets/icons/img.svg';
@@ -72,7 +72,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
         litKit,
       })
     );
-    dispatch(displayDefaultFolder(did));
+    dispatch(displayMyPosts(did));
   };
 
   return (

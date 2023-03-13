@@ -1,6 +1,6 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useCallback, useEffect, useRef } from "react";
-import { displayDefaultFolder, folderSlice } from "@/state/folder/slice";
+import { displayMyPosts, folderSlice } from "@/state/folder/slice";
 // @ts-ignore
 import JSONFormatter from "json-formatter-js";
 import { appName, oldAppVersion } from "@/sdk";
@@ -40,7 +40,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
   const currentMirror = useSelector((state) => state.folder.currentMirror);
 
   useEffect(() => {
-    dispatch(displayDefaultFolder(did));
+    dispatch(displayMyPosts(did));
   }, [did]);
 
   const openDecryptionModel = (mirror: CustomMirror) => {
