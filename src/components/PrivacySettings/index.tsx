@@ -53,14 +53,29 @@ const PrivacySettings: React.FC = () => {
   };
 
   const saveSettings = () => {
-    dispatch(
-      privacySettingsSlice.actions.setSettings({
-        type: needEncrypt ? PostType.Datatoken : PostType.Public,
-        currency: currency.value,
-        amount: Number(amount),
-        collectLimit: checked ? 2 ** 52 : Number(limit),
-      })
-    );
+    if (needEncrypt) {
+      if (isInputValid()) {
+        setInputWarn(false);
+        dispatch(
+          privacySettingsSlice.actions.setSettings({
+            type: PostType.Datatoken,
+            currency: currency.value,
+            amount: Number(amount),
+            collectLimit: checked ? 2 ** 52 : Number(limit),
+          })
+        );
+        dispatch(privacySettingsSlice.actions.setModalVisible(false));
+      } else {
+        setInputWarn(true);
+      }
+    } else {
+      dispatch(
+        privacySettingsSlice.actions.setSettings({
+          type: PostType.Public,
+        })
+      );
+      dispatch(privacySettingsSlice.actions.setModalVisible(false));
+    }
   };
 
   return (

@@ -124,7 +124,6 @@ const Modal: React.FC<ModalProps> = ({
           <div className="footerContainer">
             <Button
               onClick={() => {
-                handleClose();
                 onOk?.();
               }}
               type="gray"

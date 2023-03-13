@@ -30,6 +30,8 @@ export default defineConfig({
   define: {
     "process.env": {
       ENV: "Browser",
+      IPFS_WEB3STORAGE: "https://w3s.link/ipfs/",
+      PROXY: "https://api.dataverse.art/raw",
     },
   },
 });
