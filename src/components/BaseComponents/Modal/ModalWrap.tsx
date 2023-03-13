@@ -51,7 +51,7 @@ export const ModalWrap = styled.div<{
     font-size: 20px;
 
     .placeholder {
-      width: 40px;
+      width: 20px;
     }
   }
 
