@@ -21,10 +21,7 @@ const Layout: React.FC = (): React.ReactElement => {
       <BodyWrapper>
         <PublishPostWrapper>
           <PublishPost />
-          <DisplayPost />
-          <DisplayPost />
-          <DisplayPost />
-          <DisplayPost />
+          
           <DisplayPost />
         </PublishPostWrapper>
         {/* <DisplayPostWrapper>

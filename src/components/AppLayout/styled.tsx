@@ -32,6 +32,7 @@ export const PublishPostWrapper = styled.aside`
   flex-shrink: 0;
   z-index: 1;
   overflow: hidden;
+  align-content: flex-start;
   justify-content: flex-start;
   max-width: 100%;
   margin: 0;

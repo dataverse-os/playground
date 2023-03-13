@@ -1,6 +1,6 @@
 import Button from "../Button";
 import Textarea from "../Textarea";
-import { Wrapper, ButtonWapper, Title, Content } from "./styled";
+import { Wrapper, ButtonWrapper, Title, Content } from "./styled";
 import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useState } from "react";
@@ -86,7 +86,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
           width={"100%"}
           height={147}
         />
-        <ButtonWapper>
+        <ButtonWrapper>
           <FlexRow>
             <Button type="icon" width={'1.75rem'} >
               <img src={imgIcon} />
@@ -108,7 +108,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
             </Button>
           </FlexRow>
 
-        </ButtonWapper>
+        </ButtonWrapper>
       </Content>
     </Wrapper>
   );

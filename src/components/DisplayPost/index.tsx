@@ -1,19 +1,15 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect } from "react";
 import { displayPostList } from "@/state/post/slice";
-import { ButtonWapper, Content, Wrapper } from "../PublishPost/styled";
-import { css } from "styled-components";
-import AccountStatus from "../AccountStatus";
-import { FlexRow } from "../App/styled";
-import Button from "../Button";
-import Textarea from "../Textarea";
+import { uuid } from "@/utils/uuid";
+import DisplayPostItem from "./DisplayPostItem";
 
 export interface PublishPostProps { }
 
 const DisplayPost: React.FC<PublishPostProps> = ({ }) => {
   const postList = useSelector((state) => state.post.postList);
   const did = useSelector((state) => state.identity.did);
-
+  console.log(postList)
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -21,12 +17,11 @@ const DisplayPost: React.FC<PublishPostProps> = ({ }) => {
   }, [did]);
 
   return (
-    <Wrapper>
-      <Content>
-        <AccountStatus name={'test.eth'} avatar={""} />
-
-      </Content>
-    </Wrapper>
+    <>
+      {postList.map((stream, index) => (
+        <DisplayPostItem stream={stream} key={uuid()} />
+      ))}
+    </>
   );
 };
 
