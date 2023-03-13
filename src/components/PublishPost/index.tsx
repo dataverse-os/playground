@@ -11,6 +11,7 @@ import imgIcon from "@/assets/icons/img.svg";
 import lockIcon from "@/assets/icons/lock.svg";
 import { FlexRow } from "../App/styled";
 import { PostType } from "@/types";
+import { didAbbreviation } from "@/utils/didAndAddress";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import PrivacySettings from "../PrivacySettings";
 
@@ -83,7 +84,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   return (
     <Wrapper>
       <Content>
-        <AccountStatus name={"test.eth"} avatar={""} />
+        <AccountStatus name={didAbbreviation(did) ?? ''} avatar={""} />
         <Textarea
           value={encryptedContent || content}
           placeholder="what's happening?"

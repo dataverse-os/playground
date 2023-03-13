@@ -36,7 +36,7 @@ export const Content = styled.div`
   }
 `;
 
-export const PostWapper = styled.div<{ marginTop: number | string }>`
+export const PostWrapper = styled.div<{ marginTop: number | string }>`
   display: flex;
   flex-direction: column;
   margin-top: ${(props) =>

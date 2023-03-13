@@ -1,4 +1,5 @@
 import Button from "@/components/BaseComponents/Button";
+import { displayMyPosts } from "@/state/folder/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { connectIdentity } from "@/state/identity/slice";
 import { didAbbreviation } from "@/utils/didAndAddress";
@@ -32,6 +33,7 @@ const Header = (): React.ReactElement => {
           type="primary"
           onClick={() => {
             dispatch(connectIdentity());
+            
           }}
         >
           {"Sign in"}
