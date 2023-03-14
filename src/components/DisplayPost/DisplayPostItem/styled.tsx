@@ -49,6 +49,17 @@ export const PostWapper = styled.div<{ marginTop: number | string }>`
   border-radius: 12px;
 `;
 
+export const CreatedAt = styled.div`
+  white-space: nowrap;
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0 1rem;
+  color: #007AFF;
+`
+
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;

@@ -30,7 +30,7 @@ export function timeAgo(dateTimeStamp: number) {
   } else if (minC >= 1 && minC <= 59) {
     result = `${minC}${en ? ` minute${minC === 1 ? "" : "s"}  ago` : "分钟前"}`;
   } else if (diffValue >= 0 && diffValue <= minute) {
-    result = "刚刚";
+    result = "just now";
   } else {
     console.log(monthC, weekC, dayC, hourC, dateTimeStamp);
     var datetime = new Date();

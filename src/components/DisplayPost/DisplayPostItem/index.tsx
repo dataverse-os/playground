@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { displayMyPosts } from "@/state/folder/slice";
 // @ts-ignore
 import { FileType } from "@dataverse/runtime-connector";
-import { Wrapper, Content } from "./styled";
+import { Wrapper, Content, CreatedAt } from "./styled";
 import React from "react";
 import { PostStream } from "@/types";
 import Text from "./Text";
@@ -13,6 +13,7 @@ import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { timeAgo } from "@/utils/dateFormat";
+import { FlexRow } from "@/components/App/styled";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -25,16 +26,18 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     <Wrapper>
       <Content>
         <Header>
-          <AccountStatus
-            name={
-              addressAbbreviation(
-                getAddressFromDid(postStream.streamContent.controller)
-              ) ?? ""
-            }
-          />
-          <div className="createdAt">
-            {timeAgo(Date.parse(postStream.streamContent.createdAt))}
-          </div>
+          <FlexRow>
+            <AccountStatus
+              name={
+                addressAbbreviation(
+                  getAddressFromDid(postStream.streamContent.controller)
+                ) ?? ""
+              }
+            />
+            <CreatedAt>
+              {'• ' + timeAgo(Date.parse(postStream.streamContent.createdAt))}
+            </CreatedAt>
+          </FlexRow>
           {postStream.streamContent.fileType !== FileType.Public && (
             <UnlockInfo postStream={postStream} />
           )}
