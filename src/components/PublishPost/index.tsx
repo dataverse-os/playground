@@ -1,29 +1,27 @@
-import Button from "@/components/BaseComponents/Button";
-import Textarea from "@/components/BaseComponents/Textarea";
-import { Wrapper, ButtonWrapper, Title, Content, UploadImg } from "./styled";
-import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { useEffect, useState } from "react";
-import { displayMyPosts } from "@/state/folder/slice";
-import { css } from "styled-components";
-import AccountStatus from "../AccountStatus";
 import imgIcon from "@/assets/icons/img.svg";
 import lockIcon from "@/assets/icons/lock.svg";
-import { FlexRow } from "../App/styled";
-import { PostType } from "@/types";
-import {
-  addressAbbreviation,
-  didAbbreviation,
-  getAddressFromDid,
-} from "@/utils/didAndAddress";
+import crossIcon from "@/assets/icons/cross.svg";
+import Button from "@/components/BaseComponents/Button";
+import Textarea from "@/components/BaseComponents/Textarea";
+import { displayMyPosts } from "@/state/folder/slice";
+import { useAppDispatch, useSelector } from "@/state/hook";
+import { encryptPost, postSlice, publishPost, uploadImg } from "@/state/post/slice";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
-import PrivacySettings from "../PrivacySettings";
-import ImageUploading, { ImageListType } from "react-images-uploading";
+import {
+  addressAbbreviation, getAddressFromDid
+} from "@/utils/didAndAddress";
 import { uuid } from "@/utils/uuid";
+import { useState } from "react";
+import ImageUploading, { ImageListType } from "react-images-uploading";
+import { css } from "styled-components";
+import AccountStatus from "../AccountStatus";
+import { FlexRow } from "../App/styled";
+import PrivacySettings from "../PrivacySettings";
+import { ButtonWrapper, Content, UploadImg, UploadImgCross, UploadImgWrapper, Wrapper } from "./styled";
 
-export interface PublishPostProps {}
+export interface PublishPostProps { }
 
-const PublishPost: React.FC<PublishPostProps> = ({}) => {
+const PublishPost: React.FC<PublishPostProps> = ({ }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
@@ -61,9 +59,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         did,
         postContent: {
           text: content,
-          images: [
-            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
-          ],
+          images: images.map((image) => image["upload"]),
           videos: [],
         },
       })
@@ -90,14 +86,14 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         return;
       }
     }
+    const files: File[] = []
+    images.map((image) => { if (image.file) { files.push(image.file) } })
     await dispatch(
       publishPost({
         did,
         postContent: {
           text: content,
-          images: [
-            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
-          ],
+          images: await (await dispatch(uploadImg({ files }))).payload as string[],
           videos: [],
         },
       })
@@ -144,7 +140,10 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
               />
               <FlexRow>
                 {imageList.map((image, index) => (
-                  <UploadImg src={image["upload"]} key={uuid()} />
+                  <UploadImgWrapper>
+                    <UploadImgCross src={crossIcon} onClick={() => { onImageRemove(index) }} />
+                    <UploadImg src={image["upload"]} key={uuid()} onClick={() => { onImageUpdate(index) }} />
+                  </UploadImgWrapper>
                 ))}
               </FlexRow>
               <ButtonWrapper>
@@ -163,10 +162,6 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
                     <img src={lockIcon} />
                   </Button>
                 </FlexRow>
-
-                {/* <Button loading={isEncrypting} onClick={encrypt}>
-                {isEncryptedSuccessfully ? "Encrypted" : "Encrypt"}
-              </Button> */}
                 <FlexRow>
                   <Button
                     type="primary"

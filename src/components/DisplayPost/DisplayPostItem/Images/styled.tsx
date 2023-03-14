@@ -3,6 +3,8 @@ import styled from "styled-components";
 export const ImgWrapper = styled.div`
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
 `;
 
 export const Secret = styled.div`
@@ -17,8 +19,19 @@ export const Secret = styled.div`
   font-size: 30px;
 `;
 
-export const Image = styled.img`
-  width: 100%;
-  height: auto;
+export const Image = styled.img<{ imgCount: number }>`
+  width: ${(props) => 100 / props.imgCount}%;
+  height: 100%;
   object-fit: cover;
+  border-radius: 1.25rem;
 `;
+
+export const ImageWrapperGrid = styled.div`
+  display: grid;
+  width: 100%;
+  height: 100%;
+  justify-content: space-evenly;
+  align-content: space-evenly;
+  grid-template-columns: repeat(2,50%);
+  grid-template-rows: repeat(2,50%);
+`

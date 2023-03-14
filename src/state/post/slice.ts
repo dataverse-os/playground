@@ -10,6 +10,7 @@ import {
 } from "@/sdk/stream";
 import { CustomMirrorFile, LitKit, Post, PostContent, PostType } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
+import { web3Storage } from "@/utils/web3Storage";
 import {
   DecryptionConditionsTypes,
   IndexFileContentType,
@@ -87,6 +88,15 @@ export const decryptPost = createAsyncThunk(
     return res;
   }
 );
+
+export const uploadImg = createAsyncThunk(
+  "post/uploadImg",
+  async ({ files }: { files: File[] }): Promise<string[]> => {
+    const imgCIDs = await Promise.all(files.map((file) => web3Storage.storeFiles([file])))
+    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.dweb.link`)
+    return imgUrls
+  }
+)
 
 export const publishPost = createAsyncThunk(
   "post/publishPost",
@@ -177,6 +187,16 @@ export const postSlice = createSlice({
     builder.addCase(encryptPost.rejected, (state) => {
       state.isEncrypting = false;
       state.isEncryptedSuccessfully = false;
+    });
+
+    builder.addCase(uploadImg.pending, (state) => {
+      state.isPublishingPost = true;
+    });
+    builder.addCase(uploadImg.fulfilled, (state, action) => {
+      state.isPublishingPost = false;
+    });
+    builder.addCase(uploadImg.rejected, (state) => {
+      state.isPublishingPost = false;
     });
 
     builder.addCase(publishPost.pending, (state) => {
