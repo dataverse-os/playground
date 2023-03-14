@@ -4,6 +4,7 @@ export const ImgWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  align-items: center;
 `;
 
 export const Secret = styled.div`
@@ -20,7 +21,7 @@ export const Secret = styled.div`
 
 export const Image = styled.img<{ imgCount: number }>`
   width: ${(props) => 100 / props.imgCount}%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
   border-radius: 1.25rem;
 `;

@@ -1,26 +1,23 @@
-import Button from "@/components/BaseComponents/Button";
-import Textarea from "@/components/BaseComponents/Textarea";
-import { Wrapper, ButtonWrapper, Title, Content, UploadImg } from "./styled";
-import { encryptPost, publishPost, postSlice, uploadImg } from "@/state/post/slice";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { useEffect, useState } from "react";
-import { displayMyPosts } from "@/state/folder/slice";
-import { css } from "styled-components";
-import AccountStatus from "../AccountStatus";
 import imgIcon from "@/assets/icons/img.svg";
 import lockIcon from "@/assets/icons/lock.svg";
-import { FlexRow } from "../App/styled";
-import { PostType } from "@/types";
-import {
-  addressAbbreviation,
-  didAbbreviation,
-  getAddressFromDid,
-} from "@/utils/didAndAddress";
+import crossIcon from "@/assets/icons/cross.svg";
+import Button from "@/components/BaseComponents/Button";
+import Textarea from "@/components/BaseComponents/Textarea";
+import { displayMyPosts } from "@/state/folder/slice";
+import { useAppDispatch, useSelector } from "@/state/hook";
+import { encryptPost, postSlice, publishPost, uploadImg } from "@/state/post/slice";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
-import PrivacySettings from "../PrivacySettings";
-import ImageUploading, { ImageListType } from "react-images-uploading";
+import {
+  addressAbbreviation, getAddressFromDid
+} from "@/utils/didAndAddress";
 import { uuid } from "@/utils/uuid";
-import { web3Storage } from "@/utils/web3Storage";
+import { useState } from "react";
+import ImageUploading, { ImageListType } from "react-images-uploading";
+import { css } from "styled-components";
+import AccountStatus from "../AccountStatus";
+import { FlexRow } from "../App/styled";
+import PrivacySettings from "../PrivacySettings";
+import { ButtonWrapper, Content, UploadImg, UploadImgCross, UploadImgWrapper, Wrapper } from "./styled";
 
 export interface PublishPostProps { }
 
@@ -143,7 +140,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
               />
               <FlexRow>
                 {imageList.map((image, index) => (
-                  <UploadImg src={image["upload"]} key={uuid()} />
+                  <UploadImgWrapper>
+                    <UploadImgCross src={crossIcon} onClick={() => { onImageRemove(index) }} />
+                    <UploadImg src={image["upload"]} key={uuid()} onClick={() => { onImageUpdate(index) }} />
+                  </UploadImgWrapper>
                 ))}
               </FlexRow>
               <ButtonWrapper>
@@ -162,10 +162,6 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
                     <img src={lockIcon} />
                   </Button>
                 </FlexRow>
-
-                {/* <Button loading={isEncrypting} onClick={encrypt}>
-                {isEncryptedSuccessfully ? "Encrypted" : "Encrypt"}
-              </Button> */}
                 <FlexRow>
                   <Button
                     type="primary"

@@ -39,11 +39,22 @@ export const ButtonWrapper = styled.div`
 `;
 
 export const UploadImg = styled.img`
-  height: 25%;
-  width: 25%;
+  height: 100%;
+  width: 100%;
   cursor: pointer;
 `
 
-export const UploadImgWrap = styled.div`
-  
+export const UploadImgWrapper = styled.div`
+  height: 25%;
+  width: 25%;
+  position: relative;
+`
+
+export const UploadImgCross = styled.img`
+  cursor: pointer;
+  position: absolute;
+  right: 10%;
+  top: 10%;
+  width: 1.5rem;
+  height: 1.5rem;
 `
