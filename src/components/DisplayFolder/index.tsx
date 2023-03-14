@@ -39,10 +39,6 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
   const posts = useSelector((state) => state.folder.posts);
   const currentMirror = useSelector((state) => state.folder.currentMirror);
 
-  useEffect(() => {
-    dispatch(displayMyPosts(did));
-  }, [did]);
-
   const openDecryptionModel = (mirror: CustomMirror) => {
     dispatch(folderSlice.actions.setCurrentMirror(mirror));
   };
