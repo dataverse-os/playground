@@ -11,4 +11,5 @@ export const TextWrapper = styled.div`
   line-height: 1.85rem;
   margin-left: 0.57rem;
   color: #000000;
+  margin-bottom: 0.8rem;
 `;
