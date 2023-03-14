@@ -62,7 +62,8 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     let nowImages = showImage(postStream);
     if (
       nowImages.length === 0 &&
-      postStream.streamContent.fileType === FileType.Datatoken
+      postStream.streamContent.fileType !== FileType.Public && 
+      !postStream.isDecryptedSuccessfully
     ) {
       nowImages = ["?"];
     }
