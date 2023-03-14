@@ -451,7 +451,7 @@ export const generateUnifiedAccessControlConditions = async ({
       contractAddress: datatokenId,
       conditionType: "evmContract",
       functionName: "isCollected",
-      functionParams: [":userAddress", datatokenId],
+      functionParams: [":userAddress"],
       functionAbi: {
         inputs: [
           {
