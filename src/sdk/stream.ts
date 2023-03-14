@@ -61,19 +61,22 @@ export const loadAllPostStreams = async () => {
   });
   const sortedList = streamList
     .filter((el) => el.streamContent.content.appVersion === appVersion)
-    .map((el) => {
+    .map((el, index) => {
       try {
-        if (el.streamContent.content.content) {
-          el.streamContent.content.content = JSON.parse(
-            el.streamContent.content.content as string
-          );
-        }
+        el.streamContent.content.content = JSON.parse(
+          el.streamContent.content.content as string
+        );
       } catch (error) {
         console.log(el);
         console.log(error);
       }
       return el;
     })
+    .filter(
+      (el) =>
+        el.streamContent.content.content &&
+        Object.keys(el.streamContent.content.content).length > 0
+    )
     .sort(
       (a, b) =>
         Date.parse(b.streamContent.createdAt) -
