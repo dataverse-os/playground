@@ -5,22 +5,25 @@ import { uuid } from "@/utils/uuid";
 import DisplayPostItem from "./DisplayPostItem";
 import { displayMyPosts } from "@/state/folder/slice";
 
-export interface PublishPostProps { }
+export interface PublishPostProps {}
 
-const DisplayPost: React.FC<PublishPostProps> = ({ }) => {
+const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const posts = useSelector((state) => state.folder.posts);
   const did = useSelector((state) => state.identity.did);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(displayPostList(did));
-    dispatch(displayMyPosts(did));
+    // dispatch(displayPostList(did));
+    console.log(did)
+    if (did) {
+      dispatch(displayMyPosts(did));
+    }
   }, [did]);
 
   return (
     <>
       {posts.map((mirror, index) => (
-        <DisplayPostItem mirror={mirror} key={'mirror' + index} />
+        <DisplayPostItem mirror={mirror} key={"mirror" + index} />
       ))}
     </>
   );
