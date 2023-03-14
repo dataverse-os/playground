@@ -33,9 +33,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
             }
           />
           <div className="createdAt">
-            {timeAgo(Date.parse(postStream.streamContent.indexFile.createdAt))}
+            {timeAgo(Date.parse(postStream.streamContent.createdAt))}
           </div>
-          {postStream.streamContent.indexFile.fileType !== FileType.Public && (
+          {postStream.streamContent.fileType !== FileType.Public && (
             <UnlockInfo postStream={postStream} />
           )}
         </Header>

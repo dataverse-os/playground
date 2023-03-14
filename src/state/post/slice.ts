@@ -20,6 +20,7 @@ import { getAddressFromDid } from "@/utils/didAndAddress";
 import { web3Storage } from "@/utils/web3Storage";
 import {
   DecryptionConditionsTypes,
+  IndexFile,
   IndexFileContentType,
   StreamObject,
 } from "@dataverse/runtime-connector";
@@ -74,25 +75,14 @@ export const encryptPost = createAsyncThunk(
 
 export const decryptPost = createAsyncThunk(
   "post/decryptPost",
-  async ({
-    did,
-    mirrorFile,
-  }: {
-    did: string;
-    mirrorFile: CustomMirrorFile;
-  }) => {
-    if (!(mirrorFile.contentType in IndexFileContentType)) {
+  async ({ did, indexFile }: { did: string; indexFile: IndexFile }) => {
+    if (!(indexFile.contentType in IndexFileContentType)) {
       const res = await _decryptPost({
         did,
-        mirrorFile,
+        mirrorFile: indexFile,
       });
       return res;
     }
-    const res = await decryptFile({
-      did,
-      mirrorFile,
-    });
-    return res;
   }
 );
 

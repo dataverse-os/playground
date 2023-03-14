@@ -59,26 +59,27 @@ export const loadAllPostStreams = async () => {
       streamContent,
     });
   });
-  console.log({ streamList });
   const sortedList = streamList
     .filter(
       (el) =>
-        el.streamContent.appVersion === appVersion && el.streamContent.indexFile
+        el.streamContent.content.appVersion === appVersion
     )
     .map((el) => {
-      if (el.streamContent.indexFile.fileType === FileType.Public) {
+      if (el.streamContent.fileType === FileType.Public) {
         try {
-          el.streamContent.content = JSON.parse(
-            el.streamContent.content as string
+          el.streamContent.content.content = JSON.parse(
+            el.streamContent.content.content as string
           );
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
       }
       return el;
     })
     .sort(
       (a, b) =>
-        Date.parse(b.streamContent.indexFile.createdAt) -
-        Date.parse(a.streamContent.indexFile.createdAt)
+        Date.parse(b.streamContent.createdAt) -
+        Date.parse(a.streamContent.createdAt)
     );
   console.log(sortedList);
   return sortedList;

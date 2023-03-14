@@ -1,5 +1,6 @@
 import {
   DecryptionConditionsTypes,
+  FileType,
   IndexFile,
   IndexFileContentType,
   Mirror,
@@ -11,9 +12,21 @@ export interface PostStream {
   streamId: string;
   streamContent: {
     appVersion: string;
-    content: string | Post;
+    content: { appVersion: string; content: string | Post; controller: string };
     controller: string;
-    indexFile: IndexFile;
+    contentId: string;
+    contentType: IndexFileContentType;
+    comment: object;
+    relation?: object;
+    additional?: object;
+    datatokenId?: string;
+    fileType: FileType;
+    encryptedSymmetricKey?: string;
+    decryptionConditions?: any[];
+    decryptionConditionsType?: DecryptionConditionsTypes;
+    createdAt: string;
+    updatedAt: string;
+    deleted?: boolean;
   };
   isDecrypting?: boolean;
   isDecryptedSuccessfully?: boolean;

@@ -15,40 +15,40 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     if (postStream.streamContent.appVersion === oldAppVersion) {
       return [];
     }
-    if (postStream.streamContent.indexFile.fileType === FileType.Public) {
+    if (postStream.streamContent.fileType === FileType.Public) {
       return (
-        ((postStream.streamContent.content as Post).postContent as PostContent)
+        ((postStream.streamContent.content.content as Post).postContent as PostContent)
           ?.images ?? []
       );
     }
-    if (postStream.streamContent.indexFile.fileType === FileType.Private) {
+    if (postStream.streamContent.fileType === FileType.Private) {
       if (postStream.isDecryptedSuccessfully) {
         return (
           (
-            (postStream.streamContent.content as Post)
+            (postStream.streamContent.content.content as Post)
               .postContent as PostContent
           )?.images ?? []
         );
       }
       return (
         Array.from<string>({
-          length: (postStream.streamContent.content as Post).options
+          length: (postStream.streamContent.content.content as Post).options
             ?.lockedImagesNum!,
         }).fill("?") ?? []
       );
     }
-    if (postStream.streamContent.indexFile.fileType === FileType.Datatoken) {
+    if (postStream.streamContent.fileType === FileType.Datatoken) {
       if (postStream.isDecryptedSuccessfully) {
         return (
           (
-            (postStream.streamContent.content as Post)
+            (postStream.streamContent.content.content as Post)
               .postContent as PostContent
           )?.images ?? []
         );
       }
       return (
         Array.from<string>({
-          length: (postStream.streamContent.content as Post).options
+          length: (postStream.streamContent.content.content as Post).options
             ?.lockedImagesNum!,
         }).fill("?") ?? []
       );
