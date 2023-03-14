@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@dataverse/runtime-connector': latest
+  '@dataverse/runtime-connector': 1.0.21
   '@reduxjs/toolkit': 1.9.0
   '@types/node': ^18.15.1
   '@types/react': ^18.0.17

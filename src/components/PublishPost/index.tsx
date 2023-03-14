@@ -150,6 +150,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
                 cssStyles={css`
                   margin-bottom: 1rem;
                 `}
+                did={did}
               />
               <Textarea
                 value={encryptedContent || content}

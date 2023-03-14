@@ -35,6 +35,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream, ref }) =>
                   getAddressFromDid(postStream.streamContent.controller)
                 ) ?? ""
               }
+              did={postStream.streamContent.controller}
             />
             <CreatedAt>
               {'• ' + timeAgo(Date.parse(postStream.streamContent.createdAt))}

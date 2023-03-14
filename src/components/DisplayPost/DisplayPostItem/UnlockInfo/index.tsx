@@ -39,7 +39,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     if (postStream.streamContent.content.controller === did) {
       dispatch(decryptPost({ did, postStream }));
     } else {
-      dispatch(buyPost({ did, postStream }));
+      await dispatch(buyPost({ did, postStream }));
+      dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
     }
   };
 

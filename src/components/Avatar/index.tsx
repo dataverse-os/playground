@@ -10,6 +10,7 @@ import {
 import { checkImgExists } from "./utils";
 import styled from "styled-components";
 import { BasicProfile } from "./types";
+import { useSelector } from "@/state/hook";
 
 export const getProfile = async (profileId: string) => {
   return {};
@@ -88,7 +89,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const [name, setName] = useState<string>();
   const [open, setOpen] = useState(false);
   const [bg, setBg] = useState("");
-
+  const postStreamList = useSelector((state) => state.post.postStreamList);
   async function load() {
     if (imageLoading) return;
     setBackgroundLoading?.(true);
@@ -175,7 +176,7 @@ const Avatar: React.FC<AvatarProps> = ({
   useEffect(() => {
     if (!did) return;
     load();
-  }, [did]);
+  }, [did, postStreamList.length]);
 
 
   useEffect(() => {
@@ -183,7 +184,7 @@ const Avatar: React.FC<AvatarProps> = ({
       setAvatar(avatarSrc);
     });
   }, [avatarSrc]);
-  
+
   return (
     <AvatarContainer
       haveContextMenu={!!contextMenu}
