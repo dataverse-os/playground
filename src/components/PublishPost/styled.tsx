@@ -41,8 +41,9 @@ export const ButtonWrapper = styled.div`
 export const UploadImg = styled.img`
   height: 25%;
   width: 25%;
+  cursor: pointer;
 `
 
 export const UploadImgWrap = styled.div`
-
+  
 `
