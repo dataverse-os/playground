@@ -43,6 +43,6 @@ export const UploadImg = styled.img`
   width: 25%;
 `
 
-export const UploadImgWrap =styled.div`
+export const UploadImgWrap = styled.div`
 
 `

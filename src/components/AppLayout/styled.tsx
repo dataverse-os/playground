@@ -35,7 +35,8 @@ export const PostWrapper = styled.aside`
   overflow: hidden;
   align-content: flex-start;
   justify-content: flex-start;
-  max-width: 91rem;
+  max-width: 92.5rem;
+  width: 100vw;
   margin: 0;
   &::before,
   ::after {
