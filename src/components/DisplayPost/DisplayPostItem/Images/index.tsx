@@ -56,7 +56,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
         if (image === "?") {
           return <Secret key={"image" + index}>{image}</Secret>;
         } else {
-          return <Image src={image}></Image>;
+          return <Image imgCount={images.length} src={image}></Image>;
         }
       })}
     </ImgWrapper>

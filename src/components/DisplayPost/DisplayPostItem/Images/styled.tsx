@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const ImgWrapper = styled.div`
   width: 100%;
   height: 100%;
+  display: flex;
 `;
 
 export const Secret = styled.div`
@@ -17,8 +18,8 @@ export const Secret = styled.div`
   font-size: 30px;
 `;
 
-export const Image = styled.img`
-  width: 100%;
+export const Image = styled.img<{ imgCount: number }>`
+  width: ${(props) => 100 / props.imgCount}%;
   height: auto;
   object-fit: cover;
   border-radius: 1.25rem;
