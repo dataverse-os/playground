@@ -154,10 +154,11 @@ export const displayPostList = createAsyncThunk(
 
 export const getDatatokenInfo = createAsyncThunk(
   "post/getDatatokenInfo",
-  async (mirrorFile: CustomMirrorFile) => {
+  async ({ address }: { address: string }) => {
     const res = await _getDatatokenInfo({
-      datatokenId: mirrorFile.datatokenId!,
+      address,
     });
+    console.log(res)
     return res;
   }
 );

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { CustomMirror, PostStream } from "@/types";
+import { PostStream } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
 import { decryptPost, getDatatokenInfo } from "@/state/post/slice";
 import { connectIdentity } from "@/state/identity/slice";
@@ -20,26 +20,26 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     dispatch(decryptPost({ did: res.payload as string, postStream }));
   };
 
-  // useEffect(() => {
-  //   if (
-  //     mirror.mirrorFile.isGettingDatatokenInfo ||
-  //     mirror.mirrorFile.hasGotDatatokenInfo ||
-  //     (mirror.mirrorFile.isGettingDatatokenInfo === false &&
-  //       mirror.mirrorFile.hasGotDatatokenInfo === false)
-  //   ) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (
+      postStream.isGettingDatatokenInfo ||
+      postStream.hasGotDatatokenInfo ||
+      (postStream.isGettingDatatokenInfo === false &&
+        postStream.hasGotDatatokenInfo === false)
+    ) {
+      return;
+    }
 
-  //   if (mirror.mirrorFile.fileType === FileType.Datatoken) {
-  //     console.log(
-  //       mirror.mirrorFile.isGettingDatatokenInfo,
-  //       mirror.mirrorFile.hasGotDatatokenInfo
-  //     );
-  //     dispatch(getDatatokenInfo(mirror.mirrorFile));
-  //   }
-  //   // getDatatokenInfo();
-  // }, [mirror]);
-  // console.log(mirror)
+    if (postStream.streamContent.fileType === FileType.Datatoken) {
+      console.log(
+        postStream.isGettingDatatokenInfo,
+        postStream.hasGotDatatokenInfo
+      );
+      dispatch(getDatatokenInfo({ address: postStream.streamId }));
+    }
+    // getDatatokenInfo();
+  }, [postStream]);
+  // console.log(postStream)
   return (
     <Wrapper>
       <img
@@ -47,7 +47,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
         className="lock"
         onClick={unlock}
       ></img>
-      {/* {postStream.streamContent.indexFile.fileType === FileType.Datatoken && (
+      {postStream.streamContent.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">10</span>
           <span className="currency">WMATIC</span>
@@ -56,7 +56,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           <span className="collectLimit">100</span>
           <span className="Sold">Sold</span>
         </DatatokenInfoWrapper>
-      )} */}
+      )}
     </Wrapper>
   );
 };
