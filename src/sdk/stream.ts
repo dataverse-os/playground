@@ -59,6 +59,7 @@ export const loadAllPostStreams = async () => {
       streamContent,
     });
   });
+  console.log({ streamList });
   const sortedList = streamList
     .filter(
       (el) =>

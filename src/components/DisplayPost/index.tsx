@@ -15,7 +15,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   useEffect(() => {
     dispatch(displayPostList());
   }, [did]);
-  console.log({ postStreamList });
+  
   return (
     <>
       {postStreamList.map((postStream, index) => (

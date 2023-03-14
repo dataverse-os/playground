@@ -17,7 +17,7 @@ import { privacySettingsSlice } from "./privacySettings/slice";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["identity", "folder"],
+  whitelist: ["post"],
 };
 
 const rootReducer = combineReducers({
@@ -41,7 +41,7 @@ const middlewares: Array<Middleware> = [createStateSyncMiddleware()];
 // );
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   devTools: true,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -12,6 +12,7 @@ import Text from "./Text";
 import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
+import { timeAgo } from "@/utils/dateFormat";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -31,7 +32,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
               ) ?? ""
             }
           />
-          {/* {postStream.streamContent.indexFile.createdAt} */}
+          <div className="createdAt">
+            {timeAgo(Date.parse(postStream.streamContent.indexFile.createdAt))}
+          </div>
           {postStream.streamContent.indexFile.fileType !== FileType.Public && (
             <UnlockInfo postStream={postStream} />
           )}
