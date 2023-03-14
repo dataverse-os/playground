@@ -5,11 +5,15 @@ import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
 import { displayMyPosts } from "@/state/folder/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { encryptPost, postSlice, publishPost, uploadImg } from "@/state/post/slice";
-import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import {
-  addressAbbreviation, getAddressFromDid
-} from "@/utils/didAndAddress";
+  displayPostList,
+  encryptPost,
+  postSlice,
+  publishPost,
+  uploadImg,
+} from "@/state/post/slice";
+import { privacySettingsSlice } from "@/state/privacySettings/slice";
+import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
 import { uuid } from "@/utils/uuid";
 import { useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
@@ -17,11 +21,19 @@ import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
 import { FlexRow } from "../App/styled";
 import PrivacySettings from "../PrivacySettings";
-import { ButtonWrapper, Content, UploadImg, UploadImgCross, UploadImgWrapper, Wrapper } from "./styled";
+import {
+  ButtonWrapper,
+  Content,
+  UploadImg,
+  UploadImgCross,
+  UploadImgWrapper,
+  Wrapper,
+} from "./styled";
+import { connectIdentity } from "@/state/identity/slice";
 
-export interface PublishPostProps { }
+export interface PublishPostProps {}
 
-const PublishPost: React.FC<PublishPostProps> = ({ }) => {
+const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
@@ -68,10 +80,11 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
 
   const post = async () => {
     if (isPublishingPost) return;
-    if (!did) {
-      alert("Please connect identity first.");
-      return;
-    }
+    const { payload: did } = await dispatch(connectIdentity());
+    // if (!did) {
+    //   alert("Please connect identity first.");
+    //   return;
+    // }
     if (needEncrypt) {
       const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
       const { amount, collectLimit } = settings;
@@ -86,19 +99,26 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
         return;
       }
     }
-    const files: File[] = []
-    images.map((image) => { if (image.file) { files.push(image.file) } })
+    const files: File[] = [];
+    images.map((image) => {
+      if (image.file) {
+        files.push(image.file);
+      }
+    });
     await dispatch(
       publishPost({
-        did,
+        did: did as string,
         postContent: {
           text: content,
-          images: await (await dispatch(uploadImg({ files }))).payload as string[],
+          images: (await (
+            await dispatch(uploadImg({ files }))
+          ).payload) as string[],
           videos: [],
         },
       })
     );
-    dispatch(displayMyPosts(did));
+    dispatch(displayPostList());
+    dispatch(postSlice.actions.setIsPublishingPost(false));
   };
 
   const openPrivacySettings = () => {
@@ -141,8 +161,18 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
               <FlexRow>
                 {imageList.map((image, index) => (
                   <UploadImgWrapper key={uuid()}>
-                    <UploadImgCross src={crossIcon} onClick={() => { onImageRemove(index) }} />
-                    <UploadImg src={image["upload"]} onClick={() => { onImageUpdate(index) }} />
+                    <UploadImgCross
+                      src={crossIcon}
+                      onClick={() => {
+                        onImageRemove(index);
+                      }}
+                    />
+                    <UploadImg
+                      src={image["upload"]}
+                      onClick={() => {
+                        onImageUpdate(index);
+                      }}
+                    />
                   </UploadImgWrapper>
                 ))}
               </FlexRow>

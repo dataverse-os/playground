@@ -206,9 +206,9 @@ export const postSlice = createSlice({
     builder.addCase(publishPost.pending, (state) => {
       state.isPublishingPost = true;
     });
-    builder.addCase(publishPost.fulfilled, (state, action) => {
-      state.isPublishingPost = false;
-    });
+    // builder.addCase(publishPost.fulfilled, (state, action, ) => {
+    //   state.isPublishingPost = false;
+    // });
     builder.addCase(publishPost.rejected, (state) => {
       state.isPublishingPost = false;
     });
