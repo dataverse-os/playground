@@ -1,18 +1,16 @@
 import { encryptWithLit, newLitKey } from "@/sdk/encryptionAndDecryption";
 import { decryptFile, decryptPost as _decryptPost } from "@/sdk/folder";
 import {
-  createPrivatePostStream,
+  createDatatokenPostStream,
   createPublicPostStream,
   generateAccessControlConditions,
   loadMyPostStreams,
 } from "@/sdk/stream";
-import { CustomMirrorFile, LitKit, Post, PostContent, PostType } from "@/types";
+import { CustomMirrorFile, LitKit, PostContent, PostType } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
-import { encode } from "@/utils/encodeAndDecode";
 import {
   DecryptionConditionsTypes,
   IndexFileContentType,
-  MirrorFile,
   StreamObject,
 } from "@dataverse/runtime-connector";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -90,36 +88,36 @@ export const decryptPost = createAsyncThunk(
 
 export const publishPost = createAsyncThunk(
   "post/publishPost",
-  async ({
-    did,
-    postContent,
-    encryptedContent,
-    litKit,
-  }: {
-    did: string;
-    postContent: PostContent;
-    encryptedContent?: string;
-    litKit?: LitKit;
-  }) => {
+  async ({ did, postContent }: { did: string; postContent: PostContent }) => {
+    const rootStore = await import("@/state/store");
+    const { settings } = rootStore.default.store.getState().privacySettings;
+    const { postType, currency, amount, collectLimit } = settings;
+
     const post = {
-      postContent: litKit ? encryptedContent : postContent,
+      postContent,
       createdAt: new Date().toISOString(),
-      postType: litKit ? PostType.Private : PostType.Public,
+      postType,
     };
-
-    const content = JSON.stringify(post);
-
-    let res;
-    if (!litKit) {
-      res = await createPublicPostStream({ did, content });
-    } else {
-      res = await createPrivatePostStream({
-        did,
-        content,
-        litKit,
-      });
+    console.log(post)
+    try {
+      let res;
+      if (postType === PostType.Public) {
+        res = await createPublicPostStream({ did, post });
+      } else if (postType === PostType.Private) {
+        // res = await createPrivatePostStream({ did, content, litKit });
+      } else {
+        res = await createDatatokenPostStream({
+          did,
+          post,
+          currency: currency!,
+          amount: amount!,
+          collectLimit: collectLimit!,
+        });
+      }
+      return res;
+    } catch (error: any) {
+      alert(error?.message ?? error);
     }
-    return res;
   }
 );
 
@@ -164,7 +162,6 @@ export const postSlice = createSlice({
       state.isPublishingPost = true;
     });
     builder.addCase(publishPost.fulfilled, (state, action) => {
-      state.postList.push(action.payload);
       state.isPublishingPost = false;
     });
     builder.addCase(publishPost.rejected, (state) => {
