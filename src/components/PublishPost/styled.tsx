@@ -27,7 +27,7 @@ export const Content = styled.div`
   border-radius: 12px;
   padding: 27px 26px;
   padding-bottom: 21px;
-  max-width: calc(50vw - 3.35rem);
+  max-width: calc(100% - 3.35rem);
 `;
 
 export const ButtonWrapper = styled.div`
@@ -41,4 +41,8 @@ export const ButtonWrapper = styled.div`
 export const UploadImg = styled.img`
   height: 25%;
   width: 25%;
+`
+
+export const UploadImgWrap =styled.div`
+
 `

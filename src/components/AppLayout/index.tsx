@@ -7,7 +7,7 @@ import {
   Container,
   HeaderWrapper,
   BodyWrapper,
-  PublishPostWrapper,
+  PostWrapper,
   DisplayPostWrapper,
 } from "./styled";
 
@@ -18,11 +18,10 @@ const Layout: React.FC = (): React.ReactElement => {
         <Header />
       </HeaderWrapper>
       <BodyWrapper>
-        <PublishPostWrapper>
-          <PublishPost />
-          
+        <PostWrapper>
+          <PublishPost /> 
           <DisplayPost />
-        </PublishPostWrapper>
+        </PostWrapper>
         {/* <DisplayPostWrapper>
           <DisplayFolder />
         </DisplayPostWrapper> */}
