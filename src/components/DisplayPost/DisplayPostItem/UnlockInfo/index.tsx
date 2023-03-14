@@ -42,7 +42,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
         postStream.isGettingDatatokenInfo,
         postStream.hasGotDatatokenInfo
       );
-      dispatch(getDatatokenInfo({ address: postStream.streamId }));
+      dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
     }
     // getDatatokenInfo();
   }, [postStream]);
