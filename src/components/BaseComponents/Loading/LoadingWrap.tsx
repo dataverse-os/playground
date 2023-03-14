@@ -1,6 +1,9 @@
-import styled from "styled-components";
+import styled, { FlattenSimpleInterpolation } from "styled-components";
 
-export const LoadingWrap = styled.div<{ size: number }>`
+export const LoadingWrap = styled.div<{
+  size: number;
+  cssStyles?: FlattenSimpleInterpolation;
+}>`
   .circle {
     display: flex;
   }
@@ -37,4 +40,5 @@ export const LoadingWrap = styled.div<{ size: number }>`
     opacity: 0;
     width: ${(props) => props.size - 10}px;
   }
+  ${(props) => props.cssStyles}
 `;

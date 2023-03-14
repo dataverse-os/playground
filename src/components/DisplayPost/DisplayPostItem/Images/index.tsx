@@ -40,7 +40,6 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
       );
     }
     if (postStream.streamContent.fileType === FileType.Datatoken) {
-      console.log(postStream.isDecryptedSuccessfully);
       if (postStream.isDecryptedSuccessfully) {
         return (
           (

@@ -108,21 +108,6 @@ export const monetizeFile = createAsyncThunk(
   }
 );
 
-export const buyFile = createAsyncThunk(
-  "file/buyFile",
-  async ({
-    did,
-    mirrorFile,
-  }: {
-    did: string;
-    mirrorFile: CustomMirrorFile;
-  }) => {
-    await collect(mirrorFile.datatokenId!);
-    const res = await decryptPost({ did, mirrorFile });
-    return res;
-  }
-);
-
 export const fileSlice = createSlice({
   name: "file",
   initialState,

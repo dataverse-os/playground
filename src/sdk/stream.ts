@@ -447,7 +447,7 @@ export const generateUnifiedAccessControlConditions = async ({
     {
       contractAddress: datatokenId,
       conditionType: "evmContract",
-      functionName: "canUnlock",
+      functionName: "isCollected",
       functionParams: [":userAddress", datatokenId],
       functionAbi: {
         inputs: [
@@ -468,7 +468,7 @@ export const generateUnifiedAccessControlConditions = async ({
         stateMutability: "view",
         type: "function",
       },
-      chain,
+      chain: "mumbai",
       returnValueTest: {
         key: "",
         comparator: "=",

@@ -1,6 +1,10 @@
 import { encryptWithLit, newLitKey } from "@/sdk/encryptionAndDecryption";
 import { decryptFile, decryptPost as _decryptPost } from "@/sdk/folder";
-import { getDatatokenInfo as _getDatatokenInfo } from "@/sdk/monetize";
+import {
+  collect,
+  getDatatokenInfo as _getDatatokenInfo,
+  isCollected,
+} from "@/sdk/monetize";
 import {
   createDatatokenPostStream,
   createPublicPostStream,
@@ -86,6 +90,21 @@ export const decryptPost = createAsyncThunk(
       postStream,
     });
     return res;
+  }
+);
+
+export const buyPost = createAsyncThunk(
+  "file/buyFile",
+  async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+    const res = await isCollected({
+      datatokenId: postStream.streamContent.datatokenId!,
+      address: getAddressFromDid(did),
+    });
+    if (!res) {
+      await collect(postStream.streamContent.datatokenId!);
+    }
+    const res2 = await _decryptPost({ did, postStream });
+    return res2;
   }
 );
 
@@ -207,7 +226,6 @@ export const postSlice = createSlice({
     });
 
     builder.addCase(publishPost.pending, (state) => {
-      console.log(state);
       state.isPublishingPost = true;
     });
     // builder.addCase(publishPost.fulfilled, (state, action, ) => {
@@ -264,30 +282,53 @@ export const postSlice = createSlice({
       state.postStreamList = postStreamList;
       alert(action.error.message);
     });
-    // builder.addCase(decryptPost.fulfilled, (state, action) => {
-    //   console.log(state.postStreamList);
-    //   state.postStreamList.find((postStream) => {
-    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
-    //       postStream = {
-    //         ...postStream,
-    //         isDecrypting: false,
-    //         isDecryptedSuccessfully: true,
-    //       };
-    //     }
-    //   });
-    // });
-    // builder.addCase(decryptPost.rejected, (state, action) => {
-    //   state.postStreamList.find((postStream) => {
-    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
-    //       postStream = {
-    //         ...postStream,
-    //         isDecrypting: false,
-    //         isDecryptedSuccessfully: false,
-    //       };
-    //     }
-    //   });
-    //   alert(action.error.message);
-    // });
+
+    //buyPostListener
+    builder.addCase(buyPost.pending, (state, action) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = Object.assign(postStream, {
+            ...action.meta.arg.postStream,
+            isBuying: true,
+          });
+        }
+      });
+      state.postStreamList = postStreamList;
+    });
+    builder.addCase(buyPost.fulfilled, (state, action) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = Object.assign(postStream, {
+            ...action.payload,
+            isBuying: false,
+            hasBoughtSuccessfully: true,
+          });
+        }
+      });
+      state.postStreamList = postStreamList;
+    });
+    builder.addCase(buyPost.rejected, (state, action) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = Object.assign(postStream, {
+            ...action.meta.arg.postStream,
+            isBuying: false,
+            hasBoughtSuccessfully: false,
+          });
+        }
+      });
+      state.postStreamList = postStreamList;
+      alert(action.error.message);
+    });
   },
 });
 
