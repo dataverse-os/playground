@@ -1,5 +1,6 @@
 import { encryptWithLit, newLitKey } from "@/sdk/encryptionAndDecryption";
 import { decryptFile, decryptPost as _decryptPost } from "@/sdk/folder";
+import { getDatatokenInfo as _getDatatokenInfo } from "@/sdk/monetize";
 import {
   createDatatokenPostStream,
   createPublicPostStream,
@@ -99,7 +100,7 @@ export const publishPost = createAsyncThunk(
       createdAt: new Date().toISOString(),
       postType,
     } as Post;
-    
+
     try {
       let res;
       if (postType === PostType.Public) {
@@ -135,6 +136,16 @@ export const displayPostList = createAsyncThunk(
   "post/displayPostList",
   async () => {
     const res = await loadAllPostStreams();
+    return res;
+  }
+);
+
+export const getDatatokenInfo = createAsyncThunk(
+  "post/getDatatokenInfo",
+  async (mirrorFile: CustomMirrorFile) => {
+    const res = await _getDatatokenInfo({
+      datatokenId: mirrorFile.datatokenId!,
+    });
     return res;
   }
 );

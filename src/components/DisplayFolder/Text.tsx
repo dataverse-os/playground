@@ -23,7 +23,7 @@ const Text: React.FC<TextProps> = ({ mirrorFile }) => {
       return mirrorFile.content.content.postContent as string;
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
-      if (mirrorFile.isBoughtSuccessfully) {
+      if (mirrorFile.hasBoughtSuccessfully) {
         return (mirrorFile.content.content.postContent as PostContent)?.text;
       }
       return mirrorFile.content.content.postContent as string;

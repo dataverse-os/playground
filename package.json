@@ -23,7 +23,9 @@
     "redux-persist": "6.0.0",
     "redux-state-sync": "3.1.4",
     "styled-components": "5.3.6",
-    "uint8arrays": "3.1.0"
+    "uint8arrays": "3.1.0",
+    "graphql": "^16.6.0",
+    "graphql-request": "^5.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.1",

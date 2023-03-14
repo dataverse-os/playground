@@ -16,7 +16,9 @@ export interface CustomMirrorFile extends MirrorFile {
   isMonetizing?: boolean;
   isMonetizedSuccessfully?: boolean;
   isBuying?: boolean;
-  isBoughtSuccessfully?: boolean;
+  hasBoughtSuccessfully?: boolean;
+  isGettingDatatokenInfo?: boolean,
+  hasGotDatatokenInfo?: boolean,
 }
 
 export type CustomMirror = Omit<Mirror, "mirrorFile"> & {

@@ -88,7 +88,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ mirror }) => {
       return mirrorFile.content.content.postContent as string;
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
-      if (mirrorFile.isBoughtSuccessfully) {
+      if (mirrorFile.hasBoughtSuccessfully) {
         return (mirrorFile.content.content.postContent as PostContent)?.text;
       }
       return mirrorFile.content.content.postContent as string;

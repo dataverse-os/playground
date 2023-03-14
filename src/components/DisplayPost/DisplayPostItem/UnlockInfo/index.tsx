@@ -1,11 +1,11 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
-import React from "react";
+import React, { useEffect } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import { CustomMirror } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
-import { decryptPost } from "@/state/post/slice";
+import { decryptPost, getDatatokenInfo } from "@/state/post/slice";
 
 interface DisplayPostItemProps {
   mirror: CustomMirror;
@@ -19,6 +19,26 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ mirror }) => {
     dispatch(decryptPost({ did, mirrorFile: mirror.mirrorFile }));
   };
 
+  // useEffect(() => {
+  //   if (
+  //     mirror.mirrorFile.isGettingDatatokenInfo ||
+  //     mirror.mirrorFile.hasGotDatatokenInfo ||
+  //     (mirror.mirrorFile.isGettingDatatokenInfo === false &&
+  //       mirror.mirrorFile.hasGotDatatokenInfo === false)
+  //   ) {
+  //     return;
+  //   }
+
+  //   if (mirror.mirrorFile.fileType === FileType.Datatoken) {
+  //     console.log(
+  //       mirror.mirrorFile.isGettingDatatokenInfo,
+  //       mirror.mirrorFile.hasGotDatatokenInfo
+  //     );
+  //     dispatch(getDatatokenInfo(mirror.mirrorFile));
+  //   }
+  //   // getDatatokenInfo();
+  // }, [mirror]);
+  // console.log(mirror)
   return (
     <Wrapper>
       <img

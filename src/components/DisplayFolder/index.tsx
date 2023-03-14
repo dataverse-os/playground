@@ -97,7 +97,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
       return mirrorFile.content.content.postContent as string;
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
-      if (mirrorFile.isBoughtSuccessfully) {
+      if (mirrorFile.hasBoughtSuccessfully) {
         return (mirrorFile.content.content.postContent as PostContent)?.text;
       }
       return mirrorFile.content.content.postContent as string;
@@ -135,7 +135,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
                     </Button>
                   )}
                 {mirror.mirrorFile.fileType === FileType.Datatoken &&
-                  !mirror.mirrorFile.isBoughtSuccessfully && (
+                  !mirror.mirrorFile.hasBoughtSuccessfully && (
                     <>
                       <Button
                         loading={mirror.mirrorFile.isBuying}

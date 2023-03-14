@@ -1,7 +1,7 @@
 import { readMyPosts } from "@/sdk/folder";
 import { CustomMirror, CustomMirrors } from "@/types";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { decryptPost } from "../post/slice";
+import { decryptPost, getDatatokenInfo } from "../post/slice";
 import { buyFile, monetizeFile } from "../file/slice";
 
 interface Props {
@@ -109,6 +109,44 @@ export const folderSlice = createSlice({
       alert(action.error.message);
     });
 
+    //getDatatokenInfo
+    builder.addCase(getDatatokenInfo.pending, (state, action) => {
+      state.posts.find((mirror) => {
+        if (mirror.mirrorId === action.meta.arg.indexFileId) {
+          mirror.mirrorFile = {
+            ...mirror.mirrorFile,
+            isGettingDatatokenInfo: true,
+          };
+        }
+      });
+    });
+    builder.addCase(getDatatokenInfo.fulfilled, (state, action) => {
+      state.posts.find((mirror) => {
+        if (mirror.mirrorId === action.meta.arg.indexFileId) {
+          console.log(action.payload);
+          mirror.mirrorFile = {
+            ...mirror.mirrorFile,
+            ...action.payload,
+            isGettingDatatokenInfo: false,
+            hasGotDatatokenInfo: true,
+          };
+        }
+      });
+    });
+    builder.addCase(getDatatokenInfo.rejected, (state, action) => {
+      state.posts.find((mirror) => {
+        if (mirror.mirrorId === action.meta.arg.indexFileId) {
+          console.log(222);
+          mirror.mirrorFile = {
+            ...mirror.mirrorFile,
+            isGettingDatatokenInfo: false,
+            hasGotDatatokenInfo: false,
+          };
+        }
+      });
+      // alert(action.error.message);
+    });
+
     //buyFileListener
     builder.addCase(buyFile.pending, (state, action) => {
       state.posts.find((mirror) => {
@@ -126,7 +164,7 @@ export const folderSlice = createSlice({
           mirror.mirrorFile = {
             ...action.payload,
             isBuying: false,
-            isBoughtSuccessfully: true,
+            hasBoughtSuccessfully: true,
           };
         }
       });
@@ -137,7 +175,7 @@ export const folderSlice = createSlice({
           mirror.mirrorFile = {
             ...action.meta.arg.mirrorFile,
             isBuying: false,
-            isBoughtSuccessfully: false,
+            hasBoughtSuccessfully: false,
           };
         }
       });
