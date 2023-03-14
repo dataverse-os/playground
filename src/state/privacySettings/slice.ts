@@ -5,10 +5,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 interface Props {
   modalVisible: boolean;
   settings: Settings;
+  needEncrypt?: boolean;
 }
 
 interface Settings {
-  type: PostType;
+  postType: PostType;
   currency?: Currency;
   amount?: number;
   collectLimit?: number;
@@ -17,7 +18,7 @@ interface Settings {
 const initialState: Props = {
   modalVisible: false,
   settings: {
-    type: PostType.Private,
+    postType: PostType.Public,
     currency: undefined,
     amount: undefined,
     collectLimit: undefined,
@@ -32,8 +33,10 @@ export const privacySettingsSlice = createSlice({
       state.modalVisible = action.payload;
     },
     setSettings: (state, action: PayloadAction<Settings>) => {
-      console.log(action.payload)
       state.settings = action.payload;
+    },
+    setNeedEncrypt: (state, action: PayloadAction<boolean>) => {
+      state.needEncrypt = action.payload;
     },
   },
 });

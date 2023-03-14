@@ -187,7 +187,7 @@ const Avatar: React.FC<AvatarProps> = ({
       setAvatar(avatarSrc);
     });
   }, [avatarSrc]);
-  console.log(avatar)
+  
   return (
     <AvatarContainer
       haveContextMenu={!!contextMenu}

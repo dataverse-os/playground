@@ -28,7 +28,7 @@ const PrivacySettings: React.FC = () => {
   const settings = useSelector((state) => state.privacySettings.settings);
 
   const dispatch = useAppDispatch();
-  const [needEncrypt, setNeedEncrypt] = useState(true);
+  const [needEncrypt, setNeedEncrypt] = useState(false);
   const [currency, setCurrency] = useState<any>({
     name: "WMATIC",
     value: "WMATIC",
@@ -58,10 +58,10 @@ const PrivacySettings: React.FC = () => {
         setInputWarn(false);
         dispatch(
           privacySettingsSlice.actions.setSettings({
-            type: PostType.Datatoken,
+            postType: PostType.Datatoken,
             currency: currency.value,
-            amount: Number(amount),
-            collectLimit: checked ? 2 ** 52 : Number(limit),
+            amount: parseFloat(amount),
+            collectLimit: checked ? 2 ** 52 : parseFloat(limit),
           })
         );
         dispatch(privacySettingsSlice.actions.setModalVisible(false));
@@ -71,11 +71,16 @@ const PrivacySettings: React.FC = () => {
     } else {
       dispatch(
         privacySettingsSlice.actions.setSettings({
-          type: PostType.Public,
+          postType: PostType.Public,
         })
       );
       dispatch(privacySettingsSlice.actions.setModalVisible(false));
     }
+  };
+
+  const switchEncrypt = (value: boolean) => {
+    setNeedEncrypt(value);
+    dispatch(privacySettingsSlice.actions.setNeedEncrypt(value));
   };
 
   return (
@@ -109,7 +114,7 @@ const PrivacySettings: React.FC = () => {
           >
             Encrypt
           </Title>
-          <Switch defaultChecked={true} onChange={setNeedEncrypt} />
+          <Switch defaultChecked={needEncrypt} onChange={switchEncrypt} />
         </EncryptWrapper>
         {needEncrypt && (
           <>

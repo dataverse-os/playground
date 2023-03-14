@@ -50,10 +50,15 @@ export interface PostContent {
 export interface Post {
   postContent: PostContent | string;
   postType: PostType;
-  options: {
+  options?: {
     lockedImagesNum?: number;
     lockedVideosNum?: number;
   };
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
+
+export interface Settings {
+  
+}
+

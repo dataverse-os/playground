@@ -22,6 +22,8 @@ export interface PublishPostProps { }
 const PublishPost: React.FC<PublishPostProps> = ({ }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
+  const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
+  const settings = useSelector((state) => state.privacySettings.settings);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
   const isEncrypting = useSelector((state) => state.post.isEncrypting);
   const isEncryptedSuccessfully = useSelector(
@@ -70,6 +72,20 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
       alert("Please connect identity first.");
       return;
     }
+    if (needEncrypt) {
+      const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
+      const { amount, collectLimit } = settings;
+      const isValid =
+        amount &&
+        collectLimit &&
+        amountReg.test(String(amount)) &&
+        amount > 0 &&
+        collectLimit > 0;
+      if (!isValid) {
+        alert("Incorrect privacy settings!");
+        return;
+      }
+    }
     await dispatch(
       publishPost({
         did,
@@ -80,8 +96,6 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
           ],
           videos: [],
         },
-        encryptedContent,
-        litKit,
       })
     );
     dispatch(displayMyPosts(did));

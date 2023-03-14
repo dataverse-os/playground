@@ -1,6 +1,9 @@
-import { CustomMirrorFile, PostType } from "@/types";
+import { CustomMirrorFile, Post, PostType } from "@/types";
+import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   Apps,
+  Currency,
+  DatatokenVars,
   DecryptionConditionsTypes,
   FileType,
   IndexFileContentType,
@@ -14,7 +17,9 @@ import {
   modelName,
   appVersion,
 } from ".";
+import { getModelIdByAppNameAndModelName } from "./appRegistry";
 import { newLitKey, encryptWithLit } from "./encryptionAndDecryption";
+import { createDatatoken } from "./monetize";
 
 export const loadStream = async (streamId: string) => {
   const stream = await runtimeConnector.loadStream(streamId);
@@ -60,10 +65,10 @@ export const loadAllPostStreams = async (did: string) => {
 
 export const createPublicPostStream = async ({
   did,
-  content,
+  post,
 }: {
   did: string;
-  content: string;
+  post: Post;
 }) => {
   const streamObject = await runtimeConnector.createStream({
     did,
@@ -71,7 +76,7 @@ export const createPublicPostStream = async ({
     modelName,
     streamContent: {
       appVersion,
-      content,
+      content: JSON.stringify(post),
     },
     fileType: FileType.Public,
   });
@@ -104,6 +109,63 @@ export const createPrivatePostStream = async ({
     ...litKit,
   });
   return streamObject;
+};
+
+export const createDatatokenPostStream = async ({
+  did,
+  post,
+  currency,
+  amount,
+  collectLimit,
+}: {
+  did: string;
+  post: Post;
+  currency: Currency;
+  amount: number;
+  collectLimit: number;
+}) => {
+  const res = await createPublicPostStream({ did, post: {} as Post });
+  let datatokenId;
+  try {
+    const res2 = await createDatatoken({
+      streamId: res.newMirror!.mirrorId,
+      currency,
+      amount,
+      collectLimit,
+    });
+    datatokenId = res2.datatokenId;
+  } catch (error: any) {
+    console.log(error);
+    await deletePostStream({ did, mirrorId: res.newMirror!.mirrorId });
+    throw error;
+  }
+  const res2 = await updatePostStreamsWithAccessControlConditions({
+    did,
+    address: getAddressFromDid(did),
+    mirrorFile: {
+      contentId: res.streamId,
+      content: { appVersion: res.streamContent.appVersion, content: post },
+      datatokenId,
+      contentType: await getModelIdByAppNameAndModelName(ModelNames.post),
+    } as unknown as CustomMirrorFile,
+  });
+
+  return res2;
+};
+
+export const deletePostStream = async ({
+  did,
+  mirrorId,
+}: {
+  did: string;
+  mirrorId: string;
+}) => {
+  const res = await runtimeConnector.removeMirrors({
+    did,
+    appName,
+    mirrorIds: [mirrorId],
+  });
+  return res;
 };
 
 export const updatePostStreamsToPublicContent = async ({
