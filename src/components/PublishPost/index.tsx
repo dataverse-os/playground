@@ -11,15 +11,19 @@ import imgIcon from "@/assets/icons/img.svg";
 import lockIcon from "@/assets/icons/lock.svg";
 import { FlexRow } from "../App/styled";
 import { PostType } from "@/types";
-import { didAbbreviation } from "@/utils/didAndAddress";
+import {
+  addressAbbreviation,
+  didAbbreviation,
+  getAddressFromDid,
+} from "@/utils/didAndAddress";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import PrivacySettings from "../PrivacySettings";
-import ImageUploading, { ImageListType } from 'react-images-uploading'
+import ImageUploading, { ImageListType } from "react-images-uploading";
 import { uuid } from "@/utils/uuid";
 
-export interface PublishPostProps { }
+export interface PublishPostProps {}
 
-const PublishPost: React.FC<PublishPostProps> = ({ }) => {
+const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
@@ -125,7 +129,12 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
             dragProps,
           }) => (
             <>
-              <AccountStatus name={didAbbreviation(did) ?? ''} avatar={""} />
+              <AccountStatus
+                name={addressAbbreviation(getAddressFromDid(did)) ?? ""}
+                cssStyles={css`
+                  margin-bottom: 1rem;
+                `}
+              />
               <Textarea
                 value={encryptedContent || content}
                 placeholder="what's happening?"
@@ -135,24 +144,20 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
               />
               <FlexRow>
                 {imageList.map((image, index) => (
-                  <UploadImg src={image['upload']} key={uuid()} />
+                  <UploadImg src={image["upload"]} key={uuid()} />
                 ))}
               </FlexRow>
               <ButtonWrapper>
                 <FlexRow>
-                  <Button
-                    type="icon"
-                    width={"1.75rem"}
-                    onClick={onImageUpload}
-                  >
+                  <Button type="icon" width={"1.75rem"} onClick={onImageUpload}>
                     <img src={imgIcon} />
                   </Button>
                   <Button
                     type="icon"
                     width={"1.75rem"}
                     css={css`
-                    margin-left: 26px;
-                  `}
+                      margin-left: 26px;
+                    `}
                     onClick={openPrivacySettings}
                   >
                     <img src={lockIcon} />
@@ -169,9 +174,9 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
                     onClick={post}
                     width={"1.4375rem"}
                     css={css`
-                  border-radius: 8px;
-                  padding: 0.3rem 2rem;
-                `}
+                      border-radius: 8px;
+                      padding: 0.3rem 2rem;
+                    `}
                   >
                     Post
                   </Button>
@@ -179,11 +184,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
               </ButtonWrapper>
             </>
           )}
-
         </ImageUploading>
       </Content>
       <PrivacySettings></PrivacySettings>
-    </Wrapper >
+    </Wrapper>
   );
 };
 

@@ -1,17 +1,17 @@
-import styled from "styled-components";
+import styled, { FlattenSimpleInterpolation } from "styled-components";
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ cssStyles?: FlattenSimpleInterpolation }>`
   display: flex;
   justify-items: center;
   width: 100%;
   height: 2rem;
-  margin-bottom: 1rem;
-`
+  ${(props) => props.cssStyles}
+`;
 
 export const Avatar = styled.img`
   height: 1.85rem;
   width: 1.85rem;
-`
+`;
 
 export const Name = styled.div`
   font-family: Poppins-SemiBold;
@@ -21,4 +21,4 @@ export const Name = styled.div`
   line-height: 1.85rem;
   margin-left: 0.57rem;
   color: #000000;
-`
+`;

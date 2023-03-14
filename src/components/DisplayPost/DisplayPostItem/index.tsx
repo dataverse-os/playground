@@ -1,5 +1,9 @@
-import AccountStatus from "../AccountStatus";
-import { didAbbreviation } from "@/utils/didAndAddress";
+import AccountStatus from "@/components/AccountStatus";
+import {
+  addressAbbreviation,
+  didAbbreviation,
+  getAddressFromDid,
+} from "@/utils/didAndAddress";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect } from "react";
 import { displayMyPosts, folderSlice } from "@/state/folder/slice";
@@ -7,16 +11,18 @@ import { displayMyPosts, folderSlice } from "@/state/folder/slice";
 import JSONFormatter from "json-formatter-js";
 import { oldAppVersion } from "@/sdk";
 import { FileType, StreamObject } from "@dataverse/runtime-connector";
-import { Wrapper, Content } from "@/components/PublishPost/styled";
+import { Wrapper, Content } from "./styled";
 import { decryptPost } from "@/state/post/slice";
 import React from "react";
 import { buyFile, monetizeFile } from "@/state/file/slice";
 import { CustomMirror, CustomMirrorFile, PostContent } from "@/types";
-import Text from './Text'
-import Images from './Images'
+import Text from "./Text";
+import Images from "./Images";
+import UnlockInfo from "./UnlockInfo";
+import { Header } from "./styled";
 
 interface DisplayPostItemProps {
-  mirror: CustomMirror
+  mirror: CustomMirror;
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ mirror }) => {
@@ -92,12 +98,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ mirror }) => {
   return (
     <Wrapper>
       <Content>
-        <AccountStatus name={didAbbreviation(did) ?? ''} avatar={""} />
+        <Header>
+          <AccountStatus
+            name={addressAbbreviation(getAddressFromDid(did)) ?? ""}
+          />
+          <UnlockInfo />
+        </Header>
         <Text mirrorFile={mirror.mirrorFile} />
         <Images mirrorFile={mirror.mirrorFile} />
       </Content>
     </Wrapper>
-  )
-}
+  );
+};
 
-export default DisplayPostItem
+export default DisplayPostItem;

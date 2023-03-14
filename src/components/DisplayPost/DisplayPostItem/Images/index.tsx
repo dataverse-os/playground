@@ -1,6 +1,6 @@
 import { oldAppVersion } from "@/sdk";
 import { FileType } from "@dataverse/runtime-connector";
-import { Secret, Wrapper, Image, ImgWrapper } from "./styled";
+import { Secret, Image, ImgWrapper } from "./styled";
 import React, { useEffect, useState } from "react";
 import { CustomMirrorFile, PostContent } from "@/types";
 
@@ -54,7 +54,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
     <ImgWrapper>
       {images.map((image, index) => {
         if (image === "?") {
-          return <Secret key={'image' + index}>{image}</Secret>;
+          return <Secret key={"image" + index}>{image}</Secret>;
         } else {
           return <Image src={image}></Image>;
         }
