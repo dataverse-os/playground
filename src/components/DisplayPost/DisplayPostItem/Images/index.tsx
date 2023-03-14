@@ -29,7 +29,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
       return (
         Array.from<string>({
           length: mirrorFile.content.content.options?.lockedImagesNum!,
-        }).fill("?") ?? []
+        }).fill("?") ?? ['?']
       );
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
@@ -41,14 +41,19 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
       return (
         Array.from<string>({
           length: mirrorFile.content.content.options?.lockedImagesNum!,
-        }).fill("?") ?? []
+        }).fill("?") ?? ['?']
       );
     }
     return [];
   };
 
   useEffect(() => {
-    setImages(showImage(mirrorFile));
+    let nowImages = showImage(mirrorFile)
+    if (nowImages.length === 0 && !mirrorFile.isDecryptedSuccessfully) {
+      nowImages = ['?']
+    }
+    console.log(nowImages)
+    setImages(nowImages);
   }, [mirrorFile]);
 
   const CurrentImgWrapper = images.length < 4 ? ImgWrapper : ImageWrapperGrid
@@ -56,7 +61,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
     <CurrentImgWrapper>
       {images.map((image, index) => {
         if (image === "?") {
-          return <div> <Image key={"image" + index} src={question} imgCount={1} /></div>;
+          return <Image key={"image" + index} src={question} imgCount={images.length < 4 ? images.length : 1} />;
         } else {
           return <Image key={"image" + index} imgCount={images.length < 4 ? images.length : 1} src={image}></Image>;
         }
