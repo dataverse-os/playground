@@ -14,7 +14,7 @@ const Header = (): React.ReactElement => {
     <Wrapper>
       <Brand>Playground</Brand>
       <HeaderRightRender>
-        <Button
+        {/* <Button
           css={css`
             margin-right: -30px;
           `}
@@ -27,7 +27,7 @@ const Header = (): React.ReactElement => {
           `}
         >
           My posts
-        </Button>
+        </Button> */}
 
         <Button
           type="primary"
@@ -36,7 +36,7 @@ const Header = (): React.ReactElement => {
 
           }}
         >
-          {didAbbreviation(did, 5) || "Sign in"}
+          {didAbbreviation(did, 2) || "Sign in"}
         </Button>
       </HeaderRightRender>
     </Wrapper>

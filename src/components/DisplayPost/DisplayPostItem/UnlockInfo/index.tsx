@@ -46,7 +46,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ mirror }) => {
         className="lock"
         onClick={unlock}
       ></img>
-      {mirror.mirrorFile.fileType === FileType.Datatoken && (
+      {/* {mirror.mirrorFile.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">10</span>
           <span className="currency">WMATIC</span>
@@ -55,7 +55,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ mirror }) => {
           <span className="collectLimit">100</span>
           <span className="Sold">Sold</span>
         </DatatokenInfoWrapper>
-      )}
+      )} */}
     </Wrapper>
   );
 };
