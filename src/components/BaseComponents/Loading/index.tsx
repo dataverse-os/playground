@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { LoadingWrap } from "./LoadingWrap";
-import iconSpinner from "@/assets/icons/spinner_black.svg";
+import iconSpinner from "@/assets/icons/spinner_white.svg";
 import { fade, show } from "@/utils/framer";
 
 export interface LoadingProps {
