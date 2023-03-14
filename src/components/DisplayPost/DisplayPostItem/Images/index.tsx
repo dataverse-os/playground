@@ -52,7 +52,11 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
     if (nowImages.length === 0 && !mirrorFile.isDecryptedSuccessfully) {
       nowImages = ['?']
     }
-    console.log(nowImages)
+    
+    if (nowImages) {
+      
+    }
+    
     setImages(nowImages);
   }, [mirrorFile]);
 

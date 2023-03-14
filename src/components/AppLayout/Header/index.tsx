@@ -33,11 +33,10 @@ const Header = (): React.ReactElement => {
           type="primary"
           onClick={() => {
             dispatch(connectIdentity());
-            
+
           }}
         >
-          {"Sign in"}
-          {/*didAbbreviation(did) || "Sign in" */}
+          {didAbbreviation(did, 5) || "Sign in"}
         </Button>
       </HeaderRightRender>
     </Wrapper>
