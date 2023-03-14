@@ -1,9 +1,10 @@
-import { CustomMirrorFile, Post } from "@/types";
+import { CustomMirrorFile, Post, PostStream } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import { decode } from "@/utils/encodeAndDecode";
 import {
   FileType,
   FolderType,
+  IndexFile,
   IndexFileContentType,
   Mirror,
   Mirrors,
@@ -124,37 +125,41 @@ export const readMyDefaultFolder = async (did: string) => {
 
 export const decryptPost = async ({
   did,
-  mirrorFile,
+  postStream,
 }: {
   did: string;
-  mirrorFile: CustomMirrorFile;
+  postStream: PostStream;
 }) => {
-  mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
+  console.log({postStream})
+  postStream = JSON.parse(JSON.stringify(postStream));
+  const {
+    fileType,
+    encryptedSymmetricKey,
+    decryptionConditions,
+    decryptionConditionsType,
+  } = postStream.streamContent;
   if (
-    mirrorFile.fileType !== FileType.Public &&
-    (mirrorFile.fileKey ||
-      (mirrorFile.encryptedSymmetricKey &&
-        mirrorFile.decryptionConditions &&
-        mirrorFile.decryptionConditionsType))
+    postStream.streamContent.fileType !== FileType.Public &&
+    encryptedSymmetricKey &&
+    decryptionConditions &&
+    decryptionConditionsType
   ) {
     try {
       const content = await decryptWithLit({
         did,
-        encryptedContent: mirrorFile.content.content.postContent as string,
-        ...(mirrorFile.fileKey
-          ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-          : {
-              encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-              decryptionConditions: mirrorFile.decryptionConditions,
-              decryptionConditionsType: mirrorFile.decryptionConditionsType,
-            }),
+        encryptedContent: (postStream.streamContent.content.content as Post)
+          .postContent as string,
+        encryptedSymmetricKey: encryptedSymmetricKey,
+        decryptionConditions: decryptionConditions,
+        decryptionConditionsType: decryptionConditionsType,
       });
-      mirrorFile.content.content.postContent = JSON.parse(content);
+      (postStream.streamContent.content.content as Post).postContent =
+        JSON.parse(content);
     } catch (error) {
       console.log({ error });
     }
   }
-  return mirrorFile;
+  return postStream;
 };
 
 export const decryptFile = async ({

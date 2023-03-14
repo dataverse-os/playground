@@ -1,4 +1,9 @@
-import { CRYPTO_WALLET_TYPE, METAMASK } from "@dataverse/runtime-connector";
+import { checkIsExtensionInjected } from "@/utils/checkIsExtensionInjected";
+import {
+  Apps,
+  CRYPTO_WALLET_TYPE,
+  METAMASK,
+} from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
 
 export const connectWallet = async () => {
@@ -10,13 +15,28 @@ export const connectWallet = async () => {
 };
 
 export const connectIdentity = async () => {
-  await connectWallet();
-  await runtimeConnector.switchNetwork(137);
-  const did = await runtimeConnector.connectIdentity({
-    wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
-    appName,
-  });
-  return did;
+  try {
+    await checkIsExtensionInjected();
+    const res = await runtimeConnector.checkIsCurrentDIDValid({ appName });
+    if (!res) {
+      await runtimeConnector.connectWallet({
+        name: METAMASK,
+        type: CRYPTO_WALLET_TYPE,
+      });
+      await runtimeConnector.switchNetwork(137);
+      const did = await runtimeConnector.connectIdentity({
+        wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
+        appName,
+      });
+      return did;
+    }
+    const did = await runtimeConnector.getCurrentDID();
+    return did;
+  } catch (error) {
+    console.log(error);
+    alert("Failed to connect identity");
+    throw error;
+  }
 };
 
 export const createNewDID = async () => {

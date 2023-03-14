@@ -75,11 +75,12 @@ export const encryptPost = createAsyncThunk(
 
 export const decryptPost = createAsyncThunk(
   "post/decryptPost",
-  async ({ did, indexFile }: { did: string; indexFile: IndexFile }) => {
-    if (!(indexFile.contentType in IndexFileContentType)) {
+  async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+    console.log({ postStream });
+    if (!(postStream.streamContent.contentType in IndexFileContentType)) {
       const res = await _decryptPost({
         did,
-        mirrorFile: indexFile,
+        postStream,
       });
       return res;
     }

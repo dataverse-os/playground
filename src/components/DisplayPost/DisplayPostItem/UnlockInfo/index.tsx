@@ -6,6 +6,7 @@ import unlockSVG from "@/assets/icons/unlock.svg";
 import { CustomMirror, PostStream } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
 import { decryptPost, getDatatokenInfo } from "@/state/post/slice";
+import { connectIdentity } from "@/state/identity/slice";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -13,10 +14,10 @@ interface DisplayPostItemProps {
 
 const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
-  const did = useSelector((state) => state.identity.did);
 
-  const unlock = () => {
-    dispatch(decryptPost({ did, mirrorFile: postStream.mirrorFile }));
+  const unlock = async () => {
+    const res = await dispatch(connectIdentity());
+    dispatch(decryptPost({ did: res.payload as string, postStream }));
   };
 
   // useEffect(() => {

@@ -60,19 +60,17 @@ export const loadAllPostStreams = async () => {
     });
   });
   const sortedList = streamList
-    .filter(
-      (el) =>
-        el.streamContent.content.appVersion === appVersion
-    )
+    .filter((el) => el.streamContent.content.appVersion === appVersion)
     .map((el) => {
-      if (el.streamContent.fileType === FileType.Public) {
-        try {
+      try {
+        if (el.streamContent.content.content) {
           el.streamContent.content.content = JSON.parse(
             el.streamContent.content.content as string
           );
-        } catch (error) {
-          console.log(error);
         }
+      } catch (error) {
+        console.log(el);
+        console.log(error);
       }
       return el;
     })
