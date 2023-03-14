@@ -2,13 +2,15 @@ import { pixelProofing } from "@/utils/pixelProofing";
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px;
-  overflow-y: auto;
+  max-width: 100%;
+  width: calc(50% - 0.6875rem);
+  margin: 0.35rem;
+  &:nth-child(2n + 1) {
+    order: 1;
+  }
+  &:nth-child(2n) {
+    order: 2;
+  }
 `;
 
 export const TextWrapper = styled.div`
@@ -22,12 +24,17 @@ export const TextWrapper = styled.div`
   line-height: 1.85rem;
   margin-left: 0.57rem;
   color: #000000;
-`;
-
-export const ImgWrapper = styled.div`
-  width: 100%;
-  height: 100%;
 `
+  
+
+export const Content = styled.div`
+  background: #ffffff;
+  border: 1px solid #e9e9e9;
+  border-radius: 12px;
+  padding: 0 26px 26px;
+  padding-bottom: 21px;
+  max-width: calc(100% - 3.35rem);
+`;
 
 export const PostWapper = styled.div<{ marginTop: number | string }>`
   display: flex;
@@ -42,21 +49,9 @@ export const PostWapper = styled.div<{ marginTop: number | string }>`
   border-radius: 12px;
 `;
 
-export const Secret = styled.div`
-  width: 60px;
-  height: 60px;
-  background: black;
+export const Header = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 30px;
+  height: 60px;
 `;
-
-export const Image = styled.img`
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-`;
-

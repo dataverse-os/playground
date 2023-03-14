@@ -1,13 +1,18 @@
 import { useSelector } from "@/state/hook";
 import React from "react";
+import { FlattenSimpleInterpolation } from "styled-components";
 import Avatar from "../Avatar";
 import { Name, Wrapper } from "./styled";
-import { AccountStatusProps } from "./types";
 
-const AccountStatus: React.FC<AccountStatusProps> = ({ name, avatar }) => {
+export interface AccountStatusProps {
+  name: string;
+  cssStyles?: FlattenSimpleInterpolation;
+}
+
+const AccountStatus: React.FC<AccountStatusProps> = ({ name, cssStyles }) => {
   const did = useSelector((state) => state.identity.did);
   return (
-    <Wrapper>
+    <Wrapper cssStyles={cssStyles}>
       <Avatar did={did} />
       <Name>{name}</Name>
     </Wrapper>
