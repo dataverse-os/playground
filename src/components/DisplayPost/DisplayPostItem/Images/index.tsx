@@ -57,7 +57,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
   };
   useEffect(() => {
     let nowImages = showImage(postStream);
-    if (nowImages.length === 0 && !postStream.isDecryptedSuccessfully) {
+    if (nowImages.length === 0 && postStream.streamContent.fileType === FileType.Datatoken) {
       nowImages = ["?"];
     }
     nowImages = Array.from(new Set(nowImages))
