@@ -18,6 +18,20 @@ interface DisplayPostItemProps {
 const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
   const postStreamList = useSelector((state) => state.post.postStreamList);
+  const [total, setTotal] = useState("");
+  const [soldSum, setSoldSum] = useState(0);
+
+  useEffect(() => {
+    if (postStream.streamContent.datatokenInfo?.collect_info.sold_num) {
+      setSoldSum(postStream.streamContent.datatokenInfo?.collect_info.sold_num)
+    }
+  }, [postStream.streamContent.datatokenInfo?.collect_info.sold_num])
+
+  useEffect(() => {
+    if (postStream.streamContent.datatokenInfo?.collect_info.total) {
+      setTotal(postStream.streamContent.datatokenInfo?.collect_info.total)
+    }
+  }, [postStream.streamContent.datatokenInfo?.collect_info.total])
 
   const unlock = async () => {
     const res = await dispatch(connectIdentity());
@@ -79,8 +93,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
             {/* <span className="amount">10</span>
             <span className="currency">WMATIC</span>
             <br /> */}
-            <span className="boughtNum">{postStream.streamContent.datatokenInfo?.collect_info.sold_num}</span> /
-            <span className="collectLimit">{postStream.streamContent.datatokenInfo?.collect_info.total === '0' ? ' unlimited' : ' ' + postStream.streamContent.datatokenInfo?.collect_info.total}</span>
+            <span className="boughtNum">{soldSum}</span> /
+            <span className="collectLimit">{total === '0' ? ' unlimited' : ' ' + total}</span>
             <span className="Sold">Sold</span>
           </DatatokenInfoWrapper>
         )

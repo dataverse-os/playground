@@ -179,6 +179,7 @@ export const getDatatokenInfo = createAsyncThunk(
     });
     console.log(res)
     return res.dataToken;
+
   }
 );
 
