@@ -25,7 +25,8 @@
     "styled-components": "5.3.6",
     "uint8arrays": "3.1.0",
     "graphql": "^16.6.0",
-    "graphql-request": "^5.2.0"
+    "graphql-request": "^5.2.0",
+    "web3.storage": "4.5.4"
   },
   "devDependencies": {
     "@types/node": "^18.15.1",
