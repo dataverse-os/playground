@@ -26,7 +26,7 @@ export const isCollected = async ({
   return res;
 };
 
-export const getDatatokenInfo = async (variables: { datatokenId: string }) => {
+export const getDatatokenInfo = async (variables: { address: string }) => {
   const query = gql`
     query DataToken($address: String!) {
       dataToken(address: $address) {

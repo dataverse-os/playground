@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { CustomMirror, PostStream } from "@/types";
+import { PostStream } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
 import { buyPost, decryptPost, getDatatokenInfo } from "@/state/post/slice";
 import { connectIdentity } from "@/state/identity/slice";
@@ -27,62 +27,65 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (
-  //     mirror.mirrorFile.isGettingDatatokenInfo ||
-  //     mirror.mirrorFile.hasGotDatatokenInfo ||
-  //     (mirror.mirrorFile.isGettingDatatokenInfo === false &&
-  //       mirror.mirrorFile.hasGotDatatokenInfo === false)
-  //   ) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (
+      postStream.isGettingDatatokenInfo ||
+      postStream.hasGotDatatokenInfo ||
+      (postStream.isGettingDatatokenInfo === false &&
+        postStream.hasGotDatatokenInfo === false)
+    ) {
+      return;
+    }
 
-  //   if (mirror.mirrorFile.fileType === FileType.Datatoken) {
-  //     console.log(
-  //       mirror.mirrorFile.isGettingDatatokenInfo,
-  //       mirror.mirrorFile.hasGotDatatokenInfo
-  //     );
-  //     dispatch(getDatatokenInfo(mirror.mirrorFile));
-  //   }
-  //   // getDatatokenInfo();
-  // }, [mirror]);
-  // console.log(mirror)
+    if (postStream.streamContent.fileType === FileType.Datatoken) {
+      console.log(
+        postStream.isGettingDatatokenInfo,
+        postStream.hasGotDatatokenInfo
+      );
+      dispatch(getDatatokenInfo({ address: postStream.streamId }));
+    }
+    // getDatatokenInfo();
+  }, [postStream]);
+  // console.log(postStream)
   return (
     <Wrapper>
-      {postStream.isDecrypting || postStream.isBuying ? (
-        <Loading
-          visible={postStream.isDecrypting || postStream.isBuying}
-          color="black"
-          cssStyles={css`
-            margin-right: 5px;
-            .iconSpinner {
-              width: 25px;
+      {
+        postStream.isDecrypting || postStream.isBuying ? (
+          <Loading
+            visible={postStream.isDecrypting || postStream.isBuying}
+            color="black"
+            cssStyles={css`
+                margin-right: 5px;
+                .iconSpinner {
+                  width: 25px;
+                }
+              `}
+          />
+        ) : (
+          <img
+            src={
+              postStream.isDecryptedSuccessfully ||
+                postStream.hasBoughtSuccessfully
+                ? unlockSVG
+                : lockSVG
             }
-          `}
-        ></Loading>
-      ) : (
-        <img
-          src={
-            postStream.isDecryptedSuccessfully ||
-            postStream.hasBoughtSuccessfully
-              ? unlockSVG
-              : lockSVG
-          }
-          className="lock"
-          onClick={unlock}
-        ></img>
-      )}
-
-      {/* {postStream.streamContent.indexFile.fileType === FileType.Datatoken && (
-        <DatatokenInfoWrapper>
-          <span className="amount">10</span>
-          <span className="currency">WMATIC</span>
-          <br />
-          <span className="boughtNum">0</span>/
-          <span className="collectLimit">100</span>
-          <span className="Sold">Sold</span>
-        </DatatokenInfoWrapper>
-      )} */}
+            className="lock"
+            onClick={unlock}
+          ></img>
+        )
+      }
+      {
+        postStream.streamContent.fileType === FileType.Datatoken && (
+          <DatatokenInfoWrapper>
+            <span className="amount">10</span>
+            <span className="currency">WMATIC</span>
+            <br />
+            <span className="boughtNum">0</span>/
+            <span className="collectLimit">100</span>
+            <span className="Sold">Sold</span>
+          </DatatokenInfoWrapper>
+        )
+      }
     </Wrapper>
   );
 };
