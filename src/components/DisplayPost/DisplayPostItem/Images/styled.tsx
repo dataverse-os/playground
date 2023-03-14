@@ -5,6 +5,7 @@ export const ImgWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
 `;
 
 export const Secret = styled.div`
@@ -21,6 +22,7 @@ export const Secret = styled.div`
 
 export const Image = styled.img<{ imgCount: number }>`
   width: ${(props) => 100 / props.imgCount}%;
+  max-height: 20rem;
   height: 100%;
   object-fit: cover;
   border-radius: 1.25rem;
@@ -32,6 +34,7 @@ export const ImageWrapperGrid = styled.div`
   height: 100%;
   justify-content: space-evenly;
   align-content: space-evenly;
+  gap: 0.75rem;
   grid-template-columns: repeat(2,50%);
   grid-template-rows: repeat(2,50%);
 `

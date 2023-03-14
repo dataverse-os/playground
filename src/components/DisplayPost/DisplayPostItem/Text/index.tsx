@@ -24,7 +24,7 @@ const Text: React.FC<TextProps> = ({ postStream }) => {
           (postStream.streamContent.content as Post).postContent as PostContent
         )?.text;
       }
-      return (postStream.streamContent.content as Post).postContent as string;
+      return '';
     }
     if (postStream.streamContent.indexFile.fileType === FileType.Datatoken) {
       if (postStream.isDecryptedSuccessfully) {
@@ -32,7 +32,7 @@ const Text: React.FC<TextProps> = ({ postStream }) => {
           (postStream.streamContent.content as Post).postContent as PostContent
         )?.text;
       }
-      return (postStream.streamContent.content as Post).postContent as string;
+      return '' as string;
     }
   };
   return <TextWrapper>{showContent(postStream)}</TextWrapper>;

@@ -9,7 +9,7 @@
     "deploy": "node scripts/s3-deploy/s3-deploy.js"
   },
   "dependencies": {
-    "@dataverse/runtime-connector": "^1.0.19",
+    "@dataverse/runtime-connector": "latest",
     "@reduxjs/toolkit": "1.9.0",
     "buffer": "^6.0.3",
     "framer-motion": "^9.0.2",
