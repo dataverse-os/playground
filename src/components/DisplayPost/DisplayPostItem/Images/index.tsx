@@ -32,7 +32,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
       );
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
-      if (mirrorFile.isBoughtSuccessfully) {
+      if (mirrorFile.isDecryptedSuccessfully) {
         return (
           (mirrorFile.content.content.postContent as PostContent)?.images ?? []
         );

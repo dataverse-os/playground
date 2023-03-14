@@ -102,7 +102,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ mirror }) => {
           <AccountStatus
             name={addressAbbreviation(getAddressFromDid(did)) ?? ""}
           />
-          <UnlockInfo />
+          {mirror.mirrorFile.fileType !== FileType.Public && (
+            <UnlockInfo mirror={mirror} />
+          )}
         </Header>
         <Text mirrorFile={mirror.mirrorFile} />
         <Images mirrorFile={mirror.mirrorFile} />

@@ -4,9 +4,10 @@ import {
   createDatatokenPostStream,
   createPublicPostStream,
   generateAccessControlConditions,
+  loadAllPostStreams,
   loadMyPostStreams,
 } from "@/sdk/stream";
-import { CustomMirrorFile, LitKit, PostContent, PostType } from "@/types";
+import { CustomMirrorFile, LitKit, Post, PostContent, PostType } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   DecryptionConditionsTypes,
@@ -97,8 +98,8 @@ export const publishPost = createAsyncThunk(
       postContent,
       createdAt: new Date().toISOString(),
       postType,
-    };
-    console.log(post)
+    } as Post;
+    
     try {
       let res;
       if (postType === PostType.Public) {
@@ -106,6 +107,15 @@ export const publishPost = createAsyncThunk(
       } else if (postType === PostType.Private) {
         // res = await createPrivatePostStream({ did, content, litKit });
       } else {
+        if (
+          (postContent.images && postContent.images?.length > 0) ||
+          (postContent.videos && postContent.videos?.length > 0)
+        ) {
+          post.options = {
+            lockedImagesNum: postContent.images?.length ?? 0,
+            lockedVideosNum: postContent.videos?.length ?? 0,
+          };
+        }
         res = await createDatatokenPostStream({
           did,
           post,
@@ -123,8 +133,8 @@ export const publishPost = createAsyncThunk(
 
 export const displayPostList = createAsyncThunk(
   "post/displayPostList",
-  async (did: string) => {
-    const res = await loadMyPostStreams(did);
+  async () => {
+    const res = await loadAllPostStreams();
     return res;
   }
 );

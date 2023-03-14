@@ -87,11 +87,7 @@ export const readMyPosts = async (did: string) => {
       Date.parse(mirrorB.mirrorFile.updatedAt!) -
       Date.parse(mirrorA.mirrorFile.updatedAt!)
   );
-  // console.log(
-  //   sortedMirrors.map(
-  //     (mirror) => (mirror.mirrorFile.indexFileId)
-  //   )
-  // );
+  // console.log(sortedMirrors.map((mirror) => mirror.mirrorFile.indexFileId));
   // console.log(
   //   sortedMirrors.map(
   //     (mirror) => (mirror.mirrorFile.content.content as Post).postContent
@@ -153,7 +149,6 @@ export const decryptPost = async ({
               decryptionConditionsType: mirrorFile.decryptionConditionsType,
             }),
       });
-
       mirrorFile.content.content.postContent = JSON.parse(content);
     } catch (error) {
       console.log({ error });

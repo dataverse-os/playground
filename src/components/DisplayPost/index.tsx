@@ -13,7 +13,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // dispatch(displayPostList(did));
+    // dispatch(displayPostList());
     console.log(did)
     if (did) {
       dispatch(displayMyPosts(did));
