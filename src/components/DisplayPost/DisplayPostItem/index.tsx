@@ -1,7 +1,7 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { useEffect } from "react";
+import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
 import { displayMyPosts } from "@/state/folder/slice";
 // @ts-ignore
 import { FileType } from "@dataverse/runtime-connector";
@@ -15,15 +15,17 @@ import { Header } from "./styled";
 import { timeAgo } from "@/utils/dateFormat";
 import { FlexRow } from "@/components/App/styled";
 
-interface DisplayPostItemProps {
+interface DisplayPostItemProps extends PropsWithRef<any> {
   postStream: PostStream;
 }
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream, ref }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
+
+
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Content>
         <Header>
           <FlexRow>
