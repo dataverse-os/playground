@@ -24,7 +24,7 @@ import {
   IndexFileContentType,
   StreamObject,
 } from "@dataverse/runtime-connector";
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction, current } from "@reduxjs/toolkit";
 
 interface Props {
   isEncrypting?: boolean;
@@ -75,7 +75,7 @@ export const encryptPost = createAsyncThunk(
 
 export const decryptPost = createAsyncThunk(
   "post/decryptPost",
-  async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+  async ({ did, postStream }: { did: string; postStream: PostStream }): Promise<PostStream | undefined> => {
     console.log({ postStream });
     if (!(postStream.streamContent.contentType in IndexFileContentType)) {
       const res = await _decryptPost({
@@ -225,7 +225,7 @@ export const postSlice = createSlice({
       });
     });
     builder.addCase(decryptPost.fulfilled, (state, action) => {
-      console.log(state.postStreamList);
+      console.log(current(state.postStreamList));
       state.postStreamList.find((postStream) => {
         if (postStream.streamId === action.meta.arg.postStream.streamId) {
           postStream = {
