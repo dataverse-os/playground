@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { LoadingWrap } from "./LoadingWrap";
 import iconSpinner from "@/assets/icons/spinner_white.svg";
+import iconSpinnerBlack from "@/assets/icons/spinner_black.svg";
 import { fade, show } from "@/utils/framer";
+import { FlattenSimpleInterpolation } from "styled-components";
 
 export interface LoadingProps {
   visible?: boolean;
@@ -11,7 +13,8 @@ export interface LoadingProps {
   type?: "circle" | "dots";
   status?: "loading" | "ok";
   size?: "large" | "default" | "small" | number;
-  cssStyle?: string;
+  color?: "white" | "black";
+  cssStyles?: FlattenSimpleInterpolation;
 }
 
 const Loading: React.FC<LoadingProps> = ({
@@ -20,7 +23,8 @@ const Loading: React.FC<LoadingProps> = ({
   type = "circle",
   status = "normal",
   size = "default",
-  cssStyle,
+  color = "white",
+  cssStyles,
 }) => {
   const loadingMotion = useAnimation();
   const checkAnim = useAnimation();
@@ -66,7 +70,7 @@ const Loading: React.FC<LoadingProps> = ({
     sizeNumber = size;
   }
   return (
-    <LoadingWrap size={sizeNumber}>
+    <LoadingWrap size={sizeNumber} cssStyles={cssStyles}>
       {/* <Empty cssStyle={cssStyle} background={background}> */}
       <motion.div className={type} animate={loadingMotion}>
         {type === "circle" && (
@@ -81,7 +85,7 @@ const Loading: React.FC<LoadingProps> = ({
               stiffness: 50,
               repeat: Infinity,
             }}
-            src={iconSpinner}
+            src={color === "white" ? iconSpinner : iconSpinnerBlack}
             style={{ opacity: visible ? 1 : 0 }}
             className="iconSpinner"
           />

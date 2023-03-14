@@ -5,8 +5,10 @@ import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import { CustomMirror, PostStream } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
-import { decryptPost, getDatatokenInfo } from "@/state/post/slice";
+import { buyPost, decryptPost, getDatatokenInfo } from "@/state/post/slice";
 import { connectIdentity } from "@/state/identity/slice";
+import Loading from "@/components/BaseComponents/Loading";
+import { css } from "styled-components";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -17,7 +19,12 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
   const unlock = async () => {
     const res = await dispatch(connectIdentity());
-    dispatch(decryptPost({ did: res.payload as string, postStream }));
+    const did = res.payload as string;
+    if (postStream.streamContent.content.controller === did) {
+      dispatch(decryptPost({ did, postStream }));
+    } else {
+      dispatch(buyPost({ did, postStream }));
+    }
   };
 
   // useEffect(() => {
@@ -42,11 +49,30 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   // console.log(mirror)
   return (
     <Wrapper>
-      <img
-        src={postStream.isDecryptedSuccessfully ? unlockSVG : lockSVG}
-        className="lock"
-        onClick={unlock}
-      ></img>
+      {postStream.isDecrypting || postStream.isBuying ? (
+        <Loading
+          visible={postStream.isDecrypting || postStream.isBuying}
+          color="black"
+          cssStyles={css`
+            margin-right: 5px;
+            .iconSpinner {
+              width: 25px;
+            }
+          `}
+        ></Loading>
+      ) : (
+        <img
+          src={
+            postStream.isDecryptedSuccessfully ||
+            postStream.hasBoughtSuccessfully
+              ? unlockSVG
+              : lockSVG
+          }
+          className="lock"
+          onClick={unlock}
+        ></img>
+      )}
+
       {/* {postStream.streamContent.indexFile.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">10</span>

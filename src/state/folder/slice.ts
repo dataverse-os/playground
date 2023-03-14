@@ -111,41 +111,6 @@ export const folderSlice = createSlice({
       });
       // alert(action.error.message);
     });
-
-    //buyFileListener
-    builder.addCase(buyFile.pending, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.meta.arg.mirrorFile,
-            isBuying: true,
-          };
-        }
-      });
-    });
-    builder.addCase(buyFile.fulfilled, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.payload,
-            isBuying: false,
-            hasBoughtSuccessfully: true,
-          };
-        }
-      });
-    });
-    builder.addCase(buyFile.rejected, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.meta.arg.mirrorFile,
-            isBuying: false,
-            hasBoughtSuccessfully: false,
-          };
-        }
-      });
-      alert(action.error.message);
-    });
   },
 });
 

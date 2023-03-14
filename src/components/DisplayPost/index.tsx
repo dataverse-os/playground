@@ -12,6 +12,9 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const did = useSelector((state) => state.identity.did);
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    dispatch(displayPostList());
+  }, []);
   
   return (
     <>
