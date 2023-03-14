@@ -34,7 +34,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
         Array.from<string>({
           length: (postStream.streamContent.content as Post).options
             ?.lockedImagesNum!,
-        }).fill("?") ?? ["?"]
+        }).fill("?") ?? []
       );
     }
     if (postStream.streamContent.indexFile.fileType === FileType.Datatoken) {
@@ -50,7 +50,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
         Array.from<string>({
           length: (postStream.streamContent.content as Post).options
             ?.lockedImagesNum!,
-        }).fill("?") ?? ["?"]
+        }).fill("?") ?? []
       );
     }
     return [];
@@ -60,6 +60,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     if (nowImages.length === 0 && !postStream.isDecryptedSuccessfully) {
       nowImages = ["?"];
     }
+    nowImages = Array.from(new Set(nowImages))
     setImages(nowImages);
   }, [postStream]);
 

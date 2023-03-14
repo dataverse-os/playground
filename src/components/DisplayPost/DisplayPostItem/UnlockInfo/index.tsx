@@ -46,7 +46,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
         className="lock"
         onClick={unlock}
       ></img>
-      {postStream.streamContent.indexFile.fileType === FileType.Datatoken && (
+      {/* {postStream.streamContent.indexFile.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">10</span>
           <span className="currency">WMATIC</span>
@@ -55,7 +55,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           <span className="collectLimit">100</span>
           <span className="Sold">Sold</span>
         </DatatokenInfoWrapper>
-      )}
+      )} */}
     </Wrapper>
   );
 };

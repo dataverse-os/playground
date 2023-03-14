@@ -14,7 +14,7 @@ const Header = (): React.ReactElement => {
     <Wrapper>
       <Brand>Playground</Brand>
       <HeaderRightRender>
-        <Button
+        {/* <Button
           css={css`
             margin-right: -30px;
           `}
@@ -27,17 +27,16 @@ const Header = (): React.ReactElement => {
           `}
         >
           My posts
-        </Button>
+        </Button> */}
 
         <Button
           type="primary"
           onClick={() => {
             dispatch(connectIdentity());
-            
+
           }}
         >
-          {"Sign in"}
-          {/*didAbbreviation(did) || "Sign in" */}
+          {didAbbreviation(did, 2) || "Sign in"}
         </Button>
       </HeaderRightRender>
     </Wrapper>
