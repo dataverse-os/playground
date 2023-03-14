@@ -23,7 +23,8 @@
     "redux-persist": "6.0.0",
     "redux-state-sync": "3.1.4",
     "styled-components": "5.3.6",
-    "uint8arrays": "3.1.0"
+    "uint8arrays": "3.1.0",
+    "web3.storage": "4.5.4"
   },
   "devDependencies": {
     "@types/node": "^18.15.1",

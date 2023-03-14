@@ -20,10 +20,11 @@ import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import PrivacySettings from "../PrivacySettings";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { uuid } from "@/utils/uuid";
+import { web3Storage } from "@/utils/web3Storage";
 
-export interface PublishPostProps {}
+export interface PublishPostProps { }
 
-const PublishPost: React.FC<PublishPostProps> = ({}) => {
+const PublishPost: React.FC<PublishPostProps> = ({ }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
@@ -61,9 +62,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         did,
         postContent: {
           text: content,
-          images: [
-            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
-          ],
+          images: images.map((image) => image["upload"]),
           videos: [],
         },
       })
@@ -90,14 +89,14 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         return;
       }
     }
+    const imgCIDs = await Promise.all(images.map((image) => web3Storage.storeFiles([image.file])))
+    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.dweb.link`)
     await dispatch(
       publishPost({
         did,
         postContent: {
           text: content,
-          images: [
-            "https://bafybeifnmmziqbl5gr6tuhcfo7zuhlnm3x4utawqlyuoralnjeif5uxpwe.ipfs.dweb.link/src=http___img.jj20.com_up_allimg_4k_s_02_210925003609C07-0-lp.jpg&refer=http___img.jj20.webp",
-          ],
+          images: imgUrls,
           videos: [],
         },
       })
