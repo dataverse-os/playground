@@ -25,13 +25,12 @@ export const Image = styled.img<{ imgCount: number }>`
   border-radius: 1.25rem;
 `;
 
-export const ImageGrid = styled.div`
+export const ImageWrapperGrid = styled.div`
   display: grid;
-  width: 320px;
-  height: 320px;
+  width: 100%;
+  height: 100%;
   justify-content: space-evenly;
   align-content: space-evenly;
-  grid-template-columns: repeat(2, 150px);
-  grid-template-rows: repeat(2, 150px);
-  border: 1px solid red;
+  grid-template-columns: repeat(2,50%);
+  grid-template-rows: repeat(2,50%);
 `
