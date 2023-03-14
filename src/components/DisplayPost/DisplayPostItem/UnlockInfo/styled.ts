@@ -3,24 +3,25 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
   display: flex;
   justify-items: center;
+  .lock {
+    width: 30px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
 `;
 
-export const UnlockInfoWrapper = styled.div`
-  font-family: Poppins-SemiBold;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1rem;
-  line-height: 1.85rem;
-  margin-left: 0.57rem;
-  color: #000000;
+export const DatatokenInfoWrapper = styled.div`
+  text-align: center;
+  .currency {
+    margin-left: 5px;
+  }
+
+  .boughtNum,
+  .collectLimit,
+  .Sold {
+    font-size: 14px;
+  }
+  .Sold {
+    margin-left: 5px;
+  }
 `;
-
-export const LockImg = styled.img`
-  width: 40px;
-`;
-
-export const DatatokenInfoWrapper = styled.div``;
-
-export const Price = styled.div``;
-export const Currency = styled.div``;
-export const CollectLimit = styled.div``;

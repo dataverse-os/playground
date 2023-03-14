@@ -45,7 +45,7 @@ export const loadMyPostStreams = async (did: string) => {
   return streamList;
 };
 
-export const loadAllPostStreams = async (did: string) => {
+export const loadAllPostStreams = async () => {
   const streams = await runtimeConnector.loadStreamsByModel({
     appName,
     modelName,
@@ -59,8 +59,15 @@ export const loadAllPostStreams = async (did: string) => {
       streamContent,
     });
   });
-
-  return streamList;
+  const sortedList = streamList
+    .filter((el) => el.streamContent.appVersion === appVersion)
+    .sort(
+      (a, b) =>
+        Date.parse(b.streamContent.indexFile?.createdAt) -
+        Date.parse(a.streamContent.indexFile?.createdAt)
+    );
+  console.log(sortedList);
+  return sortedList;
 };
 
 export const createPublicPostStream = async ({
@@ -248,7 +255,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
     contentToBeEncrypted:
       mirrorFile.contentType in IndexFileContentType
         ? mirrorFile.contentId!
-        : (mirrorFile.content.content.postContent as string),
+        : JSON.stringify(mirrorFile.content.content.postContent),
     litKit,
   });
 
