@@ -3,6 +3,7 @@ import { FileType } from "@dataverse/runtime-connector";
 import { Secret, Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 import React, { useEffect, useState } from "react";
 import { CustomMirrorFile, PostContent } from "@/types";
+import question from '@/assets/icons/question.png'
 
 export interface TextProps {
   mirrorFile: CustomMirrorFile;
@@ -55,12 +56,12 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
     <CurrentImgWrapper>
       {images.map((image, index) => {
         if (image === "?") {
-          return <Secret key={"image" + index}>{image}</Secret>;
+          return <div> <Image key={"image" + index} src={question} imgCount={1} /></div>;
         } else {
           return <Image key={"image" + index} imgCount={images.length < 4 ? images.length : 1} src={image}></Image>;
         }
       })}
-    </CurrentImgWrapper>
+    </CurrentImgWrapper >
   );
 };
 

@@ -140,9 +140,9 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
               />
               <FlexRow>
                 {imageList.map((image, index) => (
-                  <UploadImgWrapper>
+                  <UploadImgWrapper key={uuid()}>
                     <UploadImgCross src={crossIcon} onClick={() => { onImageRemove(index) }} />
-                    <UploadImg src={image["upload"]} key={uuid()} onClick={() => { onImageUpdate(index) }} />
+                    <UploadImg src={image["upload"]} onClick={() => { onImageUpdate(index) }} />
                   </UploadImgWrapper>
                 ))}
               </FlexRow>

@@ -20,13 +20,13 @@ const Text: React.FC<TextProps> = ({ mirrorFile }) => {
       if (mirrorFile.isDecryptedSuccessfully) {
         return (mirrorFile.content.content.postContent as PostContent)?.text;
       }
-      return mirrorFile.content.content.postContent as string;
+      return '';
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
       if (mirrorFile.isDecryptedSuccessfully) {
         return (mirrorFile.content.content.postContent as PostContent)?.text;
       }
-      return mirrorFile.content.content.postContent as string;
+      return '' as string;
     }
   };
   return <TextWrapper>{showContent(mirrorFile)}</TextWrapper>;
