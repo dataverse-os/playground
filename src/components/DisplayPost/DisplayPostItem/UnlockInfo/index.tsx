@@ -18,6 +18,14 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
 
   const unlock = async () => {
+    if (
+      postStream.isDecrypting ||
+      postStream.isBuying ||
+      postStream.isDecryptedSuccessfully ||
+      postStream.hasBoughtSuccessfully
+    ) {
+      return;
+    }
     const res = await dispatch(connectIdentity());
     const did = res.payload as string;
     if (postStream.streamContent.content.controller === did) {
@@ -49,43 +57,39 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   // console.log(postStream)
   return (
     <Wrapper>
-      {
-        postStream.isDecrypting || postStream.isBuying ? (
-          <Loading
-            visible={postStream.isDecrypting || postStream.isBuying}
-            color="black"
-            cssStyles={css`
-                margin-right: 5px;
-                .iconSpinner {
-                  width: 25px;
-                }
-              `}
-          />
-        ) : (
-          <img
-            src={
-              postStream.isDecryptedSuccessfully ||
-                postStream.hasBoughtSuccessfully
-                ? unlockSVG
-                : lockSVG
+      {postStream.isDecrypting || postStream.isBuying ? (
+        <Loading
+          visible={postStream.isDecrypting || postStream.isBuying}
+          color="black"
+          cssStyles={css`
+            margin-right: 5px;
+            .iconSpinner {
+              width: 25px;
             }
-            className="lock"
-            onClick={unlock}
-          ></img>
-        )
-      }
-      {
-        postStream.streamContent.fileType === FileType.Datatoken && (
-          <DatatokenInfoWrapper>
-            <span className="amount">10</span>
-            <span className="currency">WMATIC</span>
-            <br />
-            <span className="boughtNum">0</span>/
-            <span className="collectLimit">100</span>
-            <span className="Sold">Sold</span>
-          </DatatokenInfoWrapper>
-        )
-      }
+          `}
+        />
+      ) : (
+        <img
+          src={
+            postStream.isDecryptedSuccessfully ||
+            postStream.hasBoughtSuccessfully
+              ? unlockSVG
+              : lockSVG
+          }
+          className="lock"
+          onClick={unlock}
+        ></img>
+      )}
+      {postStream.streamContent.fileType === FileType.Datatoken && (
+        <DatatokenInfoWrapper>
+          <span className="amount">10</span>
+          <span className="currency">WMATIC</span>
+          <br />
+          <span className="boughtNum">0</span>/
+          <span className="collectLimit">100</span>
+          <span className="Sold">Sold</span>
+        </DatatokenInfoWrapper>
+      )}
     </Wrapper>
   );
 };

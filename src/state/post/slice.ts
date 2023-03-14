@@ -96,7 +96,6 @@ export const decryptPost = createAsyncThunk(
 export const buyPost = createAsyncThunk(
   "file/buyFile",
   async ({ did, postStream }: { did: string; postStream: PostStream }) => {
-    console.log(postStream.streamContent.datatokenId!)
     const res = await isCollected({
       datatokenId: postStream.streamContent.datatokenId!,
       address: getAddressFromDid(did),
@@ -178,7 +177,6 @@ export const getDatatokenInfo = createAsyncThunk(
     const res = await _getDatatokenInfo({
       address,
     });
-    console.log(res)
     return res;
   }
 );

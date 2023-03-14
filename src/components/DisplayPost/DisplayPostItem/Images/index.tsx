@@ -40,7 +40,10 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
       );
     }
     if (postStream.streamContent.fileType === FileType.Datatoken) {
-      if (postStream.isDecryptedSuccessfully) {
+      if (
+        postStream.isDecryptedSuccessfully ||
+        postStream.hasBoughtSuccessfully
+      ) {
         return (
           (
             (postStream.streamContent.content.content as Post)
@@ -61,8 +64,8 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     let nowImages = showImage(postStream);
     if (
       nowImages.length === 0 &&
-      postStream.streamContent.fileType !== FileType.Public && 
-      !postStream.isDecryptedSuccessfully
+      postStream.streamContent.fileType !== FileType.Public &&
+      (!postStream.isDecryptedSuccessfully && !postStream.hasBoughtSuccessfully)
     ) {
       nowImages = ["?"];
     }

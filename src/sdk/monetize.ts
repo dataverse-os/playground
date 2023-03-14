@@ -2,6 +2,11 @@ import { DatatokenVars, ModelNames } from "@dataverse/runtime-connector";
 import { appName, client, runtimeConnector } from ".";
 import { gql } from "graphql-request";
 
+export const getChainOfDatatoken = async () => {
+  const res = await runtimeConnector.getChainOfDatatoken();
+  return res;
+};
+
 export const createDatatoken = async (datatokenVars: DatatokenVars) => {
   const res = await runtimeConnector.createDatatoken(datatokenVars);
   return res;
