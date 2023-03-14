@@ -1,7 +1,7 @@
 import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
 import { Wrapper, ButtonWrapper, Title, Content, UploadImg } from "./styled";
-import { encryptPost, publishPost, postSlice } from "@/state/post/slice";
+import { encryptPost, publishPost, postSlice, uploadImg } from "@/state/post/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useState } from "react";
 import { displayMyPosts } from "@/state/folder/slice";
@@ -89,14 +89,14 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
         return;
       }
     }
-    const imgCIDs = await Promise.all(images.map((image) => web3Storage.storeFiles([image.file])))
-    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.dweb.link`)
+    const files: File[] = []
+    images.map((image) => { if (image.file) { files.push(image.file) } })
     await dispatch(
       publishPost({
         did,
         postContent: {
           text: content,
-          images: imgUrls,
+          images: await (await dispatch(uploadImg({ files }))).payload as string[],
           videos: [],
         },
       })
