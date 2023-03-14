@@ -37,3 +37,8 @@ export const ButtonWrapper = styled.div`
   justify-items: center;
   align-items: center;
 `;
+
+export const UploadImg = styled.img`
+  height: 25%;
+  width: 25%;
+`
