@@ -14,6 +14,7 @@ export interface PostStream {
     appVersion: string;
     content: { appVersion: string; content: string | Post; controller: string };
     controller: string;
+    indexFileId: string;
     contentId: string;
     contentType: IndexFileContentType;
     comment: object;

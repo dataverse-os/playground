@@ -212,6 +212,42 @@ export const postSlice = createSlice({
     builder.addCase(publishPost.rejected, (state) => {
       state.isPublishingPost = false;
     });
+
+    //decryptPostListener
+    builder.addCase(decryptPost.pending, (state, action) => {
+      state.postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = {
+            ...postStream,
+            isDecrypting: true,
+          };
+        }
+      });
+    });
+    builder.addCase(decryptPost.fulfilled, (state, action) => {
+      console.log(state.postStreamList);
+      state.postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = {
+            ...postStream,
+            isDecrypting: false,
+            isDecryptedSuccessfully: true,
+          };
+        }
+      });
+    });
+    builder.addCase(decryptPost.rejected, (state, action) => {
+      state.postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = {
+            ...postStream,
+            isDecrypting: false,
+            isDecryptedSuccessfully: false,
+          };
+        }
+      });
+      alert(action.error.message);
+    });
   },
 });
 

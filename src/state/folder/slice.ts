@@ -38,41 +38,6 @@ export const folderSlice = createSlice({
       state.posts = action.payload as CustomMirrors;
     });
 
-    //decryptPostListener
-    builder.addCase(decryptPost.pending, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.meta.arg.mirrorFile,
-            isDecrypting: true,
-          };
-        }
-      });
-    });
-    builder.addCase(decryptPost.fulfilled, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.payload.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.payload,
-            isDecrypting: false,
-            isDecryptedSuccessfully: true,
-          };
-        }
-      });
-    });
-    builder.addCase(decryptPost.rejected, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.meta.arg.mirrorFile,
-            isDecrypting: false,
-            isDecryptedSuccessfully: false,
-          };
-        }
-      });
-      alert(action.error.message);
-    });
-
     //monetizeFileListener
     builder.addCase(monetizeFile.pending, (state, action) => {
       state.posts.find((mirror) => {
