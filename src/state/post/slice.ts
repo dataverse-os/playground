@@ -8,7 +8,14 @@ import {
   loadAllPostStreams,
   loadMyPostStreams,
 } from "@/sdk/stream";
-import { CustomMirrorFile, LitKit, Post, PostContent, PostType } from "@/types";
+import {
+  CustomMirrorFile,
+  LitKit,
+  Post,
+  PostContent,
+  PostStream,
+  PostType,
+} from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import { web3Storage } from "@/utils/web3Storage";
 import {
@@ -24,7 +31,7 @@ interface Props {
   isEncryptedSuccessfully?: boolean;
   litKit?: LitKit;
   isPublishingPost: boolean;
-  postList: StreamObject[];
+  postStreamList: PostStream[];
 }
 
 const initialState: Props = {
@@ -33,7 +40,7 @@ const initialState: Props = {
   isEncryptedSuccessfully: false,
   litKit: undefined,
   isPublishingPost: false,
-  postList: [],
+  postStreamList: [],
 };
 
 export const encryptPost = createAsyncThunk(
@@ -92,11 +99,13 @@ export const decryptPost = createAsyncThunk(
 export const uploadImg = createAsyncThunk(
   "post/uploadImg",
   async ({ files }: { files: File[] }): Promise<string[]> => {
-    const imgCIDs = await Promise.all(files.map((file) => web3Storage.storeFiles([file])))
-    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.dweb.link`)
-    return imgUrls
+    const imgCIDs = await Promise.all(
+      files.map((file) => web3Storage.storeFiles([file]))
+    );
+    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.dweb.link`);
+    return imgUrls;
   }
-)
+);
 
 export const publishPost = createAsyncThunk(
   "post/publishPost",
@@ -174,6 +183,10 @@ export const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(displayPostList.fulfilled, (state, action) => {
+      state.postStreamList = action.payload;
+    });
+
     builder.addCase(encryptPost.pending, (state) => {
       state.isEncrypting = true;
       state.isEncryptedSuccessfully = false;
@@ -207,10 +220,6 @@ export const postSlice = createSlice({
     });
     builder.addCase(publishPost.rejected, (state) => {
       state.isPublishingPost = false;
-    });
-
-    builder.addCase(displayPostList.fulfilled, (state, action) => {
-      state.postList = action.payload;
     });
   },
 });

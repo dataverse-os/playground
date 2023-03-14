@@ -1,10 +1,29 @@
 import {
   DecryptionConditionsTypes,
+  IndexFile,
   IndexFileContentType,
   Mirror,
   MirrorFile,
   StructuredFolder,
 } from "@dataverse/runtime-connector";
+
+export interface PostStream {
+  streamId: string;
+  streamContent: {
+    appVersion: string;
+    content: string | Post;
+    controller: string;
+    indexFile: IndexFile;
+  };
+  isDecrypting?: boolean;
+  isDecryptedSuccessfully?: boolean;
+  isMonetizing?: boolean;
+  isMonetizedSuccessfully?: boolean;
+  isBuying?: boolean;
+  hasBoughtSuccessfully?: boolean;
+  isGettingDatatokenInfo?: boolean;
+  hasGotDatatokenInfo?: boolean;
+}
 
 export interface CustomMirrorFile extends MirrorFile {
   contentType: IndexFileContentType | string;
@@ -17,8 +36,8 @@ export interface CustomMirrorFile extends MirrorFile {
   isMonetizedSuccessfully?: boolean;
   isBuying?: boolean;
   hasBoughtSuccessfully?: boolean;
-  isGettingDatatokenInfo?: boolean,
-  hasGotDatatokenInfo?: boolean,
+  isGettingDatatokenInfo?: boolean;
+  hasGotDatatokenInfo?: boolean;
 }
 
 export type CustomMirror = Omit<Mirror, "mirrorFile"> & {
@@ -60,7 +79,4 @@ export interface Post {
   updatedAt?: string;
 }
 
-export interface Settings {
-  
-}
-
+export interface Settings {}

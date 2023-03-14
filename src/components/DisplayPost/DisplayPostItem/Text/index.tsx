@@ -2,34 +2,40 @@ import { oldAppVersion } from "@/sdk";
 import { FileType } from "@dataverse/runtime-connector";
 import { TextWrapper } from "./styled";
 import React from "react";
-import { CustomMirrorFile, PostContent } from "@/types";
+import { CustomMirrorFile, Post, PostContent, PostStream } from "@/types";
 
 export interface TextProps {
-  mirrorFile: CustomMirrorFile;
+  postStream: PostStream;
 }
 
-const Text: React.FC<TextProps> = ({ mirrorFile }) => {
-  const showContent = (mirrorFile: CustomMirrorFile) => {
-    if (mirrorFile.content.appVersion === oldAppVersion) {
-      return mirrorFile.content.content as unknown as string;
+const Text: React.FC<TextProps> = ({ postStream }) => {
+  const showContent = (postStream: PostStream) => {
+    if (postStream.streamContent.appVersion === oldAppVersion) {
+      return (postStream.streamContent.content as any)?.content;
     }
-    if (mirrorFile.fileType === FileType.Public) {
-      return (mirrorFile.content.content.postContent as PostContent)?.text;
+    if (postStream.streamContent.indexFile.fileType === FileType.Public) {
+      return (
+        (postStream.streamContent.content as Post).postContent as PostContent
+      )?.text;
     }
-    if (mirrorFile.fileType === FileType.Private) {
-      if (mirrorFile.isDecryptedSuccessfully) {
-        return (mirrorFile.content.content.postContent as PostContent)?.text;
+    if (postStream.streamContent.indexFile.fileType === FileType.Private) {
+      if (postStream.isDecryptedSuccessfully) {
+        return (
+          (postStream.streamContent.content as Post).postContent as PostContent
+        )?.text;
       }
-      return mirrorFile.content.content.postContent as string;
+      return (postStream.streamContent.content as Post).postContent as string;
     }
-    if (mirrorFile.fileType === FileType.Datatoken) {
-      if (mirrorFile.isDecryptedSuccessfully) {
-        return (mirrorFile.content.content.postContent as PostContent)?.text;
+    if (postStream.streamContent.indexFile.fileType === FileType.Datatoken) {
+      if (postStream.isDecryptedSuccessfully) {
+        return (
+          (postStream.streamContent.content as Post).postContent as PostContent
+        )?.text;
       }
-      return mirrorFile.content.content.postContent as string;
+      return (postStream.streamContent.content as Post).postContent as string;
     }
   };
-  return <TextWrapper>{showContent(mirrorFile)}</TextWrapper>;
+  return <TextWrapper>{showContent(postStream)}</TextWrapper>;
 };
 
 export default Text;

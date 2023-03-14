@@ -3,20 +3,20 @@ import React, { useEffect } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { CustomMirror } from "@/types";
+import { CustomMirror, PostStream } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
 import { decryptPost, getDatatokenInfo } from "@/state/post/slice";
 
 interface DisplayPostItemProps {
-  mirror: CustomMirror;
+  postStream: PostStream;
 }
 
-const UnlockInfo: React.FC<DisplayPostItemProps> = ({ mirror }) => {
+const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
 
   const unlock = () => {
-    dispatch(decryptPost({ did, mirrorFile: mirror.mirrorFile }));
+    dispatch(decryptPost({ did, mirrorFile: postStream.mirrorFile }));
   };
 
   // useEffect(() => {
@@ -42,11 +42,11 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ mirror }) => {
   return (
     <Wrapper>
       <img
-        src={mirror.mirrorFile.isDecryptedSuccessfully ? unlockSVG : lockSVG}
+        src={postStream.isDecryptedSuccessfully ? unlockSVG : lockSVG}
         className="lock"
         onClick={unlock}
       ></img>
-      {mirror.mirrorFile.fileType === FileType.Datatoken && (
+      {postStream.streamContent.indexFile.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">10</span>
           <span className="currency">WMATIC</span>

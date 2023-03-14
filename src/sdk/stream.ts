@@ -1,4 +1,4 @@
-import { CustomMirrorFile, Post, PostType } from "@/types";
+import { CustomMirrorFile, Post, PostStream, PostType } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   Apps,
@@ -51,7 +51,7 @@ export const loadAllPostStreams = async () => {
     modelName,
   });
 
-  const streamList: { streamId: string; streamContent: any }[] = [];
+  const streamList: PostStream[] = [];
 
   Object.entries(streams).forEach(([streamId, streamContent]) => {
     streamList.push({
@@ -60,11 +60,24 @@ export const loadAllPostStreams = async () => {
     });
   });
   const sortedList = streamList
-    .filter((el) => el.streamContent.appVersion === appVersion)
+    .filter(
+      (el) =>
+        el.streamContent.appVersion === appVersion && el.streamContent.indexFile
+    )
+    .map((el) => {
+      if (el.streamContent.indexFile.fileType === FileType.Public) {
+        try {
+          el.streamContent.content = JSON.parse(
+            el.streamContent.content as string
+          );
+        } catch (error) {}
+      }
+      return el;
+    })
     .sort(
       (a, b) =>
-        Date.parse(b.streamContent.indexFile?.createdAt) -
-        Date.parse(a.streamContent.indexFile?.createdAt)
+        Date.parse(b.streamContent.indexFile.createdAt) -
+        Date.parse(a.streamContent.indexFile.createdAt)
     );
   console.log(sortedList);
   return sortedList;

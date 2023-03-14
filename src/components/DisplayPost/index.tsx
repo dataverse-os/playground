@@ -8,22 +8,18 @@ import { displayMyPosts } from "@/state/folder/slice";
 export interface PublishPostProps {}
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const posts = useSelector((state) => state.folder.posts);
+  const postStreamList = useSelector((state) => state.post.postStreamList);
   const did = useSelector((state) => state.identity.did);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // dispatch(displayPostList());
-    console.log(did)
-    if (did) {
-      dispatch(displayMyPosts(did));
-    }
+    dispatch(displayPostList());
   }, [did]);
-
+  console.log({ postStreamList });
   return (
     <>
-      {posts.map((mirror, index) => (
-        <DisplayPostItem mirror={mirror} key={"mirror" + index} />
+      {postStreamList.map((postStream, index) => (
+        <DisplayPostItem postStream={postStream} key={postStream.streamId} />
       ))}
     </>
   );

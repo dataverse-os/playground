@@ -169,7 +169,6 @@ const Avatar: React.FC<AvatarProps> = ({
   }
 
   useEffect(() => {
-    console.log("avatar init...");
     return () => console.log("avatar destroy...");
   }, []);
 
@@ -178,9 +177,6 @@ const Avatar: React.FC<AvatarProps> = ({
     load();
   }, [did]);
 
-  useEffect(() => {
-    console.log({ open });
-  }, [open]);
 
   useEffect(() => {
     checkImgExists(avatarSrc).then(() => {
