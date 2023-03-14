@@ -16,15 +16,16 @@ export const HeaderWrapper = styled.nav`
 `;
 
 export const BodyWrapper = styled.div`
-  padding: ${padding};
-  height: calc(100% - 3.35rem);
+  padding: ${padding};  
   display: flex;
   flex-flow: column wrap;
   margin-top: 3.35rem;
-  height: 100vh;
+  // TODO: handle dynamic height;
+  height: fit-content;
+  align-items: center;
 `;
 
-export const PublishPostWrapper = styled.aside`
+export const PostWrapper = styled.aside`
   flex: 1;
   align-items: flex-start;
   display: flex;
@@ -34,7 +35,7 @@ export const PublishPostWrapper = styled.aside`
   overflow: hidden;
   align-content: flex-start;
   justify-content: flex-start;
-  max-width: 100%;
+  max-width: 91rem;
   margin: 0;
   &::before,
   ::after {

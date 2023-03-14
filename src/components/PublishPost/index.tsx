@@ -94,7 +94,13 @@ const PublishPost: React.FC<PublishPostProps> = ({ }) => {
   return (
     <Wrapper>
       <Content>
-        <ImageUploading value={images} onChange={onChange} dataURLKey="upload">
+        <ImageUploading
+          multiple
+          maxNumber={4}
+          value={images}
+          onChange={onChange}
+          dataURLKey="upload"
+        >
           {({
             imageList,
             onImageUpload,
