@@ -15,24 +15,30 @@ const Text: React.FC<TextProps> = ({ postStream }) => {
     }
     if (postStream.streamContent.fileType === FileType.Public) {
       return (
-        (postStream.streamContent.content.content as Post).postContent as PostContent
+        (postStream.streamContent.content.content as Post)
+          .postContent as PostContent
       )?.text;
     }
     if (postStream.streamContent.fileType === FileType.Private) {
       if (postStream.isDecryptedSuccessfully) {
         return (
-          (postStream.streamContent.content.content as Post).postContent as PostContent
+          (postStream.streamContent.content.content as Post)
+            .postContent as PostContent
         )?.text;
       }
-      return '';
+      return "";
     }
     if (postStream.streamContent.fileType === FileType.Datatoken) {
-      if (postStream.isDecryptedSuccessfully) {
+      if (
+        postStream.isDecryptedSuccessfully ||
+        postStream.hasBoughtSuccessfully
+      ) {
         return (
-          (postStream.streamContent.content.content as Post).postContent as PostContent
+          (postStream.streamContent.content.content as Post)
+            .postContent as PostContent
         )?.text;
       }
-      return '' as string;
+      return "" as string;
     }
   };
   return <TextWrapper>{showContent(postStream)}</TextWrapper>;

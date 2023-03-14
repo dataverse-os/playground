@@ -19,7 +19,7 @@ import {
 } from ".";
 import { getModelIdByAppNameAndModelName } from "./appRegistry";
 import { newLitKey, encryptWithLit } from "./encryptionAndDecryption";
-import { createDatatoken } from "./monetize";
+import { createDatatoken, getChainOfDatatoken } from "./monetize";
 
 export const loadStream = async (streamId: string) => {
   const stream = await runtimeConnector.loadStream(streamId);
@@ -154,7 +154,7 @@ export const createDatatokenPostStream = async ({
       streamId: res.newMirror!.mirrorId,
       currency,
       amount,
-      collectLimit,
+      collectLimit, 
     });
     datatokenId = res2.datatokenId;
   } catch (error: any) {
@@ -430,7 +430,7 @@ export const generateUnifiedAccessControlConditions = async ({
     modelName: ModelNames.post,
   });
   const chain = await runtimeConnector.getChainFromDID(did);
-
+  const datatokenChain = await getChainOfDatatoken();
   const conditions: any = [
     {
       conditionType: "evmBasic",
@@ -471,7 +471,7 @@ export const generateUnifiedAccessControlConditions = async ({
         stateMutability: "view",
         type: "function",
       },
-      chain: "mumbai",
+      chain: datatokenChain,
       returnValueTest: {
         key: "",
         comparator: "=",
