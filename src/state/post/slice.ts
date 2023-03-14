@@ -179,7 +179,7 @@ export const getDatatokenInfo = createAsyncThunk(
       address,
     });
     console.log(res)
-    return res;
+    return res.dataToken;
   }
 );
 
@@ -330,6 +330,60 @@ export const postSlice = createSlice({
       state.postStreamList = postStreamList;
       alert(action.error.message);
     });
+    //getDatatokenInfo
+    builder.addCase(getDatatokenInfo.pending, (state, action) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamContent.datatokenId === action.meta.arg.address) {
+          postStream = {
+            ...postStream,
+            isGettingDatatokenInfo: true,
+          };
+        }
+      });
+      state.postStreamList = postStreamList
+    });
+    builder.addCase(getDatatokenInfo.fulfilled, (state, action) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamContent.datatokenId === action.meta.arg.address) {
+          postStream.streamContent.datatokenInfo = {
+            ...postStream.streamContent.datatokenInfo,
+            ...action.payload,
+          };
+          postStream = {
+            ...postStream,
+            isGettingDatatokenInfo: false,
+            hasGotDatatokenInfo: true,
+          };
+        }
+      });
+      state.postStreamList = postStreamList
+    });
+
+    builder.addCase(getDatatokenInfo.rejected, (state, action) => {
+
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamContent.datatokenId === action.meta.arg.address) {
+          postStream = {
+            ...postStream,
+            isGettingDatatokenInfo: false,
+            hasGotDatatokenInfo: true,
+          };
+        }
+      });
+      state.postStreamList = postStreamList
+
+      // alert(action.error.message);
+    });
+
   },
 });
 

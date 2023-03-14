@@ -58,6 +58,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     return [];
   };
   useEffect(() => {
+    if(postStream.isGettingDatatokenInfo) return;
     let nowImages = showImage(postStream);
     if (
       nowImages.length === 0 &&

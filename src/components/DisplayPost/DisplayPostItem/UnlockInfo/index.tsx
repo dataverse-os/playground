@@ -1,5 +1,5 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
@@ -9,6 +9,7 @@ import { buyPost, decryptPost, getDatatokenInfo } from "@/state/post/slice";
 import { connectIdentity } from "@/state/identity/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
+import { uuid } from "@/utils/uuid";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -16,6 +17,7 @@ interface DisplayPostItemProps {
 
 const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
+  const postStreamList = useSelector((state) => state.post.postStreamList);
 
   const unlock = async () => {
     const res = await dispatch(connectIdentity());
@@ -30,9 +32,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   useEffect(() => {
     if (
       postStream.isGettingDatatokenInfo ||
-      postStream.hasGotDatatokenInfo ||
-      (postStream.isGettingDatatokenInfo === false &&
-        postStream.hasGotDatatokenInfo === false)
+      postStream.hasGotDatatokenInfo
     ) {
       return;
     }
@@ -44,9 +44,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       );
       dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
     }
-    // getDatatokenInfo();
-  }, [postStream]);
-  // console.log(postStream)
+  }, [postStreamList.length]);
+
   return (
     <Wrapper>
       {
@@ -77,11 +76,11 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       {
         postStream.streamContent.fileType === FileType.Datatoken && (
           <DatatokenInfoWrapper>
-            <span className="amount">10</span>
+            {/* <span className="amount">10</span>
             <span className="currency">WMATIC</span>
-            <br />
-            <span className="boughtNum">0</span>/
-            <span className="collectLimit">100</span>
+            <br /> */}
+            <span className="boughtNum">{postStream.streamContent.datatokenInfo?.collect_info.sold_num}</span> /
+            <span className="collectLimit">{postStream.streamContent.datatokenInfo?.collect_info.total === '0' ? ' unlimited' : ' ' + postStream.streamContent.datatokenInfo?.collect_info.total}</span>
             <span className="Sold">Sold</span>
           </DatatokenInfoWrapper>
         )

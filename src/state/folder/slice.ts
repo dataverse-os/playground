@@ -74,43 +74,6 @@ export const folderSlice = createSlice({
       alert(action.error.message);
     });
 
-    //getDatatokenInfo
-    builder.addCase(getDatatokenInfo.pending, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.address) {
-          mirror.mirrorFile = {
-            ...mirror.mirrorFile,
-            isGettingDatatokenInfo: true,
-          };
-        }
-      });
-    });
-    builder.addCase(getDatatokenInfo.fulfilled, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.address) {
-          console.log(action.payload);
-          mirror.mirrorFile = {
-            ...mirror.mirrorFile,
-            ...action.payload,
-            isGettingDatatokenInfo: false,
-            hasGotDatatokenInfo: true,
-          };
-        }
-      });
-    });
-    builder.addCase(getDatatokenInfo.rejected, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.address) {
-          console.log(222);
-          mirror.mirrorFile = {
-            ...mirror.mirrorFile,
-            isGettingDatatokenInfo: false,
-            hasGotDatatokenInfo: false,
-          };
-        }
-      });
-      // alert(action.error.message);
-    });
   },
 });
 

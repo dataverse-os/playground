@@ -28,7 +28,24 @@ export interface PostStream {
     createdAt: string;
     updatedAt: string;
     deleted?: boolean;
-  };
+    datatokenInfo?: {
+      address: string,
+      collect_info: {
+        collect_nft_address: string,
+        sold_list: {
+          owner: string,
+          token_id: string
+        }[],
+        sold_num: number,
+        total: string,
+        who_can_free_collect: string[]
+      },
+      content_uri: string,
+      owner: string,
+      source: string,
+    }
+  }
+
   isDecrypting?: boolean;
   isDecryptedSuccessfully?: boolean;
   isMonetizing?: boolean;
@@ -93,4 +110,4 @@ export interface Post {
   updatedAt?: string;
 }
 
-export interface Settings {}
+export interface Settings { }
