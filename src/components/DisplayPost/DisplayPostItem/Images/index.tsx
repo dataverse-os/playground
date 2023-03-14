@@ -29,7 +29,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
       return (
         Array.from<string>({
           length: mirrorFile.content.content.options?.lockedImagesNum!,
-        }).fill("?") ?? ['?']
+        }).fill("?") ?? []
       );
     }
     if (mirrorFile.fileType === FileType.Datatoken) {
@@ -41,7 +41,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
       return (
         Array.from<string>({
           length: mirrorFile.content.content.options?.lockedImagesNum!,
-        }).fill("?") ?? ['?']
+        }).fill("?") ?? []
       );
     }
     return [];
@@ -52,11 +52,7 @@ const Images: React.FC<TextProps> = ({ mirrorFile }) => {
     if (nowImages.length === 0 && !mirrorFile.isDecryptedSuccessfully) {
       nowImages = ['?']
     }
-    
-    if (nowImages) {
-      
-    }
-    
+    nowImages = Array.from(new Set(nowImages))
     setImages(nowImages);
   }, [mirrorFile]);
 
