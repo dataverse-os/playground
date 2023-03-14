@@ -24,7 +24,12 @@ import {
   IndexFileContentType,
   StreamObject,
 } from "@dataverse/runtime-connector";
-import { createSlice, createAsyncThunk, PayloadAction, current } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  current,
+} from "@reduxjs/toolkit";
 
 interface Props {
   isEncrypting?: boolean;
@@ -75,15 +80,12 @@ export const encryptPost = createAsyncThunk(
 
 export const decryptPost = createAsyncThunk(
   "post/decryptPost",
-  async ({ did, postStream }: { did: string; postStream: PostStream }): Promise<PostStream | undefined> => {
-    console.log({ postStream });
-    if (!(postStream.streamContent.contentType in IndexFileContentType)) {
-      const res = await _decryptPost({
-        did,
-        postStream,
-      });
-      return res;
-    }
+  async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+    const res = await _decryptPost({
+      did,
+      postStream,
+    });
+    return res;
   }
 );
 
@@ -204,6 +206,7 @@ export const postSlice = createSlice({
     });
 
     builder.addCase(publishPost.pending, (state) => {
+      console.log(state);
       state.isPublishingPost = true;
     });
     // builder.addCase(publishPost.fulfilled, (state, action, ) => {
@@ -215,39 +218,75 @@ export const postSlice = createSlice({
 
     //decryptPostListener
     builder.addCase(decryptPost.pending, (state, action) => {
-      state.postStreamList.find((postStream) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
         if (postStream.streamId === action.meta.arg.postStream.streamId) {
-          postStream = {
-            ...postStream,
-            isDecrypting: true,
-          };
-        }
-      });
-    });
-    builder.addCase(decryptPost.fulfilled, (state, action) => {
-      console.log(current(state.postStreamList));
-      state.postStreamList.find((postStream) => {
-        if (postStream.streamId === action.meta.arg.postStream.streamId) {
-          postStream = {
-            ...postStream,
+          postStream = Object.assign(postStream, {
+            ...action.meta.arg.postStream,
             isDecrypting: false,
             isDecryptedSuccessfully: true,
-          };
+          });
         }
       });
+      state.postStreamList = postStreamList;
+    });
+    builder.addCase(decryptPost.fulfilled, (state, action) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
+        if (postStream.streamId === action.meta.arg.postStream.streamId) {
+          postStream = Object.assign(postStream, {
+            ...action.payload,
+            isDecrypting: false,
+            isDecryptedSuccessfully: true,
+          });
+        }
+      });
+      state.postStreamList = postStreamList;
     });
     builder.addCase(decryptPost.rejected, (state, action) => {
-      state.postStreamList.find((postStream) => {
+      const postStreamList = JSON.parse(
+        JSON.stringify(current(state.postStreamList))
+      ) as PostStream[];
+      postStreamList.find((postStream) => {
         if (postStream.streamId === action.meta.arg.postStream.streamId) {
-          postStream = {
-            ...postStream,
+          postStream = Object.assign(postStream, {
+            ...action.meta.arg.postStream,
             isDecrypting: false,
             isDecryptedSuccessfully: false,
-          };
+          });
         }
       });
+      state.postStreamList = postStreamList;
       alert(action.error.message);
     });
+    // builder.addCase(decryptPost.fulfilled, (state, action) => {
+    //   console.log(state.postStreamList);
+    //   state.postStreamList.find((postStream) => {
+    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
+    //       postStream = {
+    //         ...postStream,
+    //         isDecrypting: false,
+    //         isDecryptedSuccessfully: true,
+    //       };
+    //     }
+    //   });
+    // });
+    // builder.addCase(decryptPost.rejected, (state, action) => {
+    //   state.postStreamList.find((postStream) => {
+    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
+    //       postStream = {
+    //         ...postStream,
+    //         isDecrypting: false,
+    //         isDecryptedSuccessfully: false,
+    //       };
+    //     }
+    //   });
+    //   alert(action.error.message);
+    // });
   },
 });
 

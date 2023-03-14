@@ -17,8 +17,10 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     }
     if (postStream.streamContent.fileType === FileType.Public) {
       return (
-        ((postStream.streamContent.content.content as Post).postContent as PostContent)
-          ?.images ?? []
+        (
+          (postStream.streamContent.content.content as Post)
+            .postContent as PostContent
+        )?.images ?? []
       );
     }
     if (postStream.streamContent.fileType === FileType.Private) {
@@ -38,6 +40,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
       );
     }
     if (postStream.streamContent.fileType === FileType.Datatoken) {
+      console.log(postStream.isDecryptedSuccessfully);
       if (postStream.isDecryptedSuccessfully) {
         return (
           (
@@ -57,10 +60,13 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
   };
   useEffect(() => {
     let nowImages = showImage(postStream);
-    if (nowImages.length === 0 && postStream.streamContent.fileType === FileType.Datatoken) {
+    if (
+      nowImages.length === 0 &&
+      postStream.streamContent.fileType === FileType.Datatoken
+    ) {
       nowImages = ["?"];
     }
-    nowImages = Array.from(new Set(nowImages))
+    nowImages = Array.from(new Set(nowImages));
     setImages(nowImages);
   }, [postStream]);
 

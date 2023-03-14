@@ -130,16 +130,16 @@ export const decryptPost = async ({
   did: string;
   postStream: PostStream;
 }) => {
-  console.log({postStream})
-  postStream = JSON.parse(JSON.stringify(postStream));
+  console.log({ postStream });
+  const newPostStream = JSON.parse(JSON.stringify(postStream));
   const {
     fileType,
     encryptedSymmetricKey,
     decryptionConditions,
     decryptionConditionsType,
-  } = postStream.streamContent;
+  } = newPostStream.streamContent;
   if (
-    postStream.streamContent.fileType !== FileType.Public &&
+    newPostStream.streamContent.fileType !== FileType.Public &&
     encryptedSymmetricKey &&
     decryptionConditions &&
     decryptionConditionsType
@@ -147,19 +147,19 @@ export const decryptPost = async ({
     try {
       const content = await decryptWithLit({
         did,
-        encryptedContent: (postStream.streamContent.content.content as Post)
+        encryptedContent: (newPostStream.streamContent.content.content as Post)
           .postContent as string,
         encryptedSymmetricKey: encryptedSymmetricKey,
         decryptionConditions: decryptionConditions,
         decryptionConditionsType: decryptionConditionsType,
       });
-      (postStream.streamContent.content.content as Post).postContent =
+      (newPostStream.streamContent.content.content as Post).postContent =
         JSON.parse(content);
     } catch (error) {
       console.log({ error });
     }
   }
-  return postStream;
+  return newPostStream;
 };
 
 export const decryptFile = async ({
