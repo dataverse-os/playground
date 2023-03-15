@@ -70,9 +70,7 @@ export const folderSlice = createSlice({
     //       };
     //     }
     //   });
-    //   alert(action.error.message);
     // });
-
   },
 });
 

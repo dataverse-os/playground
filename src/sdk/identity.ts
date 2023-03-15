@@ -5,6 +5,7 @@ import {
   METAMASK,
 } from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
+import { Message } from "@arco-design/web-react";
 
 export const connectWallet = async () => {
   const address = await runtimeConnector.connectWallet({
@@ -34,7 +35,7 @@ export const connectIdentity = async () => {
     return did;
   } catch (error) {
     console.log(error);
-    alert("Failed to connect identity");
+    Message.error("Failed to connect identity");
     throw error;
   }
 };

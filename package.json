@@ -9,6 +9,7 @@
     "deploy": "node scripts/s3-deploy/s3-deploy.js"
   },
   "dependencies": {
+    "@arco-design/web-react": "^2.45.2",
     "@dataverse/runtime-connector": "latest",
     "@reduxjs/toolkit": "1.9.0",
     "buffer": "^6.0.3",

@@ -34,6 +34,7 @@ import {
   PayloadAction,
   current,
 } from "@reduxjs/toolkit";
+import { Message } from "@arco-design/web-react";
 
 interface Props {
   isEncrypting?: boolean;
@@ -158,7 +159,7 @@ export const publishPost = createAsyncThunk(
       }
       return res;
     } catch (error: any) {
-      alert(error?.message ?? error);
+      Message.error(error?.message ?? error);
     }
   }
 );
@@ -177,9 +178,7 @@ export const getDatatokenInfo = createAsyncThunk(
     const res = await _getDatatokenInfo({
       address,
     });
-    console.log(res)
     return res.dataToken;
-
   }
 );
 
@@ -281,7 +280,7 @@ export const postSlice = createSlice({
         }
       });
       state.postStreamList = postStreamList;
-      alert(action.error.message);
+      action.error.message && Message.error(action.error.message);
     });
 
     //buyPostListener
@@ -328,7 +327,7 @@ export const postSlice = createSlice({
         }
       });
       state.postStreamList = postStreamList;
-      alert(action.error.message);
+      action.error.message && Message.error(action.error.message);
     });
     //getDatatokenInfo
     builder.addCase(getDatatokenInfo.pending, (state, action) => {
@@ -343,7 +342,7 @@ export const postSlice = createSlice({
           };
         }
       });
-      state.postStreamList = postStreamList
+      state.postStreamList = postStreamList;
     });
     builder.addCase(getDatatokenInfo.fulfilled, (state, action) => {
       const postStreamList = JSON.parse(
@@ -362,11 +361,10 @@ export const postSlice = createSlice({
           };
         }
       });
-      state.postStreamList = postStreamList
+      state.postStreamList = postStreamList;
     });
 
     builder.addCase(getDatatokenInfo.rejected, (state, action) => {
-
       const postStreamList = JSON.parse(
         JSON.stringify(current(state.postStreamList))
       ) as PostStream[];
@@ -379,11 +377,8 @@ export const postSlice = createSlice({
           };
         }
       });
-      state.postStreamList = postStreamList
-
-      // alert(action.error.message);
+      state.postStreamList = postStreamList;
     });
-
   },
 });
 

@@ -30,6 +30,7 @@ import {
   Wrapper,
 } from "./styled";
 import { connectIdentity } from "@/state/identity/slice";
+import { Message } from "@arco-design/web-react";
 
 export interface PublishPostProps {}
 
@@ -63,7 +64,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const encrypt = async () => {
     if (isEncrypting || isEncryptedSuccessfully) return;
     if (!did) {
-      alert("Please connect identity first.");
+      Message.info("Please connect identity first.");
       return;
     }
     dispatch(
@@ -81,10 +82,6 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const post = async () => {
     if (isPublishingPost) return;
     const { payload: did } = await dispatch(connectIdentity());
-    // if (!did) {
-    //   alert("Please connect identity first.");
-    //   return;
-    // }
     if (needEncrypt) {
       const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
       const { amount, collectLimit } = settings;
@@ -95,7 +92,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         amount > 0 &&
         collectLimit > 0;
       if (!isValid) {
-        alert("Incorrect privacy settings!");
+        Message.info("Incorrect privacy settings!");
         return;
       }
     }
