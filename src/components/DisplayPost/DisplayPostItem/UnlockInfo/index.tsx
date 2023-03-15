@@ -40,26 +40,26 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       dispatch(decryptPost({ did, postStream }));
     } else {
       await dispatch(buyPost({ did, postStream }));
-      dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
+      // dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
     }
   };
 
-  useEffect(() => {
-    if (
-      postStream.isGettingDatatokenInfo ||
-      postStream.hasGotDatatokenInfo
-    ) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (
+  //     postStream.isGettingDatatokenInfo ||
+  //     postStream.hasGotDatatokenInfo
+  //   ) {
+  //     return;
+  //   }
 
-    if (postStream.streamContent.fileType === FileType.Datatoken) {
-      console.log(
-        postStream.isGettingDatatokenInfo,
-        postStream.hasGotDatatokenInfo
-      );
-      dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
-    }
-  }, [postStreamList.length]);
+  //   if (postStream.streamContent.fileType === FileType.Datatoken) {
+  //     console.log(
+  //       postStream.isGettingDatatokenInfo,
+  //       postStream.hasGotDatatokenInfo
+  //     );
+  //     dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
+  //   }
+  // }, [postStreamList.length]);
 
   return (
     <Wrapper>
@@ -88,18 +88,18 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           ></img>
         )
       }
-      {
+      {/* {
         postStream.streamContent.fileType === FileType.Datatoken && (
           <DatatokenInfoWrapper>
-            {/* <span className="amount">10</span>
+            <span className="amount">10</span>
             <span className="currency">WMATIC</span>
-            <br /> */}
+            <br />
             <span className="boughtNum">{soldSum}</span> /
             <span className="collectLimit">{total === '0' ? ' unlimited' : ' ' + total}</span>
             <span className="Sold">Sold</span>
           </DatatokenInfoWrapper>
         )
-      }
+      } */}
     </Wrapper>
   );
 };
