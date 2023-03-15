@@ -2,7 +2,6 @@ import { readMyPosts } from "@/sdk/folder";
 import { CustomMirror, CustomMirrors } from "@/types";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { decryptPost, getDatatokenInfo } from "../post/slice";
-import { buyFile, monetizeFile } from "../file/slice";
 
 interface Props {
   posts: CustomMirrors;
@@ -38,41 +37,41 @@ export const folderSlice = createSlice({
       state.posts = action.payload as CustomMirrors;
     });
 
-    //monetizeFileListener
-    builder.addCase(monetizeFile.pending, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.meta.arg.mirrorFile,
-            isMonetizing: true,
-          };
-        }
-      });
-    });
-    builder.addCase(monetizeFile.fulfilled, (state, action) => {
-      console.log({ payload: action.payload });
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.payload?.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.payload,
-            isMonetizing: false,
-            isMonetizedSuccessfully: true,
-          };
-        }
-      });
-    });
-    builder.addCase(monetizeFile.rejected, (state, action) => {
-      state.posts.find((mirror) => {
-        if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
-          mirror.mirrorFile = {
-            ...action.meta.arg.mirrorFile,
-            isMonetizing: false,
-            isMonetizedSuccessfully: false,
-          };
-        }
-      });
-      alert(action.error.message);
-    });
+    // //monetizeFileListener
+    // builder.addCase(monetizeFile.pending, (state, action) => {
+    //   state.posts.find((mirror) => {
+    //     if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
+    //       mirror.mirrorFile = {
+    //         ...action.meta.arg.mirrorFile,
+    //         isMonetizing: true,
+    //       };
+    //     }
+    //   });
+    // });
+    // builder.addCase(monetizeFile.fulfilled, (state, action) => {
+    //   console.log({ payload: action.payload });
+    //   state.posts.find((mirror) => {
+    //     if (mirror.mirrorId === action.payload?.indexFileId) {
+    //       mirror.mirrorFile = {
+    //         ...action.payload,
+    //         isMonetizing: false,
+    //         isMonetizedSuccessfully: true,
+    //       };
+    //     }
+    //   });
+    // });
+    // builder.addCase(monetizeFile.rejected, (state, action) => {
+    //   state.posts.find((mirror) => {
+    //     if (mirror.mirrorId === action.meta.arg.mirrorFile.indexFileId) {
+    //       mirror.mirrorFile = {
+    //         ...action.meta.arg.mirrorFile,
+    //         isMonetizing: false,
+    //         isMonetizedSuccessfully: false,
+    //       };
+    //     }
+    //   });
+    //   alert(action.error.message);
+    // });
 
   },
 });

@@ -24,7 +24,6 @@ import {
 import { decryptPost } from "@/state/post/slice";
 import React from "react";
 import { css } from "styled-components";
-import { buyFile, monetizeFile } from "@/state/file/slice";
 import { CustomMirror, CustomMirrorFile, PostContent, PostType } from "@/types";
 import Text from "./Text";
 import Image from "./Images";
@@ -63,21 +62,20 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
     dispatch(folderSlice.actions.setCurrentMirror());
   };
 
-  const decrypt = () => {
-    if (currentMirror?.mirrorFile?.isDecrypting) return;
-    dispatch(decryptPost({ did, mirrorFile: currentMirror?.mirrorFile! }));
-  };
+  // const decrypt = () => {
+  //   if (currentMirror?.mirrorFile?.isDecrypting) return;
+  //   dispatch(decryptPost({ did, mirrorFile: currentMirror?.mirrorFile! }));
+  // };
 
-  const monetize = (mirrorFile: CustomMirrorFile) => {
-    if (mirrorFile.isMonetizing) return;
-    dispatch(monetizeFile({ did, mirrorFile }));
-  };
+  // const monetize = (mirrorFile: CustomMirrorFile) => {
+  //   if (mirrorFile.isMonetizing) return;
+  //   dispatch(monetizeFile({ did, mirrorFile }));
+  // };
 
-  const buy = (mirrorFile: CustomMirrorFile) => {
-    if (mirrorFile?.isBuying) return;
-    dispatch(buyFile({ did, mirrorFile }));
-  };
-  console.log(posts);
+  // const buy = (mirrorFile: CustomMirrorFile) => {
+  //   if (mirrorFile?.isBuying) return;
+  //   dispatch(buyFile({ did, mirrorFile }));
+  // };
 
   const showContent = (mirrorFile: CustomMirrorFile) => {
     if (mirrorFile.content.appVersion === oldAppVersion) {
@@ -125,7 +123,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
                   !mirror.mirrorFile.isMonetizedSuccessfully && (
                     <Button
                       loading={mirror.mirrorFile.isMonetizing}
-                      onClick={() => monetize(mirror.mirrorFile)}
+                      // onClick={() => monetize(mirror.mirrorFile)}
                     >
                       Monetize
                     </Button>
@@ -135,7 +133,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
                     <>
                       <Button
                         loading={mirror.mirrorFile.isBuying}
-                        onClick={() => buy(mirror.mirrorFile)}
+                        // onClick={() => buy(mirror.mirrorFile)}
                       >
                         Buy
                       </Button>
@@ -159,7 +157,7 @@ const DisplayPostInFolder: React.FC<PublishPostProps> = ({}) => {
         width={800}
         controlVisible={!!currentMirror}
         showCloseButton
-        onOk={decrypt}
+        // onOk={decrypt}
         onCancel={closeDecryptionModel}
         cssStyle={css`
           .headerContainer {
