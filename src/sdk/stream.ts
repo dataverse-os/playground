@@ -82,7 +82,6 @@ export const loadAllPostStreams = async () => {
         Date.parse(b.streamContent.createdAt) -
         Date.parse(a.streamContent.createdAt)
     );
-  console.log(sortedList);
   return sortedList;
 };
 
