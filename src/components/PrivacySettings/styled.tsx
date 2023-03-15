@@ -29,6 +29,12 @@ export const Title = styled.div<{ cssStyles?: FlattenSimpleInterpolation }>`
 export const ItemWrapper = styled.div`
   display: flex;
   align-items: center;
+  .tip {
+    margin-top: 30px;
+    .link {
+      margin-left: 5px;
+    }
+  }
 `;
 
 export const EncryptWrapper = styled.div`

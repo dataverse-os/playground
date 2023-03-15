@@ -31,6 +31,7 @@ import {
 } from "./styled";
 import { connectIdentity } from "@/state/identity/slice";
 import { Message } from "@arco-design/web-react";
+import { IconArrowRight } from "@arco-design/web-react/icon";
 
 export interface PublishPostProps {}
 
@@ -51,9 +52,13 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const maxNumber = 69;
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
-    // data for submit
-    console.log(imageList, addUpdateIndex);
     setImages(imageList);
+  };
+
+  const onError = (error: any) => {
+    if (error?.maxNumber) {
+      Message.info("Up to four pictures can be uploaded");
+    }
   };
 
   const textareaOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -114,6 +119,30 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         },
       })
     );
+    Message.success({
+      content: (
+        <>
+          Post successfully!
+          <a
+            href={`${process.env.DATAVERSE_OS}/finder`}
+            target="_blank"
+            style={{ marginLeft: "5px", color: "black" }}
+          >
+            <span style={{ textDecoration: "underline" }}>
+              View on DataverseOS File System
+            </span>
+            <IconArrowRight
+              style={{
+                color: "black",
+                transform: "rotate(-45deg)",
+              }}
+            />
+          </a>
+        </>
+      ),
+    });
+    setContent("");
+    setImages([]);
     dispatch(displayPostList());
     dispatch(postSlice.actions.setIsPublishingPost(false));
   };
@@ -130,6 +159,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
           maxNumber={4}
           value={images}
           onChange={onChange}
+          onError={onError}
           dataURLKey="upload"
         >
           {({

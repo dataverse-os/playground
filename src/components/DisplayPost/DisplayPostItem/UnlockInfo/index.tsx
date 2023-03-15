@@ -23,22 +23,28 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
   useEffect(() => {
     if (postStream.streamContent.datatokenInfo?.collect_info.sold_num) {
-      setSoldSum(postStream.streamContent.datatokenInfo?.collect_info.sold_num)
+      setSoldSum(postStream.streamContent.datatokenInfo?.collect_info.sold_num);
     }
-  }, [postStream.streamContent.datatokenInfo?.collect_info.sold_num])
+  }, [postStream.streamContent.datatokenInfo?.collect_info.sold_num]);
 
   useEffect(() => {
     if (postStream.streamContent.datatokenInfo?.collect_info.total) {
-      setTotal(postStream.streamContent.datatokenInfo?.collect_info.total)
+      setTotal(postStream.streamContent.datatokenInfo?.collect_info.total);
     }
-  }, [postStream.streamContent.datatokenInfo?.collect_info.total])
+  }, [postStream.streamContent.datatokenInfo?.collect_info.total]);
 
   const unlock = async () => {
     const res = await dispatch(connectIdentity());
     const did = res.payload as string;
     if (postStream.streamContent.content.controller === did) {
+      if (postStream.isDecrypting || postStream.isDecryptedSuccessfully) {
+        return;
+      }
       dispatch(decryptPost({ did, postStream }));
     } else {
+      if (postStream.isBuying || postStream.hasBoughtSuccessfully) {
+        return;
+      }
       await dispatch(buyPost({ did, postStream }));
       // dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
     }
@@ -63,31 +69,29 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
   return (
     <Wrapper>
-      {
-        postStream.isDecrypting || postStream.isBuying ? (
-          <Loading
-            visible={postStream.isDecrypting || postStream.isBuying}
-            color="black"
-            cssStyles={css`
-                margin-right: 5px;
-                .iconSpinner {
-                  width: 25px;
-                }
-              `}
-          />
-        ) : (
-          <img
-            src={
-              postStream.isDecryptedSuccessfully ||
-                postStream.hasBoughtSuccessfully
-                ? unlockSVG
-                : lockSVG
+      {postStream.isDecrypting || postStream.isBuying ? (
+        <Loading
+          visible={postStream.isDecrypting || postStream.isBuying}
+          color="black"
+          cssStyles={css`
+            margin-right: 5px;
+            .iconSpinner {
+              width: 25px;
             }
-            className="lock"
-            onClick={unlock}
-          ></img>
-        )
-      }
+          `}
+        />
+      ) : (
+        <img
+          src={
+            postStream.isDecryptedSuccessfully ||
+            postStream.hasBoughtSuccessfully
+              ? unlockSVG
+              : lockSVG
+          }
+          className="lock"
+          onClick={unlock}
+        ></img>
+      )}
       {/* {
         postStream.streamContent.fileType === FileType.Datatoken && (
           <DatatokenInfoWrapper>

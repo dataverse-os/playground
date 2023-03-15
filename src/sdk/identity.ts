@@ -15,6 +15,12 @@ export const connectWallet = async () => {
   return address;
 };
 
+export const getCurrentDID = async () => {
+  await checkIsExtensionInjected();
+  const res = await runtimeConnector.getCurrentDID();
+  return res;
+};
+
 export const connectIdentity = async () => {
   try {
     await checkIsExtensionInjected();

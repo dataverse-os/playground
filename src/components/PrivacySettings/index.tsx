@@ -196,6 +196,19 @@ const PrivacySettings: React.FC = () => {
                 <UnlimitedText>Unlimited</UnlimitedText>
               </UnlimitedWrapper>
             </ItemWrapper>
+            <ItemWrapper>
+              <div className="tip">
+                Data Monetization is on Mumbai. Testnet Matic faucet
+                <a
+                  href={process.env.MUMBAI_FAUCET}
+                  target="_blank"
+                  className="link"
+                >
+                  here
+                </a>
+                .
+              </div>
+            </ItemWrapper>
           </>
         )}
       </Modal>

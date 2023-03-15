@@ -169,9 +169,9 @@ const Avatar: React.FC<AvatarProps> = ({
     }
   }
 
-  useEffect(() => {
-    return () => console.log("avatar destroy...");
-  }, []);
+  // useEffect(() => {
+  //   return () => console.log("avatar destroy...");
+  // }, []);
 
   useEffect(() => {
     if (!did) return;

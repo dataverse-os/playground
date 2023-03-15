@@ -5,7 +5,7 @@ import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
 import { displayMyPosts } from "@/state/folder/slice";
 // @ts-ignore
 import { FileType } from "@dataverse/runtime-connector";
-import { Wrapper, Content, CreatedAt } from "./styled";
+import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
 import { PostStream } from "@/types";
 import Text from "./Text";
@@ -19,10 +19,12 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
   postStream: PostStream;
 }
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream, ref }) => {
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
+  postStream,
+  ref,
+}) => {
   const dispatch = useAppDispatch();
   const did = useSelector((state) => state.identity.did);
-
 
   return (
     <Wrapper ref={ref}>
@@ -38,7 +40,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream, ref }) =>
               did={postStream.streamContent.controller}
             />
             <CreatedAt>
-              {'• ' + timeAgo(Date.parse(postStream.streamContent.createdAt))}
+              {"• " + timeAgo(Date.parse(postStream.streamContent.createdAt))}
             </CreatedAt>
           </FlexRow>
           {postStream.streamContent.fileType !== FileType.Public && (
@@ -47,6 +49,15 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream, ref }) =>
         </Header>
         <Text postStream={postStream} />
         <Images postStream={postStream} />
+        <Footer>
+          <a
+            href={`${process.env.DATAVERSE_OS}/finder`}
+            target="_blank"
+            className="link"
+          >
+            View on DataverseOS File System
+          </a>
+        </Footer>
       </Content>
     </Wrapper>
   );

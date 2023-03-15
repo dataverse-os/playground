@@ -159,7 +159,8 @@ export const publishPost = createAsyncThunk(
       }
       return res;
     } catch (error: any) {
-      Message.error(error?.message ?? error);
+      (error?.message ?? error) &&
+        Message.error((error?.message ?? error).slice(0, 100));
     }
   }
 );
@@ -280,7 +281,7 @@ export const postSlice = createSlice({
         }
       });
       state.postStreamList = postStreamList;
-      action.error.message && Message.error(action.error.message);
+      action.error.message && Message.error(action.error.message.slice(0, 100));
     });
 
     //buyPostListener
@@ -327,7 +328,7 @@ export const postSlice = createSlice({
         }
       });
       state.postStreamList = postStreamList;
-      action.error.message && Message.error(action.error.message);
+      action.error.message && Message.error(action.error.message.slice(0, 100));
     });
     //getDatatokenInfo
     builder.addCase(getDatatokenInfo.pending, (state, action) => {

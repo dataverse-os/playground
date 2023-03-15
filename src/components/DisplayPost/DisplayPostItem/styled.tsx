@@ -13,7 +13,6 @@ export const Wrapper = styled.div`
   }
 `;
 
-
 export const Content = styled.div`
   background: #ffffff;
   border: 1px solid #e9e9e9;
@@ -44,12 +43,24 @@ export const CreatedAt = styled.div`
   font-size: 1rem;
   line-height: 1rem;
   margin: 0 1rem;
-  color: #007AFF;
-`
+  color: #007aff;
+`;
 
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 60px;
+`;
+
+export const Footer = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 20px;
+  .link {
+    font-family: Poppins-Medium;
+    color: black;
+  }
 `;

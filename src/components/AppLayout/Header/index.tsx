@@ -3,11 +3,13 @@ import { displayMyPosts } from "@/state/folder/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { connectIdentity } from "@/state/identity/slice";
 import { didAbbreviation } from "@/utils/didAndAddress";
+import { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper } from "./styled";
+
 
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const did = useSelector((state) => state.identity.did);
+  const { did, isConnectingIdentity } = useSelector((state) => state.identity);
 
   return (
     <Wrapper>
@@ -29,10 +31,14 @@ const Header = (): React.ReactElement => {
         </Button> */}
 
         <Button
+          loading={isConnectingIdentity}
           type="primary"
           onClick={() => {
             dispatch(connectIdentity());
           }}
+          css={css`
+            min-width: 150px;
+          `}
         >
           {didAbbreviation(did, 2) || "Sign in"}
         </Button>
