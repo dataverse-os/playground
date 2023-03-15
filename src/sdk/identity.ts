@@ -18,11 +18,11 @@ export const connectIdentity = async () => {
   try {
     await checkIsExtensionInjected();
     const res = await runtimeConnector.checkIsCurrentDIDValid({ appName });
+    await runtimeConnector.connectWallet({
+      name: METAMASK,
+      type: CRYPTO_WALLET_TYPE,
+    });
     if (!res) {
-      await runtimeConnector.connectWallet({
-        name: METAMASK,
-        type: CRYPTO_WALLET_TYPE,
-      });
       await runtimeConnector.switchNetwork(137);
       const did = await runtimeConnector.connectIdentity({
         wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
