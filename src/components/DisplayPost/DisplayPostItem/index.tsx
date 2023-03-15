@@ -49,7 +49,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         </Header>
         <Text postStream={postStream} />
         <Images postStream={postStream} />
-        <Footer>
+        {/* <Footer>
           <a
             href={`${process.env.DATAVERSE_OS}/finder`}
             target="_blank"
@@ -57,7 +57,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           >
             View on DataverseOS File System
           </a>
-        </Footer>
+        </Footer> */}
       </Content>
     </Wrapper>
   );
