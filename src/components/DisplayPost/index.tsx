@@ -20,14 +20,14 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const postListLeft = postStreamList
     .map((post, index) => {
-      if (index % 2 === 0) return post;
+      if (index % 2 === 1) return post;
     })
     .filter((element) => {
       return element !== undefined;
     });
   const postListRight = postStreamList
     .map((post, index) => {
-      if (index % 2 === 1) return post;
+      if (index % 2 === 0) return post;
     })
     .filter((element) => {
       return element !== undefined;
