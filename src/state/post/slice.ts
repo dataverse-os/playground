@@ -35,6 +35,7 @@ import {
   current,
 } from "@reduxjs/toolkit";
 import { Message } from "@arco-design/web-react";
+import { connectIdentity } from "@/sdk/identity";
 
 interface Props {
   isEncrypting?: boolean;
@@ -86,6 +87,7 @@ export const encryptPost = createAsyncThunk(
 export const decryptPost = createAsyncThunk(
   "post/decryptPost",
   async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+    await connectIdentity();
     const res = await _decryptPost({
       did,
       postStream,
@@ -97,6 +99,7 @@ export const decryptPost = createAsyncThunk(
 export const buyPost = createAsyncThunk(
   "file/buyFile",
   async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+    await connectIdentity();
     const res = await isCollected({
       datatokenId: postStream.streamContent.datatokenId!,
       address: getAddressFromDid(did),
@@ -123,6 +126,7 @@ export const uploadImg = createAsyncThunk(
 export const publishPost = createAsyncThunk(
   "post/publishPost",
   async ({ did, postContent }: { did: string; postContent: PostContent }) => {
+    await connectIdentity();
     const rootStore = await import("@/state/store");
     const { settings } = rootStore.default.store.getState().privacySettings;
     const { postType, currency, amount, collectLimit } = settings;
