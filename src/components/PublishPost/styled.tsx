@@ -2,7 +2,7 @@ import styled, { FlattenSimpleInterpolation } from "styled-components";
 
 export const Wrapper = styled.div`
   max-width: 100%;
-  width: calc(50% - 0.6875rem);
+  /* width: calc(50% - 0.6875rem); */
   margin: 0.35rem;
   &:nth-child(2n + 1) {
     order: 1;

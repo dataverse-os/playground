@@ -3,7 +3,6 @@ import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
 import { displayMyPosts } from "@/state/folder/slice";
-// @ts-ignore
 import { FileType } from "@dataverse/runtime-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
@@ -20,14 +19,11 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
-  postStream,
-  ref,
+  postStream
 }) => {
-  const dispatch = useAppDispatch();
-  const did = useSelector((state) => state.identity.did);
 
   return (
-    <Wrapper ref={ref}>
+    <Wrapper>
       <Content>
         <Header>
           <FlexRow>

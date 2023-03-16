@@ -25,29 +25,28 @@ export const BodyWrapper = styled.div`
   align-items: center;
 `;
 
-export const PostWrapper = styled.aside`
+export const PostWrapper = styled.div`
   flex: 1;
   align-items: flex-start;
   display: flex;
-  flex-flow: column wrap;
-  flex-shrink: 0;
+  flex-direction: row;
   z-index: 1;
   overflow: hidden;
   align-content: flex-start;
-  justify-content: flex-start;
+  justify-content: space-between;
   max-width: 92.5rem;
   width: 100%;
   margin: 0;
-  &::before,
+  /* &::before,
   ::after {
     content: "";
     flex-basis: 100%;
     width: 0;
     order: 1;
-  }
+  } */
 `;
 
-export const DisplayPostWrapper = styled.aside`
+export const DisplayPostWrapper = styled.div`
   position: relative;
   flex: 1;
   display: flex;

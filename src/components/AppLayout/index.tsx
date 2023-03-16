@@ -19,7 +19,6 @@ const Layout: React.FC = (): React.ReactElement => {
       </HeaderWrapper>
       <BodyWrapper>
         <PostWrapper>
-          <PublishPost /> 
           <DisplayPost />
         </PostWrapper>
         {/* <DisplayPostWrapper>
