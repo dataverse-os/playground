@@ -1,4 +1,10 @@
-import { CustomMirrorFile, Post, PostStream, PostType } from "@/types";
+import {
+  CustomMirrorFile,
+  Post,
+  PostContent,
+  PostStream,
+  PostType,
+} from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   Apps,
@@ -72,16 +78,33 @@ export const loadAllPostStreams = async () => {
       }
       return el;
     })
-    .filter(
-      (el) =>
-        el.streamContent.content.content &&
-        Object.keys(el.streamContent.content.content).length > 0
-    )
+    .filter((el) => {
+      const post = el.streamContent.content.content;
+      const case1 = post && Object.keys(post).length > 0;
+      let case2;
+      let case3;
+      if (case1) {
+        if ((post as Post).postType === PostType.Public) {
+          const postContent = (post as Post).postContent;
+          if (postContent) {
+            const { text, images, videos } = postContent as PostContent;
+            case2 =
+              text ||
+              (images && images.length > 0) ||
+              (videos && videos.length > 0);
+          }
+        } else {
+          case3 = (post as Post).postContent;
+        }
+      }
+      return case1 && (case2 || case3);
+    })
     .sort(
       (a, b) =>
         Date.parse(b.streamContent.createdAt) -
         Date.parse(a.streamContent.createdAt)
     );
+  console.log(sortedList);
   return sortedList;
 };
 
@@ -153,7 +176,7 @@ export const createDatatokenPostStream = async ({
       streamId: res.newMirror!.mirrorId,
       currency,
       amount,
-      collectLimit, 
+      collectLimit,
     });
     datatokenId = res2.datatokenId;
   } catch (error: any) {

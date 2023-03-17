@@ -165,6 +165,7 @@ export const publishPost = createAsyncThunk(
     } catch (error: any) {
       (error?.message ?? error) &&
         Message.error((error?.message ?? error).slice(0, 100));
+      throw error;
     }
   }
 );

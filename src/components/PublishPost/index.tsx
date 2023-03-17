@@ -107,43 +107,52 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         files.push(image.file);
       }
     });
-    await dispatch(
+    const postImages = (await (
+      await dispatch(uploadImg({ files }))
+    ).payload) as string[];
+
+    if (!content && postImages.length === 0) {
+      Message.info("Text and pictures cannot both be empty.");
+      return;
+    }
+
+    const res = await dispatch(
       publishPost({
         did: did as string,
         postContent: {
           text: content,
-          images: (await (
-            await dispatch(uploadImg({ files }))
-          ).payload) as string[],
+          images: postImages,
           videos: [],
         },
       })
     );
-    Message.success({
-      content: (
-        <>
-          Post successfully!
-          <a
-            href={`${process.env.DATAVERSE_OS}/finder`}
-            target="_blank"
-            style={{ marginLeft: "5px", color: "black" }}
-          >
-            <span style={{ textDecoration: "underline" }}>
-              View on DataverseOS File System
-            </span>
-            <IconArrowRight
-              style={{
-                color: "black",
-                transform: "rotate(-45deg)",
-              }}
-            />
-          </a>
-        </>
-      ),
-    });
-    setContent("");
-    setImages([]);
-    dispatch(displayPostList());
+    if (res.meta.requestStatus === "fulfilled") {
+      Message.success({
+        content: (
+          <>
+            Post successfully!
+            <a
+              href={`${process.env.DATAVERSE_OS}/finder`}
+              target="_blank"
+              style={{ marginLeft: "5px", color: "black" }}
+            >
+              <span style={{ textDecoration: "underline" }}>
+                View on DataverseOS File System
+              </span>
+              <IconArrowRight
+                style={{
+                  color: "black",
+                  transform: "rotate(-45deg)",
+                }}
+              />
+            </a>
+          </>
+        ),
+      });
+      setContent("");
+      setImages([]);
+      dispatch(displayPostList());
+    }
     dispatch(postSlice.actions.setIsPublishingPost(false));
   };
 
