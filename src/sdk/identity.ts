@@ -1,4 +1,7 @@
-import { checkIsExtensionInjected } from "@/utils/checkIsExtensionInjected";
+import {
+  checkIsExtensionInjected,
+  detectDataverseExtension,
+} from "@/utils/checkIsExtensionInjected";
 import {
   Apps,
   CRYPTO_WALLET_TYPE,
@@ -16,14 +19,14 @@ export const connectWallet = async () => {
 };
 
 export const getCurrentDID = async () => {
-  await checkIsExtensionInjected();
+  await detectDataverseExtension();
   const res = await runtimeConnector.getCurrentDID();
   return res;
 };
 
 export const connectIdentity = async () => {
   try {
-    await checkIsExtensionInjected();
+    await detectDataverseExtension();
     const res = await runtimeConnector.checkIsCurrentDIDValid({ appName });
     await runtimeConnector.connectWallet({
       name: METAMASK,

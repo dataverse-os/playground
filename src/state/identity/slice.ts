@@ -1,8 +1,13 @@
+import { installDataverseMessage } from "@/components/BaseComponents/Message";
 import {
   connectIdentity as _connectIdentity,
   connectWallet,
   getCurrentDID,
 } from "@/sdk/identity";
+import {
+  detectDataverseExtension,
+  detectExtension,
+} from "@/utils/checkIsExtensionInjected";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface Props {
@@ -21,6 +26,10 @@ export const connectIdentity = createAsyncThunk(
     const rootStore = await import("@/state/store");
     const { isConnectingIdentity } =
       rootStore.default.store.getState().identity;
+
+    if (!(await detectDataverseExtension())) {
+      installDataverseMessage();
+    }
 
     const did = await getCurrentDID();
     if (did) {

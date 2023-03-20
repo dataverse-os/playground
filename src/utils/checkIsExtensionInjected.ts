@@ -15,3 +15,23 @@ export const checkIsExtensionInjected = () => {
     }, 5000);
   });
 };
+
+export function detectExtension(extensionId: string): Promise<boolean> {
+  const img = new Image();
+  img.src = `chrome-extension://${extensionId}/icons/icon-16x16.png`;
+  return new Promise((resolve) => {
+    img.addEventListener("load", () => {
+      resolve(true);
+    });
+    img.addEventListener("error", () => {
+      resolve(false);
+    });
+  });
+}
+
+export async function detectDataverseExtension(): Promise<boolean> {
+  if (await detectExtension("kcigpjcafekokoclamfendmaapcljead")) {
+    return true;
+  }
+  return false;
+}
