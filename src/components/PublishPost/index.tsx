@@ -32,6 +32,7 @@ import {
 import { connectIdentity } from "@/state/identity/slice";
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
+import CreateLensProfile from "../CreateLensProfile";
 
 export interface PublishPostProps {}
 
@@ -249,6 +250,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         </ImageUploading>
       </Content>
       <PrivacySettings></PrivacySettings>
+      {/* <CreateLensProfile></CreateLensProfile> */}
     </Wrapper>
   );
 };

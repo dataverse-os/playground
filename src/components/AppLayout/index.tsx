@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import DisplayFolder from "../DisplayFolder";
 import DisplayPost from "../DisplayPost";
+import NoExtensionTip from "../NoExtensionTip";
 import PublishPost from "../PublishPost";
 import Header from "./Header";
 import {
@@ -21,6 +22,7 @@ const Layout: React.FC = (): React.ReactElement => {
         <PostWrapper>
           <DisplayPost />
         </PostWrapper>
+        <NoExtensionTip />
         {/* <DisplayPostWrapper>
           <DisplayFolder />
         </DisplayPostWrapper> */}

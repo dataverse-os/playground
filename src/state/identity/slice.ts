@@ -9,15 +9,18 @@ import {
   detectExtension,
 } from "@/utils/checkIsExtensionInjected";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { noExtensionSlice } from "../noExtension/slice";
 
 interface Props {
   did: string;
   isConnectingIdentity: boolean;
+  isDataverseExtension: boolean;
 }
 
 const initialState: Props = {
   did: "",
   isConnectingIdentity: false,
+  isDataverseExtension: true,
 };
 
 export const connectIdentity = createAsyncThunk(
@@ -28,7 +31,11 @@ export const connectIdentity = createAsyncThunk(
       rootStore.default.store.getState().identity;
 
     if (!(await detectDataverseExtension())) {
-      installDataverseMessage();
+      // installDataverseMessage();
+      dispatch(noExtensionSlice.actions.setIsDataverseExtension(false));
+      dispatch(noExtensionSlice.actions.setModalVisible(true));
+    } else {
+      dispatch(noExtensionSlice.actions.setIsDataverseExtension(true));
     }
 
     const did = await getCurrentDID();
@@ -58,6 +65,9 @@ export const identitySlice = createSlice({
   reducers: {
     setIsConnectingIdentity: (state, action: PayloadAction<boolean>) => {
       state.isConnectingIdentity = action.payload;
+    },
+    setIsDataverseExtension: (state, action: PayloadAction<boolean>) => {
+      state.isDataverseExtension = action.payload;
     },
   },
   extraReducers: (builder) => {
