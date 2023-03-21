@@ -29,22 +29,27 @@ export interface PostStream {
     updatedAt: string;
     deleted?: boolean;
     datatokenInfo?: {
-      address: string,
+      address: string;
       collect_info: {
-        collect_nft_address: string,
+        collect_nft_address: string;
         sold_list: {
-          owner: string,
-          token_id: string
-        }[],
-        sold_num: number,
-        total: string,
-        who_can_free_collect: string[]
-      },
-      content_uri: string,
-      owner: string,
-      source: string,
-    }
-  }
+          owner: string;
+          token_id: string;
+        }[];
+        price: {
+          amount: string;
+          currency: string;
+          currency_addr: string;
+        };
+        sold_num: number;
+        total: string;
+        who_can_free_collect: string[];
+      };
+      content_uri: string;
+      owner: string;
+      source: string;
+    };
+  };
 
   isDecrypting?: boolean;
   isDecryptedSuccessfully?: boolean;
@@ -110,4 +115,4 @@ export interface Post {
   updatedAt?: string;
 }
 
-export interface Settings { }
+export interface Settings {}
