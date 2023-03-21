@@ -14,7 +14,7 @@ import {
 import { runtimeConnector, appName, modelName } from ".";
 import {
   getAppNameAndModelNameByModelId,
-  getModelIdByAppNameAndModelName,
+  getModelIdByModelName,
 } from "./appRegistry";
 import { decryptWithLit } from "./encryptionAndDecryption";
 
@@ -66,7 +66,7 @@ export const readMyPosts = async (did: string) => {
     appName,
   });
 
-  const postModelId = await getModelIdByAppNameAndModelName(modelName);
+  const postModelId = await getModelIdByModelName(modelName);
 
   const mirrors = Object.values(folders)
     .map((folder) =>

@@ -12,8 +12,13 @@ export const createDatatoken = async (datatokenVars: DatatokenVars) => {
   return res;
 };
 
-export const collect = async (datatokenId: string) => {
-  const res = await runtimeConnector.collect(datatokenId);
+export const collect = async (params: {
+  did: string;
+  appName: string;
+  datatokenId: string;
+  indexFileId: string;
+}) => {
+  const res = await runtimeConnector.collect(params);
   return res;
 };
 
@@ -42,10 +47,16 @@ export const getDatatokenInfo = async (variables: { address: string }) => {
             owner
             token_id
           }
+          price {
+            amount
+            currency
+            currency_addr
+          }
           sold_num
           total
           who_can_free_collect
         }
+
         content_uri
         owner
         source

@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@arco-design/web-react": "^2.45.2",
-    "@dataverse/runtime-connector": "latest",
+    "@ceramicnetwork/common": "2.5.0",
+    "@ceramicnetwork/http-client": "2.3.3",
+    "@ceramicnetwork/stream-model-instance": "0.4.0",
+    "@dataverse/runtime-connector": "^1.0.23",
     "@reduxjs/toolkit": "1.9.0",
     "buffer": "^6.0.3",
     "framer-motion": "^9.0.2",

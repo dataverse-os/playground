@@ -53,8 +53,6 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
     dispatch(displayPostList());
   }, []);
 
-  console.log({ postStreamList, postListLeft, postListRight });
-
   return (
     <>
       <Wrapper>

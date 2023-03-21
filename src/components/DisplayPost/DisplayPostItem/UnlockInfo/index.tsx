@@ -50,22 +50,21 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (
-  //     postStream.isGettingDatatokenInfo ||
-  //     postStream.hasGotDatatokenInfo
-  //   ) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (postStream.isGettingDatatokenInfo || postStream.hasGotDatatokenInfo) {
+      return;
+    }
 
-  //   if (postStream.streamContent.fileType === FileType.Datatoken) {
-  //     console.log(
-  //       postStream.isGettingDatatokenInfo,
-  //       postStream.hasGotDatatokenInfo
-  //     );
-  //     dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
-  //   }
-  // }, [postStreamList.length]);
+    if (postStream.streamContent.fileType === FileType.Datatoken) {
+      console.log(
+        postStream.isGettingDatatokenInfo,
+        postStream.hasGotDatatokenInfo
+      );
+      dispatch(
+        getDatatokenInfo({ address: postStream.streamContent.datatokenId! })
+      );
+    }
+  }, [postStreamList.length]);
 
   return (
     <Wrapper>
@@ -92,18 +91,18 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           onClick={unlock}
         ></img>
       )}
-      {/* {
-        postStream.streamContent.fileType === FileType.Datatoken && (
-          <DatatokenInfoWrapper>
-            <span className="amount">10</span>
-            <span className="currency">WMATIC</span>
-            <br />
-            <span className="boughtNum">{soldSum}</span> /
-            <span className="collectLimit">{total === '0' ? ' unlimited' : ' ' + total}</span>
-            <span className="Sold">Sold</span>
-          </DatatokenInfoWrapper>
-        )
-      } */}
+      {postStream.streamContent.fileType === FileType.Datatoken && (
+        <DatatokenInfoWrapper>
+          <span className="amount">10</span>
+          <span className="currency">WMATIC</span>
+          <br />
+          <span className="boughtNum">{soldSum}</span> /
+          <span className="collectLimit">
+            {total === String(2 ** 52) ? " Unlimited" : " " + total}
+          </span>
+          <span className="Sold">Sold</span>
+        </DatatokenInfoWrapper>
+      )}
     </Wrapper>
   );
 };

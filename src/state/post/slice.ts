@@ -11,7 +11,7 @@ import {
   generateAccessControlConditions,
   loadAllPostStreams,
   loadMyPostStreams,
-} from "@/sdk/stream";
+} from "@/sdk/post";
 import {
   CustomMirrorFile,
   LitKit,
@@ -36,6 +36,7 @@ import {
 } from "@reduxjs/toolkit";
 import { Message } from "@arco-design/web-react";
 import { connectIdentity } from "@/sdk/identity";
+import { appName } from "@/sdk";
 
 interface Props {
   isEncrypting?: boolean;
@@ -105,7 +106,12 @@ export const buyPost = createAsyncThunk(
       address: getAddressFromDid(did),
     });
     if (!res) {
-      await collect(postStream.streamContent.datatokenId!);
+      await collect({
+        did,
+        appName: appName,
+        datatokenId: postStream.streamContent.datatokenId!,
+        indexFileId: postStream.streamContent.indexFileId,
+      });
     }
     const res2 = await _decryptPost({ did, postStream });
     return res2;

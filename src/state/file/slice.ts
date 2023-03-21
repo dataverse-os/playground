@@ -1,17 +1,4 @@
-import { collect, createDatatoken } from "@/sdk/monetize";
-import {
-  updateFileStreamsWithAccessControlConditions,
-  updatePostStreamsWithAccessControlConditions,
-} from "@/sdk/stream";
-import { CustomMirrorFile, PostContent } from "@/types";
-import { getAddressFromDid } from "@/utils/didAndAddress";
-import {
-  Currency,
-  FileType,
-  IndexFileContentType,
-} from "@dataverse/runtime-connector";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { decryptPost } from "@/sdk/folder";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface Props {}
 
@@ -107,7 +94,6 @@ const initialState: Props = {};
 //     }
 //   }
 // );
-
 
 export const fileSlice = createSlice({
   name: "file",
