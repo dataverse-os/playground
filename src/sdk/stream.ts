@@ -58,11 +58,14 @@ export const buildStreamsWithFiles = async ({
         }),
       };
     });
-
+    
     structuredFiles &&
       Object.values(structuredFiles).forEach((structuredFile) => {
-        const { contentId, contentType } = structuredFile;
-        if (streams[contentId]) {
+        const { contentId, contentType, controller } = structuredFile;
+        if (
+          streams[contentId] &&
+          streams[contentId].controller === controller
+        ) {
           streams[contentId] = {
             ...(!(contentType in IndexFileContentType) &&
               streams[contentId] && {
