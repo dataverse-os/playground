@@ -1,4 +1,3 @@
-import { installDataverseMessage } from "@/components/BaseComponents/Message";
 import {
   connectIdentity as _connectIdentity,
   connectWallet,

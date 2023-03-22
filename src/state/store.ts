@@ -14,6 +14,7 @@ import { folderSlice } from "./folder/slice";
 import { fileSlice } from "./file/slice";
 import { privacySettingsSlice } from "./privacySettings/slice";
 import { noExtensionSlice } from "./noExtension/slice";
+import { lensProfileSlice } from "./lensProfile/slice";
 
 const persistConfig = {
   key: "root",
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   file: fileSlice.reducer,
   privacySettings: privacySettingsSlice.reducer,
   noExtension: noExtensionSlice.reducer,
+  lensProfile: lensProfileSlice.reducer,
 });
 
 // 使用persistReducer强化reducer,persistReducer(config, reducer)

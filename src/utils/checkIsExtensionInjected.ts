@@ -1,19 +1,25 @@
 declare const __DATAVERSE_EXTENSION_VERSION__: string;
 
 export const checkIsExtensionInjected = () => {
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      try {
-        __DATAVERSE_EXTENSION_VERSION__;
-        clearInterval(interval);
-        resolve(true);
-      } catch (error) {}
-    }, 100);
-    setTimeout(() => {
-      clearInterval(interval);
-      resolve(false);
-    }, 5000);
-  });
+  // return new Promise((resolve) => {
+  //   const interval = setInterval(() => {
+  //     try {
+  //       __DATAVERSE_EXTENSION_VERSION__;
+  //       clearInterval(interval);
+  //       resolve(true);
+  //     } catch (error) {}
+  //   }, 100);
+  //   setTimeout(() => {
+  //     clearInterval(interval);
+  //     resolve(false);
+  //   }, 5000);
+  // });
+  try {
+    __DATAVERSE_EXTENSION_VERSION__;
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 export function detectExtension(extensionId: string): Promise<boolean> {
@@ -30,8 +36,10 @@ export function detectExtension(extensionId: string): Promise<boolean> {
 }
 
 export async function detectDataverseExtension(): Promise<boolean> {
-  if (await detectExtension("kcigpjcafekokoclamfendmaapcljead")) {
-    return true;
-  }
-  return false;
+  // if (await detectExtension("kcigpjcafekokoclamfendmaapcljead")) {
+  //   return true;
+  // }
+  // return false;
+  const res = checkIsExtensionInjected();
+  return res;
 }

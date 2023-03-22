@@ -15,7 +15,7 @@ import {
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
 import { uuid } from "@/utils/uuid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
@@ -33,6 +33,8 @@ import { connectIdentity } from "@/state/identity/slice";
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
 import CreateLensProfile from "../CreateLensProfile";
+import { getLensProfiles } from "@/sdk/monetize";
+import { lensProfileSlice } from "@/state/lensProfile/slice";
 
 export interface PublishPostProps {}
 
@@ -48,8 +50,12 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   );
   const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
   const litKit = useSelector((state) => state.post.litKit);
+  const profileId = useSelector((state) => state.lensProfile.profileId);
+
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
+  const [postImages, setPostImages] = useState<string[]>([]);
+
   const maxNumber = 69;
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
@@ -85,9 +91,28 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     );
   };
 
-  const post = async () => {
+  const handleProfileAndPost = async () => {
     if (isPublishingPost) return;
     const { payload: did } = await dispatch(connectIdentity());
+
+    const postImages = await handlePostImages();
+    if (!postImages) return;
+
+    dispatch(postSlice.actions.setIsPublishingPost(true));
+    const lensProfiles = await getLensProfiles(
+      getAddressFromDid(did as string)
+    );
+    console.log(lensProfiles);
+    if (lensProfiles.length === 0) {
+      dispatch(postSlice.actions.setIsPublishingPost(false));
+      dispatch(lensProfileSlice.actions.setModalVisible(true));
+      return;
+    }
+
+    await post({ postImages, profileId: lensProfiles.slice(-1)[0].id });
+  };
+
+  const handlePostImages = async () => {
     if (needEncrypt) {
       const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
       const { amount, collectLimit } = settings;
@@ -117,9 +142,21 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       return;
     }
 
+    setPostImages(postImages);
+    return postImages;
+  };
+
+  const post = async ({
+    profileId,
+    postImages,
+  }: {
+    profileId: string;
+    postImages: string[];
+  }) => {
     const res = await dispatch(
       publishPost({
         did: did as string,
+        profileId,
         postContent: {
           text: content,
           images: postImages,
@@ -155,6 +192,21 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       dispatch(displayPostList());
     }
     dispatch(postSlice.actions.setIsPublishingPost(false));
+  };
+
+  useEffect(() => {
+    postAfterProfileCreated();
+  }, [profileId, postImages]);
+
+  useEffect(() => {
+    dispatch(postSlice.actions.setIsPublishingPost(false));
+  }, []);
+
+  const postAfterProfileCreated = async () => {
+    if (!profileId || !postImages) return;
+    dispatch(postSlice.actions.setIsPublishingPost(true));
+    post({ profileId, postImages });
+    dispatch(lensProfileSlice.actions.setProfileId(""));
   };
 
   const openPrivacySettings = () => {
@@ -234,8 +286,8 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
                   <Button
                     type="primary"
                     loading={isPublishingPost}
-                    onClick={post}
-                    width={"1.4375rem"}
+                    onClick={handleProfileAndPost}
+                    width={110}
                     css={css`
                       border-radius: 8px;
                       padding: 0.3rem 2rem;
@@ -250,7 +302,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
         </ImageUploading>
       </Content>
       <PrivacySettings></PrivacySettings>
-      {/* <CreateLensProfile></CreateLensProfile> */}
+      <CreateLensProfile></CreateLensProfile>
     </Wrapper>
   );
 };

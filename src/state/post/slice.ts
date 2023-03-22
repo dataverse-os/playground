@@ -22,12 +22,7 @@ import {
 } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import { web3Storage } from "@/utils/web3Storage";
-import {
-  DecryptionConditionsTypes,
-  IndexFile,
-  IndexFileContentType,
-  StreamObject,
-} from "@dataverse/runtime-connector";
+import { DecryptionConditionsTypes } from "@dataverse/runtime-connector";
 import {
   createSlice,
   createAsyncThunk,
@@ -131,7 +126,15 @@ export const uploadImg = createAsyncThunk(
 
 export const publishPost = createAsyncThunk(
   "post/publishPost",
-  async ({ did, postContent }: { did: string; postContent: PostContent }) => {
+  async ({
+    did,
+    profileId,
+    postContent,
+  }: {
+    did: string;
+    profileId: string;
+    postContent: PostContent;
+  }) => {
     await connectIdentity();
     const rootStore = await import("@/state/store");
     const { settings } = rootStore.default.store.getState().privacySettings;
@@ -162,6 +165,7 @@ export const publishPost = createAsyncThunk(
         res = await createDatatokenPostStream({
           did,
           post,
+          profileId,
           currency: currency!,
           amount: amount!,
           collectLimit: collectLimit!,

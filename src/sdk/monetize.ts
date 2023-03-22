@@ -7,6 +7,16 @@ export const getChainOfDatatoken = async () => {
   return res;
 };
 
+export const createLensProfile = async (handle: string) => {
+  const res = await runtimeConnector.createLensProfile(handle);
+  return res;
+};
+
+export const getLensProfiles = async (address: string) => {
+  const res = await runtimeConnector.getLensProfiles(address);
+  return res;
+};
+
 export const createDatatoken = async (datatokenVars: DatatokenVars) => {
   const res = await runtimeConnector.createDatatoken(datatokenVars);
   return res;

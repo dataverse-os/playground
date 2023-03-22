@@ -158,12 +158,14 @@ export const createPrivatePostStream = async ({
 export const createDatatokenPostStream = async ({
   did,
   post,
+  profileId,
   currency,
   amount,
   collectLimit,
 }: {
   did: string;
   post: Post;
+  profileId: string;
   currency: Currency;
   amount: number;
   collectLimit: number;
@@ -172,6 +174,7 @@ export const createDatatokenPostStream = async ({
   let datatokenId;
   try {
     const res2 = await createDatatoken({
+      profileId,
       streamId: res.newMirror!.mirrorId,
       currency,
       amount,

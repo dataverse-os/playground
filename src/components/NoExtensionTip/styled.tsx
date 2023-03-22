@@ -5,7 +5,8 @@ export const modelWrapper = css`
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  height: 421px;
+  padding: 35.4px 24px;
+
   .footerContainer {
     display: none;
   }

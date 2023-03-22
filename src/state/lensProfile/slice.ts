@@ -2,25 +2,25 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Props {
   modalVisible: boolean;
-  isDataverseExtension: boolean;
+  profileId: string;
 }
 
 const initialState: Props = {
   modalVisible: false,
-  isDataverseExtension: false,
+  profileId: "",
 };
 
-export const noExtensionSlice = createSlice({
-  name: "noExtension",
+export const lensProfileSlice = createSlice({
+  name: "lensProfile",
   initialState,
   reducers: {
     setModalVisible: (state, action: PayloadAction<boolean>) => {
       state.modalVisible = action.payload;
     },
-    setIsDataverseExtension: (state, action: PayloadAction<boolean>) => {
-      state.isDataverseExtension = action.payload;
+    setProfileId: (state, action: PayloadAction<string>) => {
+      state.profileId = action.payload;
     },
   },
 });
 
-export default noExtensionSlice.reducer;
+export default lensProfileSlice.reducer;
