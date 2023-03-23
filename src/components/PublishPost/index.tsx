@@ -102,14 +102,18 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     const lensProfiles = await getLensProfiles(
       getAddressFromDid(did as string)
     );
-    console.log(lensProfiles);
+
     if (lensProfiles.length === 0) {
       dispatch(postSlice.actions.setIsPublishingPost(false));
       dispatch(lensProfileSlice.actions.setModalVisible(true));
       return;
     }
 
-    await post({ postImages, profileId: lensProfiles.slice(-1)[0].id });
+    await post({
+      postImages,
+      profileId: lensProfiles.slice(-1)[0].id,
+      did: did as string,
+    });
   };
 
   const handlePostImages = async () => {
@@ -147,15 +151,17 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   };
 
   const post = async ({
+    did,
     profileId,
     postImages,
   }: {
+    did: string;
     profileId: string;
     postImages: string[];
   }) => {
     const res = await dispatch(
       publishPost({
-        did: did as string,
+        did,
         profileId,
         postContent: {
           text: content,
@@ -205,7 +211,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const postAfterProfileCreated = async () => {
     if (!profileId || !postImages) return;
     dispatch(postSlice.actions.setIsPublishingPost(true));
-    post({ profileId, postImages });
+    post({ profileId, postImages, did });
     dispatch(lensProfileSlice.actions.setProfileId(""));
   };
 
