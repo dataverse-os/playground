@@ -41,7 +41,7 @@ dependencies:
   '@ceramicnetwork/common': 2.5.0
   '@ceramicnetwork/http-client': 2.3.3
   '@ceramicnetwork/stream-model-instance': 0.4.0
-  '@dataverse/runtime-connector': 1.0.23
+  '@dataverse/runtime-connector': 1.0.24
   '@reduxjs/toolkit': 1.9.0_k4ae6lp43ej6mezo3ztvx6pykq
   buffer: 6.0.3
   framer-motion: 9.0.2_biqbaboplfbrettd7655fr4n2y
@@ -495,8 +495,8 @@ packages:
       uuid: 9.0.0
     dev: false
 
-  /@dataverse/runtime-connector/1.0.23:
-    resolution: {integrity: sha512-9M2OAhyT4KVNtpyW7gaVJhVfuhgsaGZIpZZFkA8inhBptwp+hxsDKBzG+s6yeWJF7rruGZjn5IP88iYDhfOPCg==}
+  /@dataverse/runtime-connector/1.0.24:
+    resolution: {integrity: sha512-O73U/pUDOawyttqcZ7O2k4QPU8Bdu0noqBm9V2BAhIRfmg6MP38X7+1yDGPeCntzIgRofN4XrnYagJJ+IVsGxw==}
     dependencies:
       '@dataverse/communicator': 1.0.20
       ethers: 5.6.9
