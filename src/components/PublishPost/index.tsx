@@ -99,21 +99,27 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     if (!postImages) return;
 
     dispatch(postSlice.actions.setIsPublishingPost(true));
-    const lensProfiles = await getLensProfiles(
-      getAddressFromDid(did as string)
-    );
 
-    if (lensProfiles.length === 0) {
-      dispatch(postSlice.actions.setIsPublishingPost(false));
-      dispatch(lensProfileSlice.actions.setModalVisible(true));
-      return;
+    let lensProfiles: any[] = [];
+    if (needEncrypt) {
+      lensProfiles = await getLensProfiles(getAddressFromDid(did as string));
+
+      if (lensProfiles.length === 0) {
+        dispatch(postSlice.actions.setIsPublishingPost(false));
+        dispatch(lensProfileSlice.actions.setModalVisible(true));
+        return;
+      }
+      await post({
+        postImages,
+        profileId: lensProfiles.slice(-1)[0].id,
+        did: did as string,
+      });
+    } else {
+      await post({
+        postImages,
+        did: did as string,
+      });
     }
-
-    await post({
-      postImages,
-      profileId: lensProfiles.slice(-1)[0].id,
-      did: did as string,
-    });
   };
 
   const handlePostImages = async () => {
@@ -156,7 +162,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     postImages,
   }: {
     did: string;
-    profileId: string;
+    profileId?: string;
     postImages: string[];
   }) => {
     const res = await dispatch(

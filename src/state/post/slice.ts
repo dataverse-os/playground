@@ -132,7 +132,7 @@ export const publishPost = createAsyncThunk(
     postContent,
   }: {
     did: string;
-    profileId: string;
+    profileId?: string;
     postContent: PostContent;
   }) => {
     await connectIdentity();
@@ -165,7 +165,7 @@ export const publishPost = createAsyncThunk(
         res = await createDatatokenPostStream({
           did,
           post,
-          profileId,
+          profileId: profileId!,
           currency: currency!,
           amount: amount!,
           collectLimit: collectLimit!,

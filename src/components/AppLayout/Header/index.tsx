@@ -5,6 +5,7 @@ import { didAbbreviation } from "@/utils/didAndAddress";
 import styled, { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper } from "./styled";
 import githubLogo from "@/assets/github.png";
+import { useEffect } from "react";
 
 const GitHubLink = styled.img`
   height: 36px;
@@ -16,6 +17,12 @@ const GitHubLink = styled.img`
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const { did, isConnectingIdentity } = useSelector((state) => state.identity);
+
+  useEffect(() => {
+    if (self !== top && !did) {
+      dispatch(connectIdentity());
+    }
+  }, [did]);
 
   return (
     <Wrapper>
