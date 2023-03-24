@@ -130,7 +130,6 @@ export const decryptPost = async ({
   did: string;
   postStream: PostStream;
 }) => {
-  console.log({ postStream });
   const newPostStream = JSON.parse(JSON.stringify(postStream));
   const {
     fileType,
