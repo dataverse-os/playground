@@ -21,4 +21,5 @@ export const Brand = styled.div`
 export const HeaderRightRender = styled.div`
   display: flex;
   justify-items: center;
+  align-items: center;
 `
