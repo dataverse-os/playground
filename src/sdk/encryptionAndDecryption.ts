@@ -61,7 +61,7 @@ export const decryptWithLit = async ({
   decryptionConditionsType?: DecryptionConditionsTypes;
   symmetricKeyInBase16Format?: string;
 }) => {
-  const { content } = await runtimeConnector.decryptWithLit({
+  const res= await runtimeConnector.decryptWithLit({
     did,
     appName,
     modelNames,
@@ -74,5 +74,5 @@ export const decryptWithLit = async ({
           decryptionConditionsType,
         }),
   });
-  return content;
+  return res.content;
 };

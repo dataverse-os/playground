@@ -30,6 +30,14 @@ export default defineConfig({
   define: {
     "process.env": {
       ENV: "Browser",
+      IPFS_WEB3STORAGE: "https://w3s.link/ipfs/",
+      PROXY: "https://api.dataverse.art/raw",
+      DATAVERSE_ENDPOINT: "https://gateway.beta.dataverse.art/v1/data-token",
+      DATAVERSE_OS: "https://dataverse-os.com",
+      MUMBAI_FAUCET: "https://mumbaifaucet.com",
+      DATAVERSE_GOOGLE_STORE:
+        "https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead",
+      CERAMIC_API: "https://dataverseceramicdaemon.com",
     },
   },
 });

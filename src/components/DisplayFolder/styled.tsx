@@ -36,7 +36,7 @@ export const Content = styled.div`
   }
 `;
 
-export const PostWapper = styled.div<{ marginTop: number | string }>`
+export const PostWrapper = styled.div<{ marginTop: number | string }>`
   display: flex;
   flex-direction: column;
   margin-top: ${(props) =>
@@ -67,4 +67,26 @@ export const LinkWrapper = styled.a`
 
 export const Link = styled.a`
   font-size: 24px;
+`;
+
+export const ImagesWrapper = styled.div`
+  background: black;
+`;
+
+export const Secret = styled.div`
+  width: 60px;
+  height: 60px;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 30px;
+`;
+
+export const Image = styled.img`
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
 `;

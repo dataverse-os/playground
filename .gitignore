@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+scripts/s3-deploy/*
+scripts/upload.js

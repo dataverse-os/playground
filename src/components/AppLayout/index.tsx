@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import DisplayFolder from "../DisplayFolder";
-import Modal from "../Modal";
+import DisplayPost from "../DisplayPost";
+import NoExtensionTip from "../NoExtensionTip";
 import PublishPost from "../PublishPost";
 import Header from "./Header";
 import {
   Container,
   HeaderWrapper,
   BodyWrapper,
-  PublishPostWrapper,
+  PostWrapper,
   DisplayPostWrapper,
 } from "./styled";
 
@@ -18,12 +19,13 @@ const Layout: React.FC = (): React.ReactElement => {
         <Header />
       </HeaderWrapper>
       <BodyWrapper>
-        <PublishPostWrapper>
-          <PublishPost />
-        </PublishPostWrapper>
-        <DisplayPostWrapper>
+        <PostWrapper>
+          <DisplayPost />
+        </PostWrapper>
+        <NoExtensionTip />
+        {/* <DisplayPostWrapper>
           <DisplayFolder />
-        </DisplayPostWrapper>
+        </DisplayPostWrapper> */}
       </BodyWrapper>
     </Container>
   );

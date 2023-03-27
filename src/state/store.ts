@@ -8,15 +8,18 @@ import {
   initMessageListener,
 } from "redux-state-sync";
 
-import { postSlice } from "./post/slice";
 import { identitySlice } from "./identity/slice";
+import { postSlice } from "./post/slice";
 import { folderSlice } from "./folder/slice";
 import { fileSlice } from "./file/slice";
+import { privacySettingsSlice } from "./privacySettings/slice";
+import { noExtensionSlice } from "./noExtension/slice";
+import { lensProfileSlice } from "./lensProfile/slice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["identity", "folder"],
+  whitelist: ["post"],
 };
 
 const rootReducer = combineReducers({
@@ -24,6 +27,9 @@ const rootReducer = combineReducers({
   post: postSlice.reducer,
   folder: folderSlice.reducer,
   file: fileSlice.reducer,
+  privacySettings: privacySettingsSlice.reducer,
+  noExtension: noExtensionSlice.reducer,
+  lensProfile: lensProfileSlice.reducer,
 });
 
 // 使用persistReducer强化reducer,persistReducer(config, reducer)
@@ -39,7 +45,7 @@ const middlewares: Array<Middleware> = [createStateSyncMiddleware()];
 // );
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   devTools: true,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
