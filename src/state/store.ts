@@ -10,8 +10,6 @@ import {
 
 import { identitySlice } from "./identity/slice";
 import { postSlice } from "./post/slice";
-import { folderSlice } from "./folder/slice";
-import { fileSlice } from "./file/slice";
 import { privacySettingsSlice } from "./privacySettings/slice";
 import { noExtensionSlice } from "./noExtension/slice";
 import { lensProfileSlice } from "./lensProfile/slice";
@@ -25,8 +23,6 @@ const persistConfig = {
 const rootReducer = combineReducers({
   identity: identitySlice.reducer,
   post: postSlice.reducer,
-  folder: folderSlice.reducer,
-  file: fileSlice.reducer,
   privacySettings: privacySettingsSlice.reducer,
   noExtension: noExtensionSlice.reducer,
   lensProfile: lensProfileSlice.reducer,

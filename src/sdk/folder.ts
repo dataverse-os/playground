@@ -1,4 +1,4 @@
-import { CustomMirrorFile, Post, PostStream } from "@/types";
+import { CustomMirrorFile, PostStream } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import { decode } from "@/utils/encodeAndDecode";
 import {
@@ -123,43 +123,43 @@ export const readMyDefaultFolder = async (did: string) => {
   return { ...folder, mirrors: sortedMirrors };
 };
 
-export const decryptPost = async ({
-  did,
-  postStream,
-}: {
-  did: string;
-  postStream: PostStream;
-}) => {
-  const newPostStream = JSON.parse(JSON.stringify(postStream));
-  const {
-    fileType,
-    encryptedSymmetricKey,
-    decryptionConditions,
-    decryptionConditionsType,
-  } = newPostStream.streamContent;
-  if (
-    newPostStream.streamContent.fileType !== FileType.Public &&
-    encryptedSymmetricKey &&
-    decryptionConditions &&
-    decryptionConditionsType
-  ) {
-    try {
-      const content = await decryptWithLit({
-        did,
-        encryptedContent: (newPostStream.streamContent.content.content as Post)
-          .postContent as string,
-        encryptedSymmetricKey: encryptedSymmetricKey,
-        decryptionConditions: decryptionConditions,
-        decryptionConditionsType: decryptionConditionsType,
-      });
-      (newPostStream.streamContent.content.content as Post).postContent =
-        JSON.parse(content);
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-  return newPostStream;
-};
+// export const decryptPost = async ({
+//   did,
+//   postStream,
+// }: {
+//   did: string;
+//   postStream: PostStream;
+// }) => {
+//   const newPostStream = JSON.parse(JSON.stringify(postStream)) as PostStream;
+//   const {
+//     fileType,
+//     encryptedSymmetricKey,
+//     decryptionConditions,
+//     decryptionConditionsType,
+//   } = newPostStream.streamContent;
+//   if (
+//     newPostStream.streamContent.fileType !== FileType.Public &&
+//     encryptedSymmetricKey &&
+//     decryptionConditions &&
+//     decryptionConditionsType
+//   ) {
+//     try {
+//       const content = await decryptWithLit({
+//         did,
+//         encryptedContent: (newPostStream.streamContent.content.content as Post)
+//           .postContent as string,
+//         encryptedSymmetricKey: encryptedSymmetricKey,
+//         decryptionConditions: decryptionConditions,
+//         decryptionConditionsType: decryptionConditionsType,
+//       });
+//       (newPostStream.streamContent.content.content as Post).postContent =
+//         JSON.parse(content);
+//     } catch (error) {
+//       console.log({ error });
+//     }
+//   }
+//   return newPostStream;
+// };
 
 export const decryptFile = async ({
   did,

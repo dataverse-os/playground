@@ -1,11 +1,12 @@
 import {
   PostStream,
-  Post,
   PostType,
-  PostContent,
   CustomMirrorFile,
+  StructuredPost,
+  NativePost,
 } from "@/types";
 import { detectDataverseExtension } from "@/utils/checkIsExtensionInjected";
+
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   FileType,
@@ -56,7 +57,6 @@ export const loadAllPostStreams = async () => {
   } else {
     streams = await loadStreamsByModel(modelName);
   }
-
   const streamList: PostStream[] = [];
 
   Object.entries(streams).forEach(([streamId, streamContent]) => {
@@ -66,39 +66,7 @@ export const loadAllPostStreams = async () => {
     });
   });
   const sortedList = streamList
-    .filter((el) => el.streamContent.content.appVersion === appVersion)
-    .map((el, index) => {
-      try {
-        el.streamContent.content.content = JSON.parse(
-          el.streamContent.content.content as string
-        );
-      } catch (error) {
-        console.log(el);
-        console.log(error);
-      }
-      return el;
-    })
-    .filter((el) => {
-      const post = el.streamContent.content.content;
-      const case1 = post && Object.keys(post).length > 0;
-      let case2;
-      let case3;
-      if (case1) {
-        if ((post as Post).postType === PostType.Public) {
-          const postContent = (post as Post).postContent;
-          if (postContent) {
-            const { text, images, videos } = postContent as PostContent;
-            case2 =
-              text ||
-              (images && images.length > 0) ||
-              (videos && videos.length > 0);
-          }
-        } else {
-          case3 = (post as Post).postContent;
-        }
-      }
-      return case1 && (case2 || case3);
-    })
+    .filter((el) => el.streamContent.content?.appVersion === appVersion)
     .sort(
       (a, b) =>
         Date.parse(b.streamContent.createdAt) -
@@ -112,16 +80,13 @@ export const createPublicPostStream = async ({
   post,
 }: {
   did: string;
-  post: Post;
+  post: Partial<StructuredPost>;
 }) => {
   const streamObject = await runtimeConnector.createStream({
     did,
     appName,
     modelName,
-    streamContent: {
-      appVersion,
-      content: JSON.stringify(post),
-    },
+    streamContent: post,
     fileType: FileType.Public,
   });
 
@@ -131,15 +96,9 @@ export const createPublicPostStream = async ({
 export const createPrivatePostStream = async ({
   did,
   content,
-  litKit,
 }: {
   did: string;
   content: string;
-  litKit: {
-    encryptedSymmetricKey: string;
-    decryptionConditions: any[];
-    decryptionConditionsType: DecryptionConditionsTypes;
-  };
 }) => {
   const streamObject = await runtimeConnector.createStream({
     did,
@@ -150,7 +109,6 @@ export const createPrivatePostStream = async ({
       content,
     },
     fileType: FileType.Private,
-    ...litKit,
   });
   return streamObject;
 };
@@ -164,13 +122,17 @@ export const createDatatokenPostStream = async ({
   collectLimit,
 }: {
   did: string;
-  post: Post;
+  post: Partial<StructuredPost>;
   profileId: string;
   currency: Currency;
   amount: number;
   collectLimit: number;
 }) => {
-  const res = await createPublicPostStream({ did, post: {} as Post });
+  const res = await createPublicPostStream({
+    did,
+    post: { ...post, text: "", images: [], videos: [] } as StructuredPost,
+  });
+  console.log(res);
   let datatokenId;
   try {
     const res2 = await createDatatoken({
@@ -191,10 +153,10 @@ export const createDatatokenPostStream = async ({
     address: getAddressFromDid(did),
     mirrorFile: {
       contentId: res.streamId,
-      content: { appVersion: res.streamContent.appVersion, content: post },
+      content: post,
       datatokenId,
       contentType: await getModelIdByModelName(ModelNames.post),
-    } as unknown as CustomMirrorFile,
+    } as CustomMirrorFile,
   });
 
   return res2;
@@ -250,79 +212,83 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   mirrorFile: CustomMirrorFile;
 }) => {
   if (!mirrorFile) return;
-  const {
-    contentId: streamId,
-    content: streamContent,
-    datatokenId,
-  } = mirrorFile;
+  let { contentId: streamId, content: streamContent, datatokenId } = mirrorFile;
   if (!streamId) return;
 
-  let litKit;
+  const nativeStreamContent = streamContent as NativePost;
+  // let litKit;
 
-  let decryptionConditions: any[];
-  let decryptionConditionsType: DecryptionConditionsTypes;
+  // let decryptionConditions: any[];
+  // let decryptionConditionsType: DecryptionConditionsTypes;
 
   if (!datatokenId) {
-    decryptionConditions = await generateAccessControlConditions({
-      did,
-      address,
-    });
-    decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
+    // decryptionConditions = await generateAccessControlConditions({
+    //   did,
+    //   address,
+    // });
+    // decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
 
     mirrorFile.fileType = FileType.Private;
-    streamContent.content.postType = PostType.Private;
+    nativeStreamContent.postType = PostType.Private;
   } else {
-    decryptionConditions = await generateUnifiedAccessControlConditions({
-      did,
-      address,
-      datatokenId,
-    });
-    decryptionConditionsType =
-      DecryptionConditionsTypes.UnifiedAccessControlCondition;
+    // decryptionConditions = await generateUnifiedAccessControlConditions({
+    //   did,
+    //   address,
+    //   datatokenId,
+    // });
+    // decryptionConditionsType =
+    //   DecryptionConditionsTypes.UnifiedAccessControlCondition;
 
     mirrorFile.fileType = FileType.Datatoken;
-    streamContent.content.postType = PostType.Datatoken;
+    nativeStreamContent.postType = PostType.Datatoken;
   }
 
-  litKit = await newLitKey({
-    did,
-    decryptionConditions,
-    decryptionConditionsType,
+  nativeStreamContent.encrypted = JSON.stringify({
+    text: true,
+    images: true,
+    videos: true,
   });
 
-  const { encryptedContent } = await encryptWithLit({
-    did,
-    contentToBeEncrypted:
-      mirrorFile.contentType in IndexFileContentType
-        ? mirrorFile.contentId!
-        : JSON.stringify(mirrorFile.content.content.postContent),
-    litKit,
-  });
+  if (streamContent.options) {
+    nativeStreamContent.options = JSON.stringify(streamContent.options);
+  }
 
-  streamContent.content.postContent = encryptedContent;
-  streamContent.content.updatedAt = new Date().toISOString();
+  // litKit = await newLitKey({
+  //   did,
+  //   decryptionConditions,
+  //   decryptionConditionsType,
+  // });
 
-  await runtimeConnector.updateStreams({
+  // const { encryptedContent } = await encryptWithLit({
+  //   did,
+  //   contentToBeEncrypted:
+  //     mirrorFile.contentType in IndexFileContentType
+  //       ? mirrorFile.contentId!
+  //       : JSON.stringify(mirrorFile.content.content.postContent),
+  //   litKit,
+  // });
+
+  // streamContent.content.postContent = encryptedContent;
+  nativeStreamContent.updatedAt = new Date().toISOString();
+
+  const res = await runtimeConnector.updateStreams({
     streamsRecord: {
       [streamId]: {
-        streamContent: {
-          appVersion: streamContent.appVersion,
-          content: JSON.stringify(streamContent.content),
-        },
+        streamContent: nativeStreamContent,
         fileType: mirrorFile.fileType,
         ...(datatokenId && { datatokenId: mirrorFile.datatokenId }),
-        ...litKit,
       },
     },
     syncImmediately: true,
   });
 
-  mirrorFile.content.content.postContent = encryptedContent;
+  const updatedStreamContent = res?.successRecord[streamId];
 
   mirrorFile.fileKey = undefined;
-  mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
-  mirrorFile.decryptionConditions = litKit.decryptionConditions;
-  mirrorFile.decryptionConditionsType = litKit.decryptionConditionsType;
+  mirrorFile.encryptedSymmetricKey = updatedStreamContent.encryptedSymmetricKey;
+  mirrorFile.decryptionConditions = updatedStreamContent.decryptionConditions;
+  mirrorFile.decryptionConditionsType =
+    updatedStreamContent.decryptionConditionsType;
 
   return mirrorFile;
 };
