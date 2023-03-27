@@ -16,7 +16,6 @@ import {
   getAppNameAndModelNameByModelId,
   getModelIdByModelName,
 } from "./appRegistry";
-import { decryptWithLit } from "./encryptionAndDecryption";
 
 export const readOthersFolders = async (did: string) => {
   const othersFolders = await runtimeConnector.readFolders({
@@ -160,41 +159,6 @@ export const readMyDefaultFolder = async (did: string) => {
 //   }
 //   return newPostStream;
 // };
-
-export const decryptFile = async ({
-  did,
-  mirrorFile,
-}: {
-  did: string;
-  mirrorFile: CustomMirrorFile;
-}) => {
-  mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
-  if (
-    mirrorFile.fileType !== FileType.Public &&
-    (mirrorFile.fileKey ||
-      (mirrorFile.encryptedSymmetricKey &&
-        mirrorFile.decryptionConditions &&
-        mirrorFile.decryptionConditionsType))
-  ) {
-    try {
-      const content = await decryptWithLit({
-        did,
-        encryptedContent: mirrorFile.contentId!,
-        ...(mirrorFile.fileKey
-          ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-          : {
-              encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-              decryptionConditions: mirrorFile.decryptionConditions,
-              decryptionConditionsType: mirrorFile.decryptionConditionsType,
-            }),
-      });
-      mirrorFile.contentId = content;
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-  return mirrorFile;
-};
 
 export const rebuildMirrorFile = async (mirrorFile: CustomMirrorFile) => {
   const res = await getAppNameAndModelNameByModelId(mirrorFile.contentType!);

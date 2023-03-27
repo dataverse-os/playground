@@ -1,5 +1,3 @@
-import { encryptWithLit, newLitKey } from "@/sdk/encryptionAndDecryption";
-import { decryptFile } from "@/sdk/folder";
 import {
   collect,
   getDatatokenInfo as _getDatatokenInfo,
@@ -9,7 +7,6 @@ import {
 import {
   createDatatokenPostStream,
   createPublicPostStream,
-  generateAccessControlConditions,
   loadAllPostStreams,
   loadMyPostStreams,
 } from "@/sdk/post";
@@ -99,7 +96,7 @@ export const unlockPost = createAsyncThunk(
     const postStreamCopy = JSON.parse(JSON.stringify(postStream));
     postStreamCopy.streamContent.content = res;
     return postStreamCopy;
-    
+
     // const res = await isCollected({
     //   datatokenId: postStream.streamContent.datatokenId!,
     //   address: getAddressFromDid(did),
