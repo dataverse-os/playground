@@ -153,7 +153,6 @@ export const publishPost = createAsyncThunk(
       videos,
       createdAt: date,
       updatedAt: date,
-      postType,
     } as StructuredPost;
 
     try {

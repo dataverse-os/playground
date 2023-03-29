@@ -87,7 +87,6 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
 };
 
 export const unlock = async (params: { did: string; indexFileId: string }) => {
-  console.log({ ...params, appName });
   const res = await runtimeConnector.unlock({ ...params, appName });
   return res;
 };

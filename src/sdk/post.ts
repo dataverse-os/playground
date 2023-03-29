@@ -1,6 +1,5 @@
 import {
   PostStream,
-  PostType,
   CustomMirrorFile,
   StructuredPost,
   NativePost,
@@ -65,12 +64,21 @@ export const loadAllPostStreams = async () => {
     });
   });
   const sortedList = streamList
-    .filter((el) => el.streamContent.content?.appVersion === appVersion)
+    .filter(
+      (el) =>
+        el.streamContent.content?.appVersion === appVersion &&
+        (el.streamContent.content.text ||
+          (el.streamContent.content.images &&
+            el.streamContent.content.images?.length > 0) ||
+          (el.streamContent.content.videos &&
+            el.streamContent.content.videos?.length > 0))
+    )
     .sort(
       (a, b) =>
         Date.parse(b.streamContent.createdAt) -
         Date.parse(a.streamContent.createdAt)
     );
+  console.log(sortedList);
   return sortedList;
 };
 
@@ -215,31 +223,11 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   if (!streamId) return;
 
   const nativeStreamContent = streamContent as NativePost;
-  // let litKit;
-
-  // let decryptionConditions: any[];
-  // let decryptionConditionsType: DecryptionConditionsTypes;
 
   if (!datatokenId) {
-    // decryptionConditions = await generateAccessControlConditions({
-    //   did,
-    //   address,
-    // });
-    // decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
-
     mirrorFile.fileType = FileType.Private;
-    nativeStreamContent.postType = PostType.Private;
   } else {
-    // decryptionConditions = await generateUnifiedAccessControlConditions({
-    //   did,
-    //   address,
-    //   datatokenId,
-    // });
-    // decryptionConditionsType =
-    //   DecryptionConditionsTypes.UnifiedAccessControlCondition;
-
     mirrorFile.fileType = FileType.Datatoken;
-    nativeStreamContent.postType = PostType.Datatoken;
   }
 
   nativeStreamContent.encrypted = JSON.stringify({
@@ -252,22 +240,6 @@ export const updatePostStreamsWithAccessControlConditions = async ({
     nativeStreamContent.options = JSON.stringify(streamContent.options);
   }
 
-  // litKit = await newLitKey({
-  //   did,
-  //   decryptionConditions,
-  //   decryptionConditionsType,
-  // });
-
-  // const { encryptedContent } = await encryptWithLit({
-  //   did,
-  //   contentToBeEncrypted:
-  //     mirrorFile.contentType in IndexFileContentType
-  //       ? mirrorFile.contentId!
-  //       : JSON.stringify(mirrorFile.content.content.postContent),
-  //   litKit,
-  // });
-
-  // streamContent.content.postContent = encryptedContent;
   nativeStreamContent.updatedAt = new Date().toISOString();
 
   const res = await runtimeConnector.updateStreams({
@@ -284,10 +256,10 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   const updatedStreamContent = res?.successRecord[streamId];
 
   mirrorFile.fileKey = undefined;
-  mirrorFile.encryptedSymmetricKey = updatedStreamContent.encryptedSymmetricKey;
-  mirrorFile.decryptionConditions = updatedStreamContent.decryptionConditions;
+  mirrorFile.encryptedSymmetricKey = updatedStreamContent?.encryptedSymmetricKey;
+  mirrorFile.decryptionConditions = updatedStreamContent?.decryptionConditions;
   mirrorFile.decryptionConditionsType =
-    updatedStreamContent.decryptionConditionsType;
+    updatedStreamContent?.decryptionConditionsType;
 
   return mirrorFile;
 };
