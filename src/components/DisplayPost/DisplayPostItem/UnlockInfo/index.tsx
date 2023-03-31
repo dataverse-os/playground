@@ -76,6 +76,15 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     }
   }, [postStreamList.length]);
 
+  useEffect(() => {
+    if (postStream.hasUnlockedSuccessfully) {
+      setDatatokenInfo({
+        ...datatokenInfo,
+        sold_num: datatokenInfo.sold_num + 1,
+      });
+    }
+  }, [postStream.hasUnlockedSuccessfully]);
+
   return (
     <Wrapper>
       {postStream.isUnlocking ? (
