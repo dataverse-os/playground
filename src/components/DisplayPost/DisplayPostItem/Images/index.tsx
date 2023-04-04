@@ -50,14 +50,14 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
     ) {
       nowImages = ["?"];
     }
-    nowImages = Array.from(new Set(nowImages));
+    nowImages = [...new Set(Array.from(nowImages))];
     setImages(nowImages);
   }, [postStream]);
 
   const CurrentImgWrapper = images.length < 4 ? ImgWrapper : ImageWrapperGrid;
   return (
     <CurrentImgWrapper>
-      {images.map((image, index) => {
+      {images?.map((image, index) => {
         if (image === "?") {
           return (
             <Image

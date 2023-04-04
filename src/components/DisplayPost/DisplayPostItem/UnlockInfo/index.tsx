@@ -66,10 +66,6 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     }
 
     if (postStream.streamContent.fileType === FileType.Datatoken) {
-      console.log(
-        postStream.isGettingDatatokenInfo,
-        postStream.hasGotDatatokenInfo
-      );
       dispatch(
         getDatatokenInfo({ address: postStream.streamContent.datatokenId! })
       );
