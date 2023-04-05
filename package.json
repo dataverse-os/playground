@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && vite preview",
+    "github-build": "tsc && vite build",
     "preview": "vite preview",
     "deploy": "node scripts/s3-deploy/s3-deploy.js"
   },

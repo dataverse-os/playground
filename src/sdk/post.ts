@@ -1,11 +1,11 @@
 import {
   PostStream,
-  Post,
-  PostType,
-  PostContent,
   CustomMirrorFile,
+  StructuredPost,
+  NativePost,
 } from "@/types";
 import { detectDataverseExtension } from "@/utils/checkIsExtensionInjected";
+
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import {
   FileType,
@@ -23,7 +23,6 @@ import {
   appVersion,
 } from ".";
 import { getModelIdByModelName } from "./appRegistry";
-import { newLitKey, encryptWithLit } from "./encryptionAndDecryption";
 import { createDatatoken, getChainOfDatatoken } from "./monetize";
 import { loadStreamsByModel } from "./stream";
 
@@ -56,7 +55,6 @@ export const loadAllPostStreams = async () => {
   } else {
     streams = await loadStreamsByModel(modelName);
   }
-
   const streamList: PostStream[] = [];
 
   Object.entries(streams).forEach(([streamId, streamContent]) => {
@@ -66,44 +64,21 @@ export const loadAllPostStreams = async () => {
     });
   });
   const sortedList = streamList
-    .filter((el) => el.streamContent.content.appVersion === appVersion)
-    .map((el, index) => {
-      try {
-        el.streamContent.content.content = JSON.parse(
-          el.streamContent.content.content as string
-        );
-      } catch (error) {
-        console.log(el);
-        console.log(error);
-      }
-      return el;
-    })
-    .filter((el) => {
-      const post = el.streamContent.content.content;
-      const case1 = post && Object.keys(post).length > 0;
-      let case2;
-      let case3;
-      if (case1) {
-        if ((post as Post).postType === PostType.Public) {
-          const postContent = (post as Post).postContent;
-          if (postContent) {
-            const { text, images, videos } = postContent as PostContent;
-            case2 =
-              text ||
-              (images && images.length > 0) ||
-              (videos && videos.length > 0);
-          }
-        } else {
-          case3 = (post as Post).postContent;
-        }
-      }
-      return case1 && (case2 || case3);
-    })
+    .filter(
+      (el) =>
+        el.streamContent.content?.appVersion === appVersion &&
+        (el.streamContent.content.text ||
+          (el.streamContent.content.images &&
+            el.streamContent.content.images?.length > 0) ||
+          (el.streamContent.content.videos &&
+            el.streamContent.content.videos?.length > 0))
+    )
     .sort(
       (a, b) =>
         Date.parse(b.streamContent.createdAt) -
         Date.parse(a.streamContent.createdAt)
     );
+  console.log(sortedList);
   return sortedList;
 };
 
@@ -112,16 +87,13 @@ export const createPublicPostStream = async ({
   post,
 }: {
   did: string;
-  post: Post;
+  post: Partial<StructuredPost>;
 }) => {
   const streamObject = await runtimeConnector.createStream({
     did,
     appName,
     modelName,
-    streamContent: {
-      appVersion,
-      content: JSON.stringify(post),
-    },
+    streamContent: post,
     fileType: FileType.Public,
   });
 
@@ -131,15 +103,9 @@ export const createPublicPostStream = async ({
 export const createPrivatePostStream = async ({
   did,
   content,
-  litKit,
 }: {
   did: string;
   content: string;
-  litKit: {
-    encryptedSymmetricKey: string;
-    decryptionConditions: any[];
-    decryptionConditionsType: DecryptionConditionsTypes;
-  };
 }) => {
   const streamObject = await runtimeConnector.createStream({
     did,
@@ -150,7 +116,6 @@ export const createPrivatePostStream = async ({
       content,
     },
     fileType: FileType.Private,
-    ...litKit,
   });
   return streamObject;
 };
@@ -164,13 +129,17 @@ export const createDatatokenPostStream = async ({
   collectLimit,
 }: {
   did: string;
-  post: Post;
+  post: Partial<StructuredPost>;
   profileId: string;
   currency: Currency;
   amount: number;
   collectLimit: number;
 }) => {
-  const res = await createPublicPostStream({ did, post: {} as Post });
+  const res = await createPublicPostStream({
+    did,
+    post: { ...post, text: "", images: [], videos: [] } as StructuredPost,
+  });
+  console.log(res);
   let datatokenId;
   try {
     const res2 = await createDatatoken({
@@ -191,10 +160,10 @@ export const createDatatokenPostStream = async ({
     address: getAddressFromDid(did),
     mirrorFile: {
       contentId: res.streamId,
-      content: { appVersion: res.streamContent.appVersion, content: post },
+      content: post,
       datatokenId,
       contentType: await getModelIdByModelName(ModelNames.post),
-    } as unknown as CustomMirrorFile,
+    } as CustomMirrorFile,
   });
 
   return res2;
@@ -250,272 +219,47 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   mirrorFile: CustomMirrorFile;
 }) => {
   if (!mirrorFile) return;
-  const {
-    contentId: streamId,
-    content: streamContent,
-    datatokenId,
-  } = mirrorFile;
+  let { contentId: streamId, content: streamContent, datatokenId } = mirrorFile;
   if (!streamId) return;
 
-  let litKit;
-
-  let decryptionConditions: any[];
-  let decryptionConditionsType: DecryptionConditionsTypes;
+  const nativeStreamContent = streamContent as NativePost;
 
   if (!datatokenId) {
-    decryptionConditions = await generateAccessControlConditions({
-      did,
-      address,
-    });
-    decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
-
     mirrorFile.fileType = FileType.Private;
-    streamContent.content.postType = PostType.Private;
   } else {
-    decryptionConditions = await generateUnifiedAccessControlConditions({
-      did,
-      address,
-      datatokenId,
-    });
-    decryptionConditionsType =
-      DecryptionConditionsTypes.UnifiedAccessControlCondition;
-
     mirrorFile.fileType = FileType.Datatoken;
-    streamContent.content.postType = PostType.Datatoken;
   }
 
-  litKit = await newLitKey({
-    did,
-    decryptionConditions,
-    decryptionConditionsType,
+  nativeStreamContent.encrypted = JSON.stringify({
+    text: true,
+    images: true,
+    videos: true,
   });
 
-  const { encryptedContent } = await encryptWithLit({
-    did,
-    contentToBeEncrypted:
-      mirrorFile.contentType in IndexFileContentType
-        ? mirrorFile.contentId!
-        : JSON.stringify(mirrorFile.content.content.postContent),
-    litKit,
-  });
+  if (streamContent.options) {
+    nativeStreamContent.options = JSON.stringify(streamContent.options);
+  }
 
-  streamContent.content.postContent = encryptedContent;
-  streamContent.content.updatedAt = new Date().toISOString();
+  nativeStreamContent.updatedAt = new Date().toISOString();
 
-  await runtimeConnector.updateStreams({
+  const res = await runtimeConnector.updateStreams({
     streamsRecord: {
       [streamId]: {
-        streamContent: {
-          appVersion: streamContent.appVersion,
-          content: JSON.stringify(streamContent.content),
-        },
+        streamContent: nativeStreamContent,
         fileType: mirrorFile.fileType,
         ...(datatokenId && { datatokenId: mirrorFile.datatokenId }),
-        ...litKit,
       },
     },
     syncImmediately: true,
   });
 
-  mirrorFile.content.content.postContent = encryptedContent;
+  const updatedStreamContent = res?.successRecord[streamId];
 
   mirrorFile.fileKey = undefined;
-  mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
-  mirrorFile.decryptionConditions = litKit.decryptionConditions;
-  mirrorFile.decryptionConditionsType = litKit.decryptionConditionsType;
+  mirrorFile.encryptedSymmetricKey = updatedStreamContent?.encryptedSymmetricKey;
+  mirrorFile.decryptionConditions = updatedStreamContent?.decryptionConditions;
+  mirrorFile.decryptionConditionsType =
+    updatedStreamContent?.decryptionConditionsType;
 
   return mirrorFile;
-};
-
-export const updateFileStreamsWithAccessControlConditions = async ({
-  did,
-  address,
-  mirrorFile,
-}: {
-  did: string;
-  address: string;
-  mirrorFile: CustomMirrorFile;
-}) => {
-  if (!mirrorFile) return;
-  const { contentId, indexFileId, datatokenId } = mirrorFile;
-  if (!contentId) return;
-
-  let litKit;
-
-  let decryptionConditions: any[];
-  let decryptionConditionsType: DecryptionConditionsTypes;
-
-  if (!datatokenId) {
-    decryptionConditions = await generateAccessControlConditions({
-      did,
-      address,
-    });
-    decryptionConditionsType = DecryptionConditionsTypes.AccessControlCondition;
-
-    mirrorFile.fileType = FileType.Private;
-  } else {
-    decryptionConditions = await generateUnifiedAccessControlConditions({
-      did,
-      address,
-      datatokenId,
-    });
-    decryptionConditionsType =
-      DecryptionConditionsTypes.UnifiedAccessControlCondition;
-
-    mirrorFile.fileType = FileType.Datatoken;
-  }
-
-  litKit = await newLitKey({
-    did,
-    decryptionConditions,
-    decryptionConditionsType,
-  });
-
-  const { encryptedContent } = await encryptWithLit({
-    did,
-    contentToBeEncrypted: mirrorFile.contentId!,
-    litKit,
-  });
-
-  const res = await runtimeConnector.updateMirror({
-    did,
-    appName,
-    mirrorId: indexFileId,
-    fileInfo: {
-      fileType: mirrorFile.fileType,
-      contentId: encryptedContent,
-      ...(datatokenId && { datatokenId }),
-      ...litKit,
-    },
-    syncImmediately: true,
-  });
-
-  mirrorFile.contentId = encryptedContent;
-  mirrorFile.fileKey = res.currentMirror.mirrorFile.fileKey;
-  mirrorFile.encryptedSymmetricKey = litKit.encryptedSymmetricKey;
-  mirrorFile.decryptionConditions = litKit.decryptionConditions;
-  mirrorFile.decryptionConditionsType = litKit.decryptionConditionsType;
-
-  return mirrorFile;
-};
-
-export const generateAccessControlConditions = async ({
-  did,
-  address,
-}: {
-  did: string;
-  address: string;
-}) => {
-  const modelId = await runtimeConnector.getModelIdByAppNameAndModelName({
-    appName,
-    modelName: ModelNames.post,
-  });
-  const chain = await runtimeConnector.getChainFromDID(did);
-  const conditions: any[] = [
-    {
-      contractAddress: "",
-      standardContractType: "",
-      chain,
-      method: "",
-      parameters: [":userAddress"],
-      returnValueTest: {
-        comparator: "=",
-        value: `${address}`,
-      },
-    },
-    { operator: "and" },
-    {
-      contractAddress: "",
-      standardContractType: "SIWE",
-      chain,
-      method: "",
-      parameters: [":resources"],
-      returnValueTest: {
-        comparator: "contains",
-        value: `ceramic://*?model=${modelId}`,
-      },
-    },
-  ];
-
-  return conditions;
-};
-
-export const generateUnifiedAccessControlConditions = async ({
-  did,
-  address,
-  datatokenId,
-}: {
-  did: string;
-  address: string;
-  datatokenId: string;
-}) => {
-  const modelId = await runtimeConnector.getModelIdByAppNameAndModelName({
-    appName,
-    modelName: ModelNames.post,
-  });
-  const chain = await runtimeConnector.getChainFromDID(did);
-  const datatokenChain = await getChainOfDatatoken();
-  const conditions: any = [
-    {
-      conditionType: "evmBasic",
-      contractAddress: "",
-      standardContractType: "SIWE",
-      chain,
-      method: "",
-      parameters: [":resources"],
-      returnValueTest: {
-        comparator: "contains",
-        value: `ceramic://*?model=${modelId}`,
-      },
-    },
-  ];
-  conditions.push({ operator: "and" });
-  const unifiedAccessControlConditions = [
-    {
-      contractAddress: datatokenId,
-      conditionType: "evmContract",
-      functionName: "isCollected",
-      functionParams: [":userAddress"],
-      functionAbi: {
-        inputs: [
-          {
-            internalType: "address",
-            name: "user",
-            type: "address",
-          },
-        ],
-        name: "isCollected",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      chain: datatokenChain,
-      returnValueTest: {
-        key: "",
-        comparator: "=",
-        value: "true",
-      },
-    },
-    { operator: "or" },
-    {
-      conditionType: "evmBasic",
-      contractAddress: "",
-      standardContractType: "",
-      chain,
-      method: "",
-      parameters: [":userAddress"],
-      returnValueTest: {
-        comparator: "=",
-        value: `${address}`,
-      },
-    },
-  ];
-  conditions.push(unifiedAccessControlConditions);
-  return conditions;
 };

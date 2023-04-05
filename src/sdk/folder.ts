@@ -1,4 +1,4 @@
-import { CustomMirrorFile, Post, PostStream } from "@/types";
+import { CustomMirrorFile, PostStream } from "@/types";
 import { getAddressFromDid } from "@/utils/didAndAddress";
 import { decode } from "@/utils/encodeAndDecode";
 import {
@@ -16,7 +16,6 @@ import {
   getAppNameAndModelNameByModelId,
   getModelIdByModelName,
 } from "./appRegistry";
-import { decryptWithLit } from "./encryptionAndDecryption";
 
 export const readOthersFolders = async (did: string) => {
   const othersFolders = await runtimeConnector.readFolders({
@@ -123,78 +122,43 @@ export const readMyDefaultFolder = async (did: string) => {
   return { ...folder, mirrors: sortedMirrors };
 };
 
-export const decryptPost = async ({
-  did,
-  postStream,
-}: {
-  did: string;
-  postStream: PostStream;
-}) => {
-  const newPostStream = JSON.parse(JSON.stringify(postStream));
-  const {
-    fileType,
-    encryptedSymmetricKey,
-    decryptionConditions,
-    decryptionConditionsType,
-  } = newPostStream.streamContent;
-  if (
-    newPostStream.streamContent.fileType !== FileType.Public &&
-    encryptedSymmetricKey &&
-    decryptionConditions &&
-    decryptionConditionsType
-  ) {
-    try {
-      const content = await decryptWithLit({
-        did,
-        encryptedContent: (newPostStream.streamContent.content.content as Post)
-          .postContent as string,
-        encryptedSymmetricKey: encryptedSymmetricKey,
-        decryptionConditions: decryptionConditions,
-        decryptionConditionsType: decryptionConditionsType,
-      });
-      (newPostStream.streamContent.content.content as Post).postContent =
-        JSON.parse(content);
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-  return newPostStream;
-};
-
-export const decryptFile = async ({
-  did,
-  mirrorFile,
-}: {
-  did: string;
-  mirrorFile: CustomMirrorFile;
-}) => {
-  mirrorFile = JSON.parse(JSON.stringify(mirrorFile));
-  if (
-    mirrorFile.fileType !== FileType.Public &&
-    (mirrorFile.fileKey ||
-      (mirrorFile.encryptedSymmetricKey &&
-        mirrorFile.decryptionConditions &&
-        mirrorFile.decryptionConditionsType))
-  ) {
-    try {
-      const content = await decryptWithLit({
-        did,
-        encryptedContent: mirrorFile.contentId!,
-        ...(mirrorFile.fileKey
-          ? { symmetricKeyInBase16Format: mirrorFile.fileKey }
-          : {
-              encryptedSymmetricKey: mirrorFile.encryptedSymmetricKey,
-              decryptionConditions: mirrorFile.decryptionConditions,
-              decryptionConditionsType: mirrorFile.decryptionConditionsType,
-            }),
-      });
-      mirrorFile.contentId = content;
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-  return mirrorFile;
-};
+// export const decryptPost = async ({
+//   did,
+//   postStream,
+// }: {
+//   did: string;
+//   postStream: PostStream;
+// }) => {
+//   const newPostStream = JSON.parse(JSON.stringify(postStream)) as PostStream;
+//   const {
+//     fileType,
+//     encryptedSymmetricKey,
+//     decryptionConditions,
+//     decryptionConditionsType,
+//   } = newPostStream.streamContent;
+//   if (
+//     newPostStream.streamContent.fileType !== FileType.Public &&
+//     encryptedSymmetricKey &&
+//     decryptionConditions &&
+//     decryptionConditionsType
+//   ) {
+//     try {
+//       const content = await decryptWithLit({
+//         did,
+//         encryptedContent: (newPostStream.streamContent.content.content as Post)
+//           .postContent as string,
+//         encryptedSymmetricKey: encryptedSymmetricKey,
+//         decryptionConditions: decryptionConditions,
+//         decryptionConditionsType: decryptionConditionsType,
+//       });
+//       (newPostStream.streamContent.content.content as Post).postContent =
+//         JSON.parse(content);
+//     } catch (error) {
+//       console.log({ error });
+//     }
+//   }
+//   return newPostStream;
+// };
 
 export const rebuildMirrorFile = async (mirrorFile: CustomMirrorFile) => {
   const res = await getAppNameAndModelNameByModelId(mirrorFile.contentType!);

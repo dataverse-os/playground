@@ -24,10 +24,16 @@ export const getCurrentDID = async () => {
   return res;
 };
 
+export const checkIsCurrentDIDValid = async () => {
+  await detectDataverseExtension();
+  const res = await runtimeConnector.checkIsCurrentDIDValid({ appName });
+  return res;
+};
+
 export const connectIdentity = async () => {
   try {
     await detectDataverseExtension();
-    const res = await runtimeConnector.checkIsCurrentDIDValid({ appName });
+    const res = await checkIsCurrentDIDValid();
     await runtimeConnector.connectWallet({
       name: METAMASK,
       type: CRYPTO_WALLET_TYPE,
