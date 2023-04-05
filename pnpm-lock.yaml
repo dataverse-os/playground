@@ -36,6 +36,7 @@ specifiers:
   vite: ^4.1.1
   web3.storage: 4.5.4
 
+
 dependencies:
   '@arco-design/web-react': 2.45.2_zula6vjvt3wdocc4mwcxqa6nzi
   '@ceramicnetwork/common': 2.5.0
