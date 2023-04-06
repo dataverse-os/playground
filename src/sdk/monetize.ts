@@ -24,11 +24,10 @@ export const createDatatoken = async (datatokenVars: DatatokenVars) => {
 
 export const collect = async (params: {
   did: string;
-  appName: string;
   datatokenId: string;
   indexFileId: string;
 }) => {
-  const res = await runtimeConnector.collect(params);
+  const res = await runtimeConnector.collect({ ...params, appName });
   return res;
 };
 
@@ -85,4 +84,9 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
     "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889": "WMATIC",
   };
   return map[currencyAddress];
+};
+
+export const unlock = async (params: { did: string; indexFileId: string }) => {
+  const res = await runtimeConnector.unlock({ ...params, appName });
+  return res;
 };

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import DisplayFolder from "../DisplayFolder";
 import DisplayPost from "../DisplayPost";
 import NoExtensionTip from "../NoExtensionTip";
 import PublishPost from "../PublishPost";

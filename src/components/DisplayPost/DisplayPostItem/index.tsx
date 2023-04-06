@@ -2,7 +2,6 @@ import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
-import { displayMyPosts } from "@/state/folder/slice";
 import { FileType } from "@dataverse/runtime-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";

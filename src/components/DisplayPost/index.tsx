@@ -3,7 +3,6 @@ import { useEffect, useRef, useMemo, createRef } from "react";
 import { displayPostList } from "@/state/post/slice";
 import { uuid } from "@/utils/uuid";
 import DisplayPostItem from "./DisplayPostItem";
-import { displayMyPosts } from "@/state/folder/slice";
 import PublishPost from "@/components/PublishPost";
 import styled from "styled-components";
 

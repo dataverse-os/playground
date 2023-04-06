@@ -8,11 +8,52 @@ import {
   StructuredFolder,
 } from "@dataverse/runtime-connector";
 
+export enum PostType {
+  Public,
+  Private,
+  Datatoken,
+}
+
+export interface StructuredPost {
+  controller: string;
+  appVersion: string;
+  text?: string;
+  images?: string[];
+  videos?: string[];
+  postType: PostType;
+  options?: {};
+  createdAt: string;
+  updatedAt?: string;
+  encrypted?: {
+    appVersion?: boolean;
+    text?: boolean;
+    images?: boolean;
+    videos?: boolean;
+    postType?: boolean;
+    options?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+}
+
+export interface NativePost {
+  controller: string;
+  appVersion: string;
+  text?: string;
+  images?: string[];
+  videos?: string[];
+  postType: PostType;
+  options?: string;
+  createdAt: string;
+  updatedAt?: string;
+  encrypted?: string;
+}
+
 export interface PostStream {
   streamId: string;
   streamContent: {
     appVersion: string;
-    content: { appVersion: string; content: string | Post; controller: string };
+    content: StructuredPost;
     controller: string;
     indexFileId: string;
     contentId: string;
@@ -51,12 +92,10 @@ export interface PostStream {
     };
   };
 
-  isDecrypting?: boolean;
-  isDecryptedSuccessfully?: boolean;
   isMonetizing?: boolean;
   isMonetizedSuccessfully?: boolean;
-  isBuying?: boolean;
-  hasBoughtSuccessfully?: boolean;
+  isUnlocking?: boolean;
+  hasUnlockedSuccessfully?: boolean;
   isGettingDatatokenInfo?: boolean;
   hasGotDatatokenInfo?: boolean;
 }
@@ -65,13 +104,11 @@ export interface CustomMirrorFile extends MirrorFile {
   contentType: IndexFileContentType | string;
   appName?: string;
   modelName?: string;
-  content: { appVersion: string; content: Post };
-  isDecrypting?: boolean;
-  isDecryptedSuccessfully?: boolean;
+  content: StructuredPost;
   isMonetizing?: boolean;
   isMonetizedSuccessfully?: boolean;
-  isBuying?: boolean;
-  hasBoughtSuccessfully?: boolean;
+  isUnlocking?: boolean;
+  hasUnlockedSuccessfully?: boolean;
   isGettingDatatokenInfo?: boolean;
   hasGotDatatokenInfo?: boolean;
 }
@@ -85,34 +122,3 @@ export type CustomMirrors = CustomMirror[];
 export type CustomFolder = Omit<StructuredFolder, "mirrors"> & {
   mirrors: CustomMirror[];
 };
-
-export interface LitKit {
-  encryptedSymmetricKey: string;
-  decryptionConditions: any[];
-  decryptionConditionsType: DecryptionConditionsTypes;
-}
-
-export enum PostType {
-  Public,
-  Private,
-  Datatoken,
-}
-
-export interface PostContent {
-  text: string;
-  images?: string[];
-  videos?: string[];
-}
-
-export interface Post {
-  postContent: PostContent | string;
-  postType: PostType;
-  options?: {
-    lockedImagesNum?: number;
-    lockedVideosNum?: number;
-  };
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface Settings {}

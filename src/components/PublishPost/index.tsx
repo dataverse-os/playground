@@ -3,11 +3,9 @@ import lockIcon from "@/assets/icons/lock.svg";
 import crossIcon from "@/assets/icons/cross.svg";
 import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
-import { displayMyPosts } from "@/state/folder/slice";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import {
   displayPostList,
-  encryptPost,
   postSlice,
   publishPost,
   uploadImg,
@@ -49,7 +47,6 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     (state) => state.post.isEncryptedSuccessfully
   );
   const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
-  const litKit = useSelector((state) => state.post.litKit);
   const profileId = useSelector((state) => state.lensProfile.profileId);
 
   const [content, setContent] = useState("");
@@ -70,26 +67,25 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
 
   const textareaOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.currentTarget.value);
-    dispatch(postSlice.actions.clearEncryptedState());
   };
 
-  const encrypt = async () => {
-    if (isEncrypting || isEncryptedSuccessfully) return;
-    if (!did) {
-      Message.info("Please connect identity first.");
-      return;
-    }
-    dispatch(
-      encryptPost({
-        did,
-        postContent: {
-          text: content,
-          images: images.map((image) => image["upload"]),
-          videos: [],
-        },
-      })
-    );
-  };
+  // const encrypt = async () => {
+  //   if (isEncrypting || isEncryptedSuccessfully) return;
+  //   if (!did) {
+  //     Message.info("Please connect identity first.");
+  //     return;
+  //   }
+  //   dispatch(
+  //     encryptPost({
+  //       did,
+  //       postContent: {
+  //         text: content,
+  //         images: images.map((image) => image["upload"]),
+  //         videos: [],
+  //       },
+  //     })
+  //   );
+  // };
 
   const handleProfileAndPost = async () => {
     if (isPublishingPost) return;
@@ -169,11 +165,9 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       publishPost({
         did,
         profileId,
-        postContent: {
-          text: content,
-          images: postImages,
-          videos: [],
-        },
+        text: content,
+        images: postImages,
+        videos: [],
       })
     );
     if (res.meta.requestStatus === "fulfilled") {

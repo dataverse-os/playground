@@ -1,4 +1,5 @@
 import {
+  checkIsCurrentDIDValid,
   connectIdentity as _connectIdentity,
   connectWallet,
   getCurrentDID,
@@ -38,7 +39,8 @@ export const connectIdentity = createAsyncThunk(
     }
 
     const did = await getCurrentDID();
-    if (did) {
+    const isValid = await checkIsCurrentDIDValid();
+    if (did && isValid) {
       await connectWallet();
       return did;
     }

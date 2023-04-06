@@ -16,9 +16,9 @@ export const modelNames = [ModelNames.post];
 export const appVersion = "0.0.2";
 export const oldAppVersion = "0.0.1";
 export const postModelId =
-  "kjzl6hvfrbw6c8qhw53xw7f0x7mldpfzi2e2emkjs98m5fgkfbdnrjuui3xf7qp";
+  "kjzl6hvfrbw6c7ft23trwmoox36eo7mnxlsj1dad2574bjm6c6fon8pmoqhp7br";
 export const indexFileModelId =
-  "kjzl6hvfrbw6c56g12gbdlb0tgep7l4xaib2z09vkrlwwrptd58qc668o2sbcyz";
+  "kjzl6hvfrbw6c97oiirbdgv4jjwp5oxegb977dlpz1dktsqkbfne6agfd5ow0i0";
 
 export const client = new GraphQLClient(
   `${process.env.DATAVERSE_ENDPOINT}/graphql`,

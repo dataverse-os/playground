@@ -5,7 +5,7 @@ import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import { PostStream } from "@/types";
 import { FileType } from "@dataverse/runtime-connector";
-import { buyPost, decryptPost, getDatatokenInfo } from "@/state/post/slice";
+import { unlockPost, getDatatokenInfo } from "@/state/post/slice";
 import { connectIdentity } from "@/state/identity/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
@@ -53,20 +53,11 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   }, [postStream.streamContent.datatokenInfo]);
 
   const unlock = async () => {
-    const res = await dispatch(connectIdentity());
-    const did = res.payload as string;
-    if (postStream.streamContent.content.controller === did) {
-      if (postStream.isDecrypting || postStream.isDecryptedSuccessfully) {
-        return;
-      }
-      dispatch(decryptPost({ did, postStream }));
-    } else {
-      if (postStream.isBuying || postStream.hasBoughtSuccessfully) {
-        return;
-      }
-      await dispatch(buyPost({ did, postStream }));
-      // dispatch(getDatatokenInfo({ address: postStream.streamContent.datatokenId! }));
+    const { payload: did } = await dispatch(connectIdentity());
+    if (postStream.isUnlocking || postStream.hasUnlockedSuccessfully) {
+      return;
     }
+    await dispatch(unlockPost({ did: did as string, postStream }));
   };
 
   useEffect(() => {
@@ -75,21 +66,26 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     }
 
     if (postStream.streamContent.fileType === FileType.Datatoken) {
-      console.log(
-        postStream.isGettingDatatokenInfo,
-        postStream.hasGotDatatokenInfo
-      );
       dispatch(
         getDatatokenInfo({ address: postStream.streamContent.datatokenId! })
       );
     }
   }, [postStreamList.length]);
 
+  useEffect(() => {
+    if (postStream.hasUnlockedSuccessfully) {
+      setDatatokenInfo({
+        ...datatokenInfo,
+        sold_num: datatokenInfo.sold_num + 1,
+      });
+    }
+  }, [postStream.hasUnlockedSuccessfully]);
+
   return (
     <Wrapper>
-      {postStream.isDecrypting || postStream.isBuying ? (
+      {postStream.isUnlocking ? (
         <Loading
-          visible={postStream.isDecrypting || postStream.isBuying}
+          visible={postStream.isUnlocking}
           color="black"
           cssStyles={css`
             margin-right: 5px;
@@ -100,12 +96,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
         />
       ) : (
         <img
-          src={
-            postStream.isDecryptedSuccessfully ||
-            postStream.hasBoughtSuccessfully
-              ? unlockSVG
-              : lockSVG
-          }
+          src={postStream.hasUnlockedSuccessfully ? unlockSVG : lockSVG}
           className="lock"
           onClick={unlock}
         ></img>
