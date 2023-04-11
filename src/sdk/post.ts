@@ -89,34 +89,26 @@ export const createPublicPostStream = async ({
   did: string;
   post: Partial<StructuredPost>;
 }) => {
-  const streamObject = await runtimeConnector.createStream({
-    did,
-    appName,
-    modelName,
-    streamContent: post,
-    fileType: FileType.Public,
-  });
+  let encrypted = {} as any;
+  if (post && Object.keys(post).length > 0) {
+    Object.keys(post).forEach((key) => {
+      encrypted[key] = false;
+    });
+  }
 
-  return streamObject;
-};
-
-export const createPrivatePostStream = async ({
-  did,
-  content,
-}: {
-  did: string;
-  content: string;
-}) => {
   const streamObject = await runtimeConnector.createStream({
     did,
     appName,
     modelName,
     streamContent: {
-      appVersion,
-      content,
+      ...post,
+      ...(post && {
+        encrypted: JSON.stringify(encrypted),
+      }),
     },
-    fileType: FileType.Private,
+    fileType: FileType.Public,
   });
+
   return streamObject;
 };
 
@@ -256,7 +248,8 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   const updatedStreamContent = res?.successRecord[streamId];
 
   mirrorFile.fileKey = undefined;
-  mirrorFile.encryptedSymmetricKey = updatedStreamContent?.encryptedSymmetricKey;
+  mirrorFile.encryptedSymmetricKey =
+    updatedStreamContent?.encryptedSymmetricKey;
   mirrorFile.decryptionConditions = updatedStreamContent?.decryptionConditions;
   mirrorFile.decryptionConditionsType =
     updatedStreamContent?.decryptionConditionsType;
