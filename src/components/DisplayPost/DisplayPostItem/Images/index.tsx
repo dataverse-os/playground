@@ -1,4 +1,3 @@
-import { oldAppVersion } from "@/sdk";
 import { FileType } from "@dataverse/runtime-connector";
 import { Secret, Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 import React, { useEffect, useState } from "react";
@@ -12,9 +11,6 @@ export interface TextProps {
 const Images: React.FC<TextProps> = ({ postStream }) => {
   const [images, setImages] = useState<string[]>([]);
   const showImage = (postStream: PostStream) => {
-    if (postStream.streamContent.appVersion === oldAppVersion) {
-      return [];
-    }
     if (postStream.streamContent.fileType === FileType.Public) {
       return postStream.streamContent.content?.images ?? [];
     }
