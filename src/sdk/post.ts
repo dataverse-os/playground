@@ -154,7 +154,7 @@ export const createDatatokenPostStream = async ({
       contentId: res.streamId,
       content: post,
       datatokenId,
-      contentType: await getModelIdByModelName(ModelNames.post),
+      contentType: await getModelIdByModelName(modelName),
     } as CustomMirrorFile,
   });
 
