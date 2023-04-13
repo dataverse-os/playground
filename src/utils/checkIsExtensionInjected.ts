@@ -36,14 +36,14 @@ export function detectExtension(extensionId: string): Promise<boolean> {
 }
 
 export async function detectDataverseExtension(): Promise<boolean> {
-  if (
-    (await detectExtension("kcigpjcafekokoclamfendmaapcljead")) ||
-    (await detectExtension("cekpfnklcifiomgeogbmknnmcgbkdpim")) ||
-    (await detectExtension("jkigiefofggbpfceggkjgibefdjpflmp"))
-  ) {
-    return true;
-  }
-  return false;
-  // const res = await checkIsExtensionInjected();
-  // return res;
+  // if (
+  //   (await detectExtension("kcigpjcafekokoclamfendmaapcljead")) ||
+  //   (await detectExtension("cekpfnklcifiomgeogbmknnmcgbkdpim")) ||
+  //   (await detectExtension("jkigiefofggbpfceggkjgibefdjpflmp"))
+  // ) {
+  //   return true;
+  // }
+  // return false;
+  const res = await checkIsExtensionInjected();
+  return res;
 }
