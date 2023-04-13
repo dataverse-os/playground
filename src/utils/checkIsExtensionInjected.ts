@@ -2,16 +2,20 @@ declare const __DATAVERSE_EXTENSION_VERSION__: string;
 
 export const checkIsExtensionInjected = (): Promise<boolean> => {
   return new Promise((resolve) => {
+    let flag = false;
     const interval = setInterval(() => {
       try {
         __DATAVERSE_EXTENSION_VERSION__;
         clearInterval(interval);
+        flag = true;
         resolve(true);
       } catch (error) {}
     }, 100);
     setTimeout(() => {
-      clearInterval(interval);
-      resolve(false);
+      if (!flag) {
+        clearInterval(interval);
+        resolve(false);
+      }
     }, 1000);
   });
   // try {
@@ -44,6 +48,9 @@ export async function detectDataverseExtension(): Promise<boolean> {
   //   return true;
   // }
   // return false;
+  if (self !== top) {
+    return true;
+  }
   const res = await checkIsExtensionInjected();
   return res;
 }
