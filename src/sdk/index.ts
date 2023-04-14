@@ -12,7 +12,7 @@ export const runtimeConnector: RuntimeConnector = new RuntimeConnector(
 );
 export const appName = Apps.Playground;
 export const slug = Apps.Playground;
-export const modelName = `${slug.toLocaleLowerCase()}_${ModelNames.post}`;
+export const modelName = `${slug.toLocaleLowerCase()}_post`;
 export const modelNames = [modelName];
 export const appVersion = "0.0.1";
 export const postModelId =
