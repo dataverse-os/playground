@@ -44,7 +44,7 @@ const defaultOriginal: Original = {
   height: 1,
 };
 const contextAvatar = (address?: string) =>
-  address ? `https://context.app/api/avatar/${address}?size=150` : "";
+  address ? `https://mint.fun/api/avatar/${address}?size=150` : "";
 
 const emptyProfile = {
   name: "",
