@@ -120,7 +120,7 @@ export const uploadImg = createAsyncThunk(
     const imgCIDs = await Promise.all(
       files.map((file) => web3Storage.storeFiles([file]))
     );
-    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.dweb.link`);
+    const imgUrls = imgCIDs.map((cid) => `https://${cid}.ipfs.w3s.link`);
     return imgUrls;
   }
 );
