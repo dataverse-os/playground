@@ -12,17 +12,20 @@ import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { timeAgo } from "@/utils/dateFormat";
 import { FlexRow } from "@/components/App/styled";
+import { useNavigate } from "react-router-dom";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
   postStream: PostStream;
 }
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
-  postStream
-}) => {
-
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
+  const navigate = useNavigate();
   return (
-    <Wrapper>
+    <Wrapper
+      onClick={() => {
+        navigate("/post/" + postStream.streamId);
+      }}
+    >
       <Content>
         <Header>
           <FlexRow>

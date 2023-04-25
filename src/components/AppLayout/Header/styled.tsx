@@ -16,6 +16,7 @@ export const Brand = styled.div`
   font-size: 24px;
   line-height: 29px;
   color: #000000;
+  cursor: pointer;
 `;
 
 export const HeaderRightRender = styled.div`
