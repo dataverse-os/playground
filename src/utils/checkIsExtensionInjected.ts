@@ -5,10 +5,13 @@ export const checkIsExtensionInjected = (): Promise<boolean> => {
     let flag = false;
     const interval = setInterval(() => {
       try {
-        __DATAVERSE_EXTENSION_VERSION__;
-        clearInterval(interval);
-        flag = true;
-        resolve(true);
+        // __DATAVERSE_EXTENSION_VERSION__;
+        const res = document.querySelector("#__dataverse__");
+        if (res) {
+          clearInterval(interval);
+          flag = true;
+          resolve(true);
+        }
       } catch (error) {}
     }, 100);
     setTimeout(() => {
