@@ -6,9 +6,10 @@ import question from "@/assets/icons/question.png";
 
 export interface TextProps {
   postStream: PostStream;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Images: React.FC<TextProps> = ({ postStream }) => {
+const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
   const [images, setImages] = useState<string[]>([]);
   const showImage = (postStream: PostStream) => {
     if (postStream.streamContent.fileType === FileType.Public) {
@@ -52,7 +53,7 @@ const Images: React.FC<TextProps> = ({ postStream }) => {
 
   const CurrentImgWrapper = images.length < 4 ? ImgWrapper : ImageWrapperGrid;
   return (
-    <CurrentImgWrapper>
+    <CurrentImgWrapper onClick={onClick}>
       {images?.map((image, index) => {
         if (image === "?") {
           return (

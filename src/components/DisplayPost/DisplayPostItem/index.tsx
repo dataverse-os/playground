@@ -21,11 +21,7 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const navigate = useNavigate();
   return (
-    <Wrapper
-      onClick={() => {
-        navigate("/post/" + postStream.streamId);
-      }}
-    >
+    <Wrapper>
       <Content>
         <Header>
           <FlexRow>
@@ -45,8 +41,19 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
             <UnlockInfo postStream={postStream} />
           )}
         </Header>
-        <Text postStream={postStream} />
-        <Images postStream={postStream} />
+
+        <Text
+          postStream={postStream}
+          onClick={() => {
+            navigate("/post/" + postStream.streamId);
+          }}
+        />
+        <Images
+          postStream={postStream}
+          onClick={() => {
+            navigate("/post/" + postStream.streamId);
+          }}
+        />
         {/* <Footer>
           <a
             href={`${process.env.DATAVERSE_OS}/finder`}
