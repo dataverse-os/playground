@@ -190,6 +190,7 @@ export const updatePostStreamsToPublicContent = async ({
   streamContent.content = content; //public content
 
   const streams = await runtimeConnector.updateStreams({
+    appName,
     streamsRecord: {
       [streamId]: {
         streamContent,
@@ -235,6 +236,7 @@ export const updatePostStreamsWithAccessControlConditions = async ({
   nativeStreamContent.updatedAt = new Date().toISOString();
 
   const res = await runtimeConnector.updateStreams({
+    appName,
     streamsRecord: {
       [streamId]: {
         streamContent: nativeStreamContent,

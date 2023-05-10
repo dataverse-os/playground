@@ -14,7 +14,7 @@
     "@ceramicnetwork/common": "2.5.0",
     "@ceramicnetwork/http-client": "2.3.3",
     "@ceramicnetwork/stream-model-instance": "0.4.0",
-    "@dataverse/runtime-connector": "1.0.36",
+    "@dataverse/runtime-connector": "1.0.37",
     "@reduxjs/toolkit": "1.9.0",
     "babel-plugin-macros": "^3.1.0",
     "buffer": "^6.0.3",

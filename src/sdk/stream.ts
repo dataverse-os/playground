@@ -4,11 +4,11 @@ import {
   ModelNames,
   StructuredFiles,
 } from "@dataverse/runtime-connector";
-import { ceramic, ceramicClient, runtimeConnector } from ".";
+import { appName, ceramic, ceramicClient, runtimeConnector } from ".";
 import { getModelIdByModelName } from "./appRegistry";
 
 export const loadStream = async (streamId: string) => {
-  const stream = await runtimeConnector.loadStream(streamId);
+  const stream = await runtimeConnector.loadStream({ appName, streamId });
   return stream;
 };
 
@@ -58,7 +58,7 @@ export const buildStreamsWithFiles = async ({
         }),
       };
     });
-    
+
     structuredFiles &&
       Object.values(structuredFiles).forEach((structuredFile) => {
         const { contentId, contentType, controller } = structuredFile;
