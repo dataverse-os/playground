@@ -4,23 +4,30 @@ import {
 } from "@/utils/checkIsExtensionInjected";
 import {
   Apps,
+  CRYPTO_WALLET,
   CRYPTO_WALLET_TYPE,
   METAMASK,
 } from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
 import { Message } from "@arco-design/web-react";
 
-export const connectWallet = async () => {
-  const address = await runtimeConnector.connectWallet({
-    name: METAMASK,
-    type: CRYPTO_WALLET_TYPE,
-  });
+export const chooseWallet = async () => {
+  const wallet = await runtimeConnector.chooseWallet();
+  return wallet;
+};
+
+export const connectWallet = async (wallet: CRYPTO_WALLET) => {
+  const address = await runtimeConnector.connectWallet(wallet);
   return address;
 };
 
-export const getCurrentDID = async () => {
-  await detectDataverseExtension();
-  const res = await runtimeConnector.getCurrentDID();
+export const getCurrentWallet = async () => {
+  const res = await runtimeConnector.getCurrentWallet();
+  return res;
+};
+
+export const switchNetwork = async (chainId: number) => {
+  const res = await runtimeConnector.switchNetwork(chainId);
   return res;
 };
 
@@ -33,20 +40,25 @@ export const checkIsCurrentDIDValid = async () => {
 export const connectIdentity = async () => {
   try {
     await detectDataverseExtension();
+
+    const currentWallet = await getCurrentWallet();
+    let wallet = {} as CRYPTO_WALLET;
+    if (!currentWallet) {
+      wallet = await chooseWallet();
+      await connectWallet(wallet);
+    } else {
+      wallet = currentWallet.wallet;
+    }
+
     const res = await checkIsCurrentDIDValid();
-    await runtimeConnector.connectWallet({
-      name: METAMASK,
-      type: CRYPTO_WALLET_TYPE,
-    });
     if (!res) {
-      await runtimeConnector.switchNetwork(137);
+      await switchNetwork(137);
       const did = await runtimeConnector.connectIdentity({
-        wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
         appName,
       });
       return did;
     }
-    const did = await runtimeConnector.getCurrentDID();
+    const did = await getCurrentDID();
     return did;
   } catch (error) {
     console.log(error);
@@ -55,11 +67,19 @@ export const connectIdentity = async () => {
   }
 };
 
-export const createNewDID = async () => {
-  const { currentDID, createdDIDList } = await runtimeConnector.createNewDID({
-    name: METAMASK,
-    type: CRYPTO_WALLET_TYPE,
-  });
+export const getCurrentDID = async () => {
+  const res = await runtimeConnector.getCurrentDID();
+  return res;
+};
+
+export const getWalletByDID = async (did: string) => {
+  return runtimeConnector.getWalletByDID(did);
+};
+
+export const createNewDID = async (wallet: CRYPTO_WALLET) => {
+  const { currentDID, createdDIDList } = await runtimeConnector.createNewDID(
+    wallet
+  );
   return { currentDID, createdDIDList };
 };
 
