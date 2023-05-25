@@ -10,6 +10,7 @@ import {
 } from "@dataverse/runtime-connector";
 import { runtimeConnector, appName, modelNames } from ".";
 import { Message } from "@arco-design/web-react";
+import { getNamespaceAndReferenceFromDID } from "@/utils/didAndAddress";
 
 export const chooseWallet = async () => {
   const wallet = await runtimeConnector.chooseWallet();
@@ -41,25 +42,28 @@ export const connectIdentity = async () => {
   try {
     await detectDataverseExtension();
 
+    const currentDID = await runtimeConnector.getCurrentDID();
+    let chainId;
+    try {
+      const { reference } = getNamespaceAndReferenceFromDID(currentDID);
+      chainId = Number(reference);
+    } catch (error) {}
+
     const currentWallet = await getCurrentWallet();
-    let wallet = {} as CRYPTO_WALLET;
     if (!currentWallet) {
-      wallet = await chooseWallet();
+      const wallet = await chooseWallet();
       await connectWallet(wallet);
-    } else {
-      wallet = currentWallet.wallet;
     }
 
     const res = await checkIsCurrentDIDValid();
     if (!res) {
-      await switchNetwork(137);
+      await switchNetwork(chainId || 137);
       const did = await runtimeConnector.connectIdentity({
         appName,
       });
       return did;
     }
-    const did = await getCurrentDID();
-    return did;
+    return currentDID;
   } catch (error) {
     console.log(error);
     Message.error("Failed to connect identity");
