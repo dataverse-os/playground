@@ -6,7 +6,7 @@ on:
     branches:
       - release
 env:
-  S3_BUCKET: 101.gold
+  S3_BUCKET: playground.dataverse-os.com
 
 permissions:
   id-token: write # This is required for requesting the JWT
