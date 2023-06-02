@@ -1,5 +1,4 @@
 import {
-  collect,
   getDatatokenInfo as _getDatatokenInfo,
   isCollected,
   unlock,

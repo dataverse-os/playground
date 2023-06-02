@@ -12,6 +12,12 @@ import { runtimeConnector, appName, modelNames } from ".";
 import { Message } from "@arco-design/web-react";
 import { getNamespaceAndReferenceFromDID } from "@/utils/didAndAddress";
 
+export const selectWallet = async () => {
+  await detectDataverseExtension();
+  const res = await runtimeConnector.selectWallet();
+  return res;
+};
+
 export const connectWallet = async (wallet: CRYPTO_WALLET) => {
   const address = await runtimeConnector.connectWallet(wallet);
   return address;
@@ -52,7 +58,7 @@ export const connectIdentity = async () => {
 
     const currentWallet = await getCurrentWallet();
     if (!currentWallet) {
-      const wallet = await runtimeConnector.selectWallet();
+      const wallet = await selectWallet();
       await connectWallet(wallet);
     }
 
