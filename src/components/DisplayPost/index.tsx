@@ -17,7 +17,6 @@ const Wrapper = styled.div`
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const postStreamList = useSelector((state) => state.post.postStreamList);
-  console.log("postStreamList: ", postStreamList)
   const postListLeft = postStreamList
     .map((post, index) => {
       if (index % 2 === 1) return post;

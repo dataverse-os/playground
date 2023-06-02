@@ -32,7 +32,6 @@ export function timeAgo(dateTimeStamp: number) {
   } else if (diffValue >= 0 && diffValue <= minute) {
     result = "just now";
   } else {
-    console.log(monthC, weekC, dayC, hourC, dateTimeStamp);
     var datetime = new Date();
     datetime.setTime(dateTimeStamp);
     var Nyear = datetime.getFullYear();
