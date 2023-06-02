@@ -108,12 +108,10 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       await post({
         postImages,
         profileId: lensProfiles.slice(-1)[0].id,
-        did: did as string,
       });
     } else {
       await post({
         postImages,
-        did: did as string,
       });
     }
   };
@@ -153,21 +151,23 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   };
 
   const post = async ({
-    did,
     profileId,
     postImages,
   }: {
-    did: string;
     profileId?: string;
     postImages: string[];
   }) => {
     const res = await dispatch(
       publishPost({
-        did,
         profileId,
         text: content,
         images: postImages,
         videos: [],
+        encrypted: {
+          text: true,
+          images: true,
+          videos: false,
+        }
       })
     );
     if (res.meta.requestStatus === "fulfilled") {
@@ -211,7 +211,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const postAfterProfileCreated = async () => {
     if (!profileId || !postImages) return;
     dispatch(postSlice.actions.setIsPublishingPost(true));
-    post({ profileId, postImages, did });
+    post({ profileId, postImages });
     dispatch(lensProfileSlice.actions.setProfileId(""));
   };
 

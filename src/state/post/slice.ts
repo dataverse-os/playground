@@ -5,10 +5,9 @@ import {
   unlock,
 } from "@/sdk/monetize";
 import {
-  createDatatokenPostStream,
-  createPublicPostStream,
+  createPayablePost,
+  createPublicPost,
   loadAllPostStreams,
-  loadMyPostStreams,
 } from "@/sdk/post";
 import {
   CustomMirrorFile,
@@ -27,7 +26,6 @@ import {
 import { Message } from "@arco-design/web-react";
 import { connectIdentity } from "@/sdk/identity";
 import { appName, appVersion } from "@/sdk";
-import { identitySlice } from "../identity/slice";
 
 interface Props {
   isEncrypting?: boolean;
@@ -45,72 +43,15 @@ const initialState: Props = {
   postStreamList: [],
 };
 
-// export const encryptPost = createAsyncThunk(
-//   "post/encryptPost",
-//   async ({ did, postContent }: { did: string; postContent: PostContent }) => {
-//     const address = getAddressFromDid(did);
-
-//     const decryptionConditions = await generateAccessControlConditions({
-//       did,
-//       address,
-//     });
-
-//     const decryptionConditionsType =
-//       DecryptionConditionsTypes.AccessControlCondition;
-
-//     const litKit = await newLitKey({
-//       did,
-//       decryptionConditions,
-//       decryptionConditionsType,
-//     });
-
-//     const res = await encryptWithLit({
-//       did,
-//       contentToBeEncrypted: JSON.stringify(postContent),
-//       litKit,
-//     });
-
-//     return res;
-//   }
-// );
-
-// export const decryptPost = createAsyncThunk(
-//   "post/decryptPost",
-//   async ({ did, postStream }: { did: string; postStream: PostStream }) => {
-//     await connectIdentity();
-//     const res = await _decryptPost({
-//       did,
-//       postStream,
-//     });
-//     return res;
-//   }
-// );
-
 export const unlockPost = createAsyncThunk(
   "post/unlockPost",
-  async ({ did, postStream }: { did: string; postStream: PostStream }) => {
+  async ({ postStream }: { postStream: PostStream }) => {
     const res = await unlock({
-      did,
-      indexFileId: postStream.streamContent.indexFileId,
+      streamId: postStream.streamId,
     });
     const postStreamCopy = JSON.parse(JSON.stringify(postStream));
-    postStreamCopy.streamContent.content = res;
+    postStreamCopy.streamContent = res;
     return postStreamCopy;
-
-    // const res = await isCollected({
-    //   datatokenId: postStream.streamContent.datatokenId!,
-    //   address: getAddressFromDid(did),
-    // });
-    // if (!res) {
-    //   await collect({
-    //     did,
-    //     appName: appName,
-    //     datatokenId: postStream.streamContent.datatokenId!,
-    //     indexFileId: postStream.streamContent.indexFileId,
-    //   });
-    // }
-    // const res2 = await _decryptPost({ did, postStream });
-    // return res2;
   }
 );
 
@@ -128,17 +69,26 @@ export const uploadImg = createAsyncThunk(
 export const publishPost = createAsyncThunk(
   "post/publishPost",
   async ({
-    did,
     profileId,
     text,
     images,
     videos,
+    encrypted,
   }: {
-    did: string;
     profileId?: string;
     text: string;
     images: string[];
     videos: string[];
+    encrypted?: {
+      appVersion?: boolean;
+      text?: boolean;
+      images?: boolean;
+      videos?: boolean;
+      postType?: boolean;
+      options?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    };
   }) => {
     const rootStore = await import("@/state/store");
     const { settings } = rootStore.default.store.getState().privacySettings;
@@ -153,17 +103,17 @@ export const publishPost = createAsyncThunk(
       videos,
       createdAt: date,
       updatedAt: date,
+      encrypted
     } as StructuredPost;
 
     try {
       let res;
       if (postType === PostType.Public) {
-        res = await createPublicPostStream({ did, post });
+        res = await createPublicPost({ post });
       } else if (postType === PostType.Private) {
         // res = await createPrivatePostStream({ did, content, litKit });
       } else {
-        res = await createDatatokenPostStream({
-          did,
+        res = await createPayablePost({
           post,
           profileId: profileId!,
           currency: currency!,
@@ -210,20 +160,6 @@ export const postSlice = createSlice({
     builder.addCase(displayPostList.fulfilled, (state, action) => {
       state.postStreamList = action.payload;
     });
-    // builder.addCase(encryptPost.pending, (state) => {
-    //   state.isEncrypting = true;
-    //   state.isEncryptedSuccessfully = false;
-    // });
-    // builder.addCase(encryptPost.fulfilled, (state, action) => {
-    //   state.encryptedContent = action.payload.encryptedContent;
-    //   state.litKit = action.payload.litKit;
-    //   state.isEncrypting = false;
-    //   state.isEncryptedSuccessfully = true;
-    // });
-    // builder.addCase(encryptPost.rejected, (state) => {
-    //   state.isEncrypting = false;
-    //   state.isEncryptedSuccessfully = false;
-    // });
 
     builder.addCase(uploadImg.pending, (state) => {
       state.isPublishingPost = true;
@@ -238,60 +174,10 @@ export const postSlice = createSlice({
     builder.addCase(publishPost.pending, (state) => {
       state.isPublishingPost = true;
     });
-    // builder.addCase(publishPost.fulfilled, (state, action, ) => {
-    //   state.isPublishingPost = false;
-    // });
+
     builder.addCase(publishPost.rejected, (state) => {
       state.isPublishingPost = false;
     });
-
-    // //decryptPostListener
-    // builder.addCase(decryptPost.pending, (state, action) => {
-    //   const postStreamList = JSON.parse(
-    //     JSON.stringify(current(state.postStreamList))
-    //   ) as PostStream[];
-    //   postStreamList.find((postStream) => {
-    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
-    //       postStream = Object.assign(postStream, {
-    //         ...action.meta.arg.postStream,
-    //         isDecrypting: false,
-    //         isDecryptedSuccessfully: true,
-    //       });
-    //     }
-    //   });
-    //   state.postStreamList = postStreamList;
-    // });
-    // builder.addCase(decryptPost.fulfilled, (state, action) => {
-    //   const postStreamList = JSON.parse(
-    //     JSON.stringify(current(state.postStreamList))
-    //   ) as PostStream[];
-    //   postStreamList.find((postStream) => {
-    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
-    //       postStream = Object.assign(postStream, {
-    //         ...action.payload,
-    //         isDecrypting: false,
-    //         isDecryptedSuccessfully: true,
-    //       });
-    //     }
-    //   });
-    //   state.postStreamList = postStreamList;
-    // });
-    // builder.addCase(decryptPost.rejected, (state, action) => {
-    //   const postStreamList = JSON.parse(
-    //     JSON.stringify(current(state.postStreamList))
-    //   ) as PostStream[];
-    //   postStreamList.find((postStream) => {
-    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
-    //       postStream = Object.assign(postStream, {
-    //         ...action.meta.arg.postStream,
-    //         isDecrypting: false,
-    //         isDecryptedSuccessfully: false,
-    //       });
-    //     }
-    //   });
-    //   state.postStreamList = postStreamList;
-    //   action.error.message && Message.error(action.error.message.slice(0, 100));
-    // });
 
     //buyPostListener
     builder.addCase(unlockPost.pending, (state, action) => {

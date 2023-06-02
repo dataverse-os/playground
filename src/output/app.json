@@ -1,0 +1,34 @@
+{
+    "website": "https://playground.dataverse-os.com/",
+    "logo": "https://bafkreibeb7b33ellnot6ltu3petnh3x2pkbpblakkqig3gq26mi3jnme7y.ipfs.w3s.link",
+    "defaultFolderName": "Untitled",
+    "description": "A demonstration application developed based on Dataverse SDK",
+    "ceramic": "https://dataverseceramicdaemon.com",
+    "models": {
+        "kjzl6hvfrbw6c5qdzwi9esxvt1v5mtt7od7hb2947624mn4u0rmq1rh9anjcnxx": {
+            "modelId": "kjzl6hvfrbw6c5qdzwi9esxvt1v5mtt7od7hb2947624mn4u0rmq1rh9anjcnxx",
+            "modelName": "indexFolders",
+            "isPublicDomain": false
+        },
+        "kjzl6hvfrbw6c6ad7ydn0hi4vtamx2v620hdgu6llq49h28rfd6cs02g3cmn9za": {
+            "modelId": "kjzl6hvfrbw6c6ad7ydn0hi4vtamx2v620hdgu6llq49h28rfd6cs02g3cmn9za",
+            "modelName": "contentFolders",
+            "isPublicDomain": false
+        },
+        "kjzl6hvfrbw6c763ubdhowzao0m4yp84cxzbfnlh4hdi5alqo4yrebmc0qpjdi5": {
+            "modelId": "kjzl6hvfrbw6c763ubdhowzao0m4yp84cxzbfnlh4hdi5alqo4yrebmc0qpjdi5",
+            "modelName": "indexFiles",
+            "isPublicDomain": false
+        },
+        "kjzl6hvfrbw6c7cp6xafsa7ghxh1yfw4bsub1363ehrxhi999vlpxny9k69uoxz": {
+            "modelId": "kjzl6hvfrbw6c7cp6xafsa7ghxh1yfw4bsub1363ehrxhi999vlpxny9k69uoxz",
+            "modelName": "playground_post",
+            "isPublicDomain": false,
+            "encryptable": [
+                "text",
+                "images",
+                "videos"
+            ]
+        }
+    }
+}

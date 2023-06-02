@@ -57,7 +57,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     if (postStream.isUnlocking || postStream.hasUnlockedSuccessfully) {
       return;
     }
-    await dispatch(unlockPost({ did: did as string, postStream }));
+    await dispatch(unlockPost({ postStream }));
   };
 
   useEffect(() => {

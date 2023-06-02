@@ -27,3 +27,4 @@ export const client = new GraphQLClient(
 
 export const ceramic = new Ceramic();
 export const ceramicClient = ceramic.initReadonlyCeramic();
+

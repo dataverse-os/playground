@@ -20,13 +20,13 @@ export const connectWallet = async () => {
 
 export const getCurrentDID = async () => {
   await detectDataverseExtension();
-  const res = await runtimeConnector.getCurrentDID();
+  const res = await runtimeConnector.wallet.getCurrentPkh();
   return res;
 };
 
 export const checkIsCurrentDIDValid = async () => {
   await detectDataverseExtension();
-  const res = await runtimeConnector.checkIsCurrentDIDValid({ appName });
+  const res = await runtimeConnector.checkCapibility(appName);
   return res;
 };
 
@@ -40,13 +40,13 @@ export const connectIdentity = async () => {
     });
     if (!res) {
       await runtimeConnector.switchNetwork(137);
-      const did = await runtimeConnector.connectIdentity({
+      const did = await runtimeConnector.createCapibility({
         wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
-        appName,
+        app: appName,
       });
       return did;
     }
-    const did = await runtimeConnector.getCurrentDID();
+    const did = await runtimeConnector.wallet.getCurrentPkh();
     return did;
   } catch (error) {
     console.log(error);
@@ -55,14 +55,3 @@ export const connectIdentity = async () => {
   }
 };
 
-export const createNewDID = async () => {
-  const { currentDID, createdDIDList } = await runtimeConnector.createNewDID({
-    name: METAMASK,
-    type: CRYPTO_WALLET_TYPE,
-  });
-  return { currentDID, createdDIDList };
-};
-
-export const switchDID = async (did: string) => {
-  await runtimeConnector.switchDID(did);
-};

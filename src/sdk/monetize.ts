@@ -2,32 +2,32 @@ import { DatatokenVars, ModelNames } from "@dataverse/runtime-connector";
 import { appName, client, runtimeConnector } from ".";
 import { gql } from "graphql-request";
 
-export const getChainOfDatatoken = async () => {
-  const res = await runtimeConnector.getChainOfDatatoken();
-  return res;
-};
+// export const getChainOfDatatoken = async () => {
+//   const res = await runtimeConnector.getChainOfDatatoken();
+//   return res;
+// };
 
 export const createLensProfile = async (handle: string) => {
-  const res = await runtimeConnector.createLensProfile(handle);
+  const res = await runtimeConnector.createProfile(handle);
   return res;
 };
 
 export const getLensProfiles = async (address: string) => {
-  const res = await runtimeConnector.getLensProfiles(address);
+  const res = await runtimeConnector.getProfiles(address);
   return res;
 };
 
-export const createDatatoken = async (datatokenVars: DatatokenVars) => {
-  const res = await runtimeConnector.createDatatoken(datatokenVars);
-  return res;
-};
+// export const createDatatoken = async (datatokenVars: DatatokenVars) => {
+//   const res = await runtimeConnector.createDatatoken(datatokenVars);
+//   return res;
+// };
 
 export const collect = async (params: {
   did: string;
   datatokenId: string;
   indexFileId: string;
 }) => {
-  const res = await runtimeConnector.collect({ ...params, appName });
+  const res = await runtimeConnector.collect({ ...params, app: appName });
   return res;
 };
 
@@ -86,7 +86,9 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
   return map[currencyAddress];
 };
 
-export const unlock = async (params: { did: string; indexFileId: string }) => {
-  const res = await runtimeConnector.unlock({ ...params, appName });
+export const unlock = async (params: { streamId: string}) => {
+  console.log("======before unlock")
+  const res = await runtimeConnector.unlock({ ...params, app: appName });
+  console.log("======after unlock, res:", res)
   return res;
 };

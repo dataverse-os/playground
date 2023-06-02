@@ -22,35 +22,18 @@ import {
   modelName,
   appVersion,
 } from ".";
-import { getModelIdByModelName } from "./appRegistry";
-import { createDatatoken, getChainOfDatatoken } from "./monetize";
 import { loadStreamsByModel } from "./stream";
-
-export const loadMyPostStreams = async (did: string) => {
-  const streams = await runtimeConnector.loadStreamsByModelAndDID({
-    did,
-    appName,
-    modelName,
-  });
-
-  const streamList: { streamId: string; streamContent: any }[] = [];
-
-  Object.entries(streams).forEach(([streamId, streamContent]) => {
-    streamList.push({
-      streamId,
-      streamContent,
-    });
-  });
-
-  return streamList;
-};
+import appJson from "../output/app.json"
 
 export const loadAllPostStreams = async () => {
+  const { modelId } = Object.values(appJson.models).find((model) =>
+    model.modelName === 'playground_post'
+  )!;
+
   let streams;
   if (await detectDataverseExtension()) {
-    streams = await runtimeConnector.loadStreamsByModel({
-      appName,
-      modelName,
+    streams = await runtimeConnector.loadStreamsBy({
+      modelId,
     });
   } else {
     streams = await loadStreamsByModel(modelName);
@@ -82,13 +65,17 @@ export const loadAllPostStreams = async () => {
   return sortedList;
 };
 
-export const createPublicPostStream = async ({
-  did,
+export const createPublicPost = async ({
   post,
 }: {
-  did: string;
   post: Partial<StructuredPost>;
 }) => {
+  const { modelId } = Object.values(appJson.models).find((model) =>
+    model.modelName === 'playground_post'
+  )!;
+
+  console.log("createPublicPost, post:", post)
+
   let encrypted = {} as any;
   if (post && Object.keys(post).length > 0) {
     Object.keys(post).forEach((key) => {
@@ -97,162 +84,114 @@ export const createPublicPostStream = async ({
   }
 
   const streamObject = await runtimeConnector.createStream({
-    did,
-    appName,
-    modelName,
+    modelId,
     streamContent: {
       ...post,
       ...(post && {
         encrypted: JSON.stringify(encrypted),
       }),
     },
-    fileType: FileType.Public,
   });
 
   return streamObject;
 };
 
-export const createDatatokenPostStream = async ({
-  did,
+export const createEncryptedPost = async ({
+  post,
+}: {
+  post: Partial<StructuredPost>;
+}) => {
+  const { modelId } = Object.values(appJson.models).find((model) =>
+    model.modelName === 'playground_post'
+  )!;
+
+  const streamObject = await runtimeConnector.createStream({
+    modelId,
+    streamContent: {
+      ...post,
+      ...(post && {
+        encrypted: JSON.stringify(post.encrypted),
+      }),
+    },
+  });
+
+  return streamObject;
+}
+
+export const createPayablePost = async ({
   post,
   profileId,
   currency,
   amount,
   collectLimit,
 }: {
-  did: string;
   post: Partial<StructuredPost>;
   profileId: string;
   currency: Currency;
   amount: number;
   collectLimit: number;
 }) => {
-  const res = await createPublicPostStream({
-    did,
-    post: { ...post, text: "", images: [], videos: [] } as StructuredPost,
-  });
-  console.log(res);
-  let datatokenId;
+  const { newFile } = await createEncryptedPost({ post });
+  if (!newFile) {
+    return
+  }
+
+  await monetizePost({
+    profileId,
+    mirrorFile: newFile,
+    currency,
+    amount,
+    collectLimit
+  })
+}
+
+const monetizePost = async ({
+  profileId,
+  mirrorFile,
+  currency,
+  amount,
+  collectLimit,
+}: {
+  mirrorFile: MirrorFile;
+  profileId?: string;
+  currency: Currency;
+  amount: number;
+  collectLimit: number;
+}) => {
   try {
-    const res2 = await createDatatoken({
-      profileId,
-      streamId: res.newMirror!.mirrorId,
-      currency,
-      amount,
-      collectLimit,
+    await runtimeConnector.monetizeFile({
+      app: appName,
+      indexFileId: mirrorFile.indexFileId,
+      datatokenVars: {
+        profileId,
+        currency,
+        amount,
+        collectLimit,
+      }
     });
-    datatokenId = res2.datatokenId;
   } catch (error: any) {
-    console.log(error);
-    await deletePostStream({ did, mirrorId: res.newMirror!.mirrorId });
+    console.error(error);
+    if (
+      error !==
+      "networkConfigurationId undefined does not match a configured networkConfiguration"
+    ) {
+      await runtimeConnector.removeFiles({
+        app: appName,
+        indexFileIds: [mirrorFile.indexFileId]
+      })
+    }
     throw error;
   }
-  const res2 = await updatePostStreamsWithAccessControlConditions({
-    did,
-    address: getAddressFromDid(did),
-    mirrorFile: {
-      contentId: res.streamId,
-      content: post,
-      datatokenId,
-      contentType: await getModelIdByModelName(modelName),
-    } as CustomMirrorFile,
-  });
-
-  return res2;
 };
 
 export const deletePostStream = async ({
-  did,
   mirrorId,
 }: {
-  did: string;
   mirrorId: string;
 }) => {
-  const res = await runtimeConnector.removeMirrors({
-    did,
-    appName,
-    mirrorIds: [mirrorId],
+  const res = await runtimeConnector.removeFiles({
+    app: appName,
+    indexFileIds: [mirrorId],
   });
   return res;
-};
-
-export const updatePostStreamsToPublicContent = async ({
-  content,
-  mirrorFile,
-}: {
-  content: string;
-  mirrorFile: MirrorFile;
-}) => {
-  if (!mirrorFile) return;
-  const { contentId: streamId, content: streamContent } = mirrorFile;
-  if (!streamId || !streamContent) return;
-
-  streamContent.content = content; //public content
-
-  const streams = await runtimeConnector.updateStreams({
-    streamsRecord: {
-      [streamId]: {
-        streamContent,
-        fileType: FileType.Public,
-      },
-    },
-    syncImmediately: true,
-  });
-  return streams;
-};
-
-export const updatePostStreamsWithAccessControlConditions = async ({
-  did,
-  address,
-  mirrorFile,
-}: {
-  did: string;
-  address: string;
-  mirrorFile: CustomMirrorFile;
-}) => {
-  if (!mirrorFile) return;
-  let { contentId: streamId, content: streamContent, datatokenId } = mirrorFile;
-  if (!streamId) return;
-
-  const nativeStreamContent = streamContent as NativePost;
-
-  if (!datatokenId) {
-    mirrorFile.fileType = FileType.Private;
-  } else {
-    mirrorFile.fileType = FileType.Datatoken;
-  }
-
-  nativeStreamContent.encrypted = JSON.stringify({
-    text: true,
-    images: true,
-    videos: true,
-  });
-
-  if (streamContent.options) {
-    nativeStreamContent.options = JSON.stringify(streamContent.options);
-  }
-
-  nativeStreamContent.updatedAt = new Date().toISOString();
-
-  const res = await runtimeConnector.updateStreams({
-    streamsRecord: {
-      [streamId]: {
-        streamContent: nativeStreamContent,
-        fileType: mirrorFile.fileType,
-        ...(datatokenId && { datatokenId: mirrorFile.datatokenId }),
-      },
-    },
-    syncImmediately: true,
-  });
-
-  const updatedStreamContent = res?.successRecord[streamId];
-
-  mirrorFile.fileKey = undefined;
-  mirrorFile.encryptedSymmetricKey =
-    updatedStreamContent?.encryptedSymmetricKey;
-  mirrorFile.decryptionConditions = updatedStreamContent?.decryptionConditions;
-  mirrorFile.decryptionConditionsType =
-    updatedStreamContent?.decryptionConditionsType;
-
-  return mirrorFile;
 };

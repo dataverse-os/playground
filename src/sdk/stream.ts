@@ -4,17 +4,23 @@ import {
   ModelNames,
   StructuredFiles,
 } from "@dataverse/runtime-connector";
-import { ceramic, ceramicClient, runtimeConnector } from ".";
-import { getModelIdByModelName } from "./appRegistry";
+import { ceramic, ceramicClient, runtimeConnector, appName } from ".";
+import appJson from "../output/app.json"
 
 export const loadStream = async (streamId: string) => {
-  const stream = await runtimeConnector.loadStream(streamId);
+  const stream = await runtimeConnector.loadStream({
+    app: appName,
+    streamId
+  });
   return stream;
 };
 
 export const loadStreamsByModel = async (modelName: string) => {
+  const { modelId } = Object.values(appJson.models).find((model) =>
+    model.modelName === 'playground_post'
+  )!;
   let streams = await ceramic.loadStreamsByModel({
-    model: (await getModelIdByModelName(modelName))!,
+    model: modelId,
     ceramic: ceramicClient,
   });
 
@@ -58,7 +64,7 @@ export const buildStreamsWithFiles = async ({
         }),
       };
     });
-    
+
     structuredFiles &&
       Object.values(structuredFiles).forEach((structuredFile) => {
         const { contentId, contentType, controller } = structuredFile;
@@ -69,8 +75,8 @@ export const buildStreamsWithFiles = async ({
           streams[contentId] = {
             ...(!(contentType in IndexFileContentType) &&
               streams[contentId] && {
-                content: streams[contentId],
-              }),
+              content: streams[contentId],
+            }),
             ...structuredFile,
           };
         }
