@@ -18,6 +18,7 @@ interface DisplayPostItemProps {
 
 const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
+  const did = useSelector((state) => state.identity.did);
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const [datatokenInfo, setDatatokenInfo] = useState({
     sold_num: 0,
@@ -76,7 +77,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     if (postStream.hasUnlockedSuccessfully) {
       setDatatokenInfo({
         ...datatokenInfo,
-        sold_num: datatokenInfo.sold_num + 1,
+        sold_num: postStream.streamContent.controller === did ? datatokenInfo.sold_num : ++datatokenInfo.sold_num,
       });
     }
   }, [postStream.hasUnlockedSuccessfully]);
