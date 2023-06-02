@@ -26,7 +26,7 @@ export const getCurrentDID = async () => {
 
 export const checkIsCurrentDIDValid = async () => {
   await detectDataverseExtension();
-  const res = await runtimeConnector.checkCapibility(appName);
+  const res = await runtimeConnector.checkCapability(appName);
   return res;
 };
 
@@ -40,7 +40,7 @@ export const connectIdentity = async () => {
     });
     if (!res) {
       await runtimeConnector.switchNetwork(137);
-      const did = await runtimeConnector.createCapibility({
+      const did = await runtimeConnector.createCapability({
         wallet: { name: METAMASK, type: CRYPTO_WALLET_TYPE },
         app: appName,
       });

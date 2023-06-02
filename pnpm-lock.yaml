@@ -6,16 +6,16 @@ dependencies:
     version: 2.45.2(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
   '@ceramicnetwork/common':
     specifier: 2.5.0
-    version: 2.5.0(@opentelemetry/api@1.1.0)
+    version: 2.5.0
   '@ceramicnetwork/http-client':
     specifier: 2.3.3
-    version: 2.3.3(@opentelemetry/api@1.1.0)
+    version: 2.3.3
   '@ceramicnetwork/stream-model-instance':
     specifier: 0.4.0
-    version: 0.4.0(@opentelemetry/api@1.1.0)
+    version: 0.4.0
   '@dataverse/runtime-connector':
-    specifier: ^1.0.42
-    version: 1.0.42
+    specifier: 1.0.43
+    version: 1.0.43
   '@reduxjs/toolkit':
     specifier: 1.9.0
     version: 1.9.0(react-redux@8.0.5)(react@18.2.0)
@@ -60,13 +60,13 @@ dependencies:
     version: 3.1.4
   styled-components:
     specifier: 5.3.6
-    version: 5.3.6(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+    version: 5.3.6(react-dom@18.2.0)(react@18.2.0)
   uint8arrays:
     specifier: 3.1.0
     version: 3.1.0
   web3.storage:
     specifier: 4.5.4
-    version: 4.5.4(node-fetch@2.6.9)
+    version: 4.5.4
 
 devDependencies:
   '@types/node':
@@ -174,10 +174,10 @@ packages:
       '@babel/helpers': 7.20.13
       '@babel/parser': 7.20.15
       '@babel/template': 7.20.7
-      '@babel/traverse': 7.20.13(supports-color@5.5.0)
+      '@babel/traverse': 7.20.13
       '@babel/types': 7.20.7
       convert-source-map: 1.9.0
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.0
@@ -247,7 +247,7 @@ packages:
       '@babel/helper-split-export-declaration': 7.18.6
       '@babel/helper-validator-identifier': 7.19.1
       '@babel/template': 7.20.7
-      '@babel/traverse': 7.20.13(supports-color@5.5.0)
+      '@babel/traverse': 7.20.13
       '@babel/types': 7.20.7
     transitivePeerDependencies:
       - supports-color
@@ -289,7 +289,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/template': 7.20.7
-      '@babel/traverse': 7.20.13(supports-color@5.5.0)
+      '@babel/traverse': 7.20.13
       '@babel/types': 7.20.7
     transitivePeerDependencies:
       - supports-color
@@ -344,6 +344,24 @@ packages:
       '@babel/parser': 7.20.15
       '@babel/types': 7.20.7
 
+  /@babel/traverse@7.20.13:
+    resolution: {integrity: sha512-kMJXfF0T6DIS9E8cgdLCSAL+cuCK+YEZHWiLK0SXpTo8YRj5lpJu3CDNKiIBCne4m9hhTIqUg6SYTAI39tAiVQ==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      '@babel/code-frame': 7.18.6
+      '@babel/generator': 7.20.14
+      '@babel/helper-environment-visitor': 7.18.9
+      '@babel/helper-function-name': 7.19.0
+      '@babel/helper-hoist-variables': 7.18.6
+      '@babel/helper-split-export-declaration': 7.18.6
+      '@babel/parser': 7.20.15
+      '@babel/types': 7.20.7
+      debug: 4.3.4
+      globals: 11.12.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /@babel/traverse@7.20.13(supports-color@5.5.0):
     resolution: {integrity: sha512-kMJXfF0T6DIS9E8cgdLCSAL+cuCK+YEZHWiLK0SXpTo8YRj5lpJu3CDNKiIBCne4m9hhTIqUg6SYTAI39tAiVQ==}
     engines: {node: '>=6.9.0'}
@@ -360,6 +378,7 @@ packages:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /@babel/types@7.20.7:
     resolution: {integrity: sha512-69OnhBxSSgK0OzTJai4kyPDiKTIe3j+ctaHdIGVbRahTLAT7L3R9oeXHC2aVSuGYt3cVnoAMDmOCgJ2yaiLMvg==}
@@ -392,12 +411,12 @@ packages:
       - encoding
     dev: false
 
-  /@ceramicnetwork/common@2.5.0(@opentelemetry/api@1.1.0):
+  /@ceramicnetwork/common@2.5.0:
     resolution: {integrity: sha512-+rYZA3IbmIYSqMKEGm8JLNJcSRZlilsIH346LYhpXrKfUHor/xbtoQ6+8/0kbKFNmCz/s5t2gsY0TO1Cq3qYTw==}
     dependencies:
       '@ceramicnetwork/streamid': 2.14.0
-      '@opentelemetry/exporter-prometheus': 0.28.0(@opentelemetry/api@1.1.0)
-      '@opentelemetry/sdk-metrics-base': 0.28.0(@opentelemetry/api@1.1.0)
+      '@opentelemetry/exporter-prometheus': 0.28.0
+      '@opentelemetry/sdk-metrics-base': 0.28.0
       '@opentelemetry/semantic-conventions': 1.10.1
       '@stablelib/random': 1.0.2
       caip: 1.1.0
@@ -416,13 +435,13 @@ packages:
       - encoding
     dev: false
 
-  /@ceramicnetwork/http-client@2.3.3(@opentelemetry/api@1.1.0):
+  /@ceramicnetwork/http-client@2.3.3:
     resolution: {integrity: sha512-ashq5yrxipYxNlsCB87fQ8z8vHm064rshb9CuI8q4kcvFxRfVb3iav1GCGQ2NtHR0ESvT1xBtryk+oJJD50mWA==}
     dependencies:
-      '@ceramicnetwork/common': 2.5.0(@opentelemetry/api@1.1.0)
+      '@ceramicnetwork/common': 2.5.0
       '@ceramicnetwork/stream-caip10-link': 2.18.0
-      '@ceramicnetwork/stream-model': 0.4.2(@opentelemetry/api@1.1.0)
-      '@ceramicnetwork/stream-model-instance': 0.4.0(@opentelemetry/api@1.1.0)
+      '@ceramicnetwork/stream-model': 0.4.2
+      '@ceramicnetwork/stream-model-instance': 0.4.0
       '@ceramicnetwork/stream-tile': 2.19.0
       '@ceramicnetwork/streamid': 2.14.0
       query-string: 7.1.3
@@ -444,10 +463,10 @@ packages:
       - encoding
     dev: false
 
-  /@ceramicnetwork/stream-model-instance@0.4.0(@opentelemetry/api@1.1.0):
+  /@ceramicnetwork/stream-model-instance@0.4.0:
     resolution: {integrity: sha512-/7Lh8Mgb5olpD5hzwle2bNBfHJcdRweVhcT8yaGNGm/lBqFEaIU4wYSS6DC9a3wZO4bEhSfWepsfSZgydMdTbw==}
     dependencies:
-      '@ceramicnetwork/common': 2.5.0(@opentelemetry/api@1.1.0)
+      '@ceramicnetwork/common': 2.5.0
       '@ceramicnetwork/streamid': 2.14.0
       '@ipld/dag-cbor': 7.0.3
       '@stablelib/random': 1.0.2
@@ -458,10 +477,10 @@ packages:
       - encoding
     dev: false
 
-  /@ceramicnetwork/stream-model@0.4.2(@opentelemetry/api@1.1.0):
+  /@ceramicnetwork/stream-model@0.4.2:
     resolution: {integrity: sha512-TxkaswKr8GCK42ZWWqx1bJs9AesFp61McHlUIH6gx2sOOHnQchHc3D1cco6EU3VtRFXUmvNZg2WJ9HaMxxWrHw==}
     dependencies:
-      '@ceramicnetwork/common': 2.5.0(@opentelemetry/api@1.1.0)
+      '@ceramicnetwork/common': 2.5.0
       '@ceramicnetwork/streamid': 2.14.0
       '@ipld/dag-cbor': 7.0.3
       '@stablelib/random': 1.0.2
@@ -508,8 +527,8 @@ packages:
       uuid: 9.0.0
     dev: false
 
-  /@dataverse/runtime-connector@1.0.42:
-    resolution: {integrity: sha512-3Yf8yx1WhDwj5HqHAjSeLGlBfMEqr263iLt1l1qxPhqDaf4oR/anBakbbyFZj1QkrKisYNTKvU3TELm/kTmSQA==}
+  /@dataverse/runtime-connector@1.0.43:
+    resolution: {integrity: sha512-c9PBnfCdvRHFs3x6F6D1qYMZ1N0T1C2hPG/5IrWCBifVG2+We95FLIJLsCVpDU4Ro8YuqNy83E/o6nKLEWqUhg==}
     dependencies:
       '@dataverse/communicator': 1.0.23
       ethers: 5.6.9
@@ -1512,60 +1531,51 @@ packages:
       '@opentelemetry/api': 1.4.1
     dev: false
 
-  /@opentelemetry/api@1.1.0:
-    resolution: {integrity: sha512-hf+3bwuBwtXsugA2ULBc95qxrOqP2pOekLz34BJhcAKawt94vfeNyUKpYc0lZQ/3sCP6LqRa7UAdHA7i5UODzQ==}
-    engines: {node: '>=8.0.0'}
-    dev: false
-
   /@opentelemetry/api@1.4.1:
     resolution: {integrity: sha512-O2yRJce1GOc6PAy3QxFM4NzFiWzvScDC1/5ihYBL6BUEVdq0XMWN01sppE+H6bBXbaFYipjwFLEWLg5PaSOThA==}
     engines: {node: '>=8.0.0'}
     dev: false
 
-  /@opentelemetry/core@1.2.0(@opentelemetry/api@1.1.0):
+  /@opentelemetry/core@1.2.0:
     resolution: {integrity: sha512-QiKp8fBbT9ZhRTP+ZVVMyqH62tD/ZQa4gWPi+GnpNetvK1SWPO/8DmRpaSXHwAhu5FWUDJrbFgpLsrDd1zGPOw==}
     engines: {node: '>=8.12.0'}
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.2.0'
     dependencies:
-      '@opentelemetry/api': 1.1.0
       '@opentelemetry/semantic-conventions': 1.2.0
     dev: false
 
-  /@opentelemetry/exporter-prometheus@0.28.0(@opentelemetry/api@1.1.0):
+  /@opentelemetry/exporter-prometheus@0.28.0:
     resolution: {integrity: sha512-1PpJk0xFwVIRXb1vUEDWb+cV2Z8m/5YkZ+zL3+u58iZBiNn5t5VMHQ7iNPE+sV6Hr2BG8X7PtNzIIuJQKXrqsw==}
     engines: {node: '>=8.12.0'}
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
     dependencies:
-      '@opentelemetry/api': 1.1.0
       '@opentelemetry/api-metrics': 0.28.0
-      '@opentelemetry/core': 1.2.0(@opentelemetry/api@1.1.0)
-      '@opentelemetry/sdk-metrics-base': 0.28.0(@opentelemetry/api@1.1.0)
+      '@opentelemetry/core': 1.2.0
+      '@opentelemetry/sdk-metrics-base': 0.28.0
     dev: false
 
-  /@opentelemetry/resources@1.2.0(@opentelemetry/api@1.1.0):
+  /@opentelemetry/resources@1.2.0:
     resolution: {integrity: sha512-S5ZlZa2JF+1qhiF7eb3tTtDfKmTODO//pvam9vEyZvr+/At45rIQ7cyznRdMWCppZbholwXWXnrKml29IIG9vQ==}
     engines: {node: '>=8.12.0'}
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.2.0'
     dependencies:
-      '@opentelemetry/api': 1.1.0
-      '@opentelemetry/core': 1.2.0(@opentelemetry/api@1.1.0)
+      '@opentelemetry/core': 1.2.0
       '@opentelemetry/semantic-conventions': 1.2.0
     dev: false
 
-  /@opentelemetry/sdk-metrics-base@0.28.0(@opentelemetry/api@1.1.0):
+  /@opentelemetry/sdk-metrics-base@0.28.0:
     resolution: {integrity: sha512-PFjk9+WWU6Y51ZjxClnPW1rzTtcT79pR1FTiFjTsNmKSG0zU3qvUHAoTo0+jvvrO0Djihj7AE+iIG2xLWY4GNQ==}
     engines: {node: '>=8.12.0'}
     deprecated: Please use @opentelemetry/sdk-metrics
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
     dependencies:
-      '@opentelemetry/api': 1.1.0
       '@opentelemetry/api-metrics': 0.28.0
-      '@opentelemetry/core': 1.2.0(@opentelemetry/api@1.1.0)
-      '@opentelemetry/resources': 1.2.0(@opentelemetry/api@1.1.0)
+      '@opentelemetry/core': 1.2.0
+      '@opentelemetry/resources': 1.2.0
       lodash.merge: 4.6.2
     dev: false
 
@@ -2001,7 +2011,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.6(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+      styled-components: 5.3.6(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /babel-plugin-syntax-jsx@6.18.0:
@@ -2290,6 +2300,17 @@ packages:
     resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
     dev: false
 
+  /debug@4.3.4:
+    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: 2.1.2
+
   /debug@4.3.4(supports-color@5.5.0):
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -2301,6 +2322,7 @@ packages:
     dependencies:
       ms: 2.1.2
       supports-color: 5.5.0
+    dev: false
 
   /decamelize-keys@1.1.1:
     resolution: {integrity: sha512-WiPxgEirIV0/eIOMcnFBA3/IJZAZqKnwAwWyvvdi4lsr1WCN22nhdf/3db3DoZcUjTV2SqfzIwNyp6y2xs3nmg==}
@@ -2372,11 +2394,11 @@ packages:
       uint8arrays: 4.0.3
     dev: false
 
-  /dns-over-http-resolver@1.2.3(node-fetch@2.6.9):
+  /dns-over-http-resolver@1.2.3:
     resolution: {integrity: sha512-miDiVSI6KSNbi4SVifzO/reD8rMnxgrlnkrlkugOLQpWQTe2qMdHsZp5DmfKjxNE+/T3VAAYLQUZMv9SMr6+AA==}
     dependencies:
-      debug: 4.3.4(supports-color@5.5.0)
-      native-fetch: 3.0.0(node-fetch@2.6.9)
+      debug: 4.3.4
+      native-fetch: 3.0.0
       receptacle: 1.3.2
     transitivePeerDependencies:
       - node-fetch
@@ -2808,7 +2830,7 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /ipfs-car@0.7.0(node-fetch@2.6.9):
+  /ipfs-car@0.7.0:
     resolution: {integrity: sha512-9ser6WWZ1ZMTCGbcVkRXUzOrpQ4SIiLfzIEnk+3LQsXbV09yeZg3ijhRuEXozEIYE68Go9JmOFshamsK9iKlNQ==}
     hasBin: true
     dependencies:
@@ -2819,8 +2841,8 @@ packages:
       browser-readablestream-to-it: 1.0.3
       idb-keyval: 6.2.0
       interface-blockstore: 2.0.3
-      ipfs-core-types: 0.8.4(node-fetch@2.6.9)
-      ipfs-core-utils: 0.12.2(node-fetch@2.6.9)
+      ipfs-core-types: 0.8.4
+      ipfs-core-utils: 0.12.2
       ipfs-unixfs-exporter: 7.0.11
       ipfs-unixfs-importer: 9.0.10
       ipfs-utils: 9.0.14
@@ -2839,26 +2861,26 @@ packages:
       - supports-color
     dev: false
 
-  /ipfs-core-types@0.8.4(node-fetch@2.6.9):
+  /ipfs-core-types@0.8.4:
     resolution: {integrity: sha512-sbRZA1QX3xJ6ywTiVQZMOxhlhp4osAZX2SXx3azOLxAtxmGWDMkHYt722VV4nZ2GyJy8qyk5GHQIZ0uvQnpaTg==}
     dependencies:
       interface-datastore: 6.1.1
-      multiaddr: 10.0.1(node-fetch@2.6.9)
+      multiaddr: 10.0.1
       multiformats: 9.9.0
     transitivePeerDependencies:
       - node-fetch
       - supports-color
     dev: false
 
-  /ipfs-core-utils@0.12.2(node-fetch@2.6.9):
+  /ipfs-core-utils@0.12.2:
     resolution: {integrity: sha512-RfxP3rPhXuqKIUmTAUhmee6fmaV3A7LMnjOUikRKpSyqESz/DR7aGK7tbttMxkZdkSEr0rFXlqbyb0vVwmn0wQ==}
     dependencies:
       any-signal: 2.1.2
       blob-to-it: 1.0.4
       browser-readablestream-to-it: 1.0.3
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       err-code: 3.0.1
-      ipfs-core-types: 0.8.4(node-fetch@2.6.9)
+      ipfs-core-types: 0.8.4
       ipfs-unixfs: 6.0.9
       ipfs-utils: 9.0.14
       it-all: 1.0.6
@@ -2866,8 +2888,8 @@ packages:
       it-peekable: 1.0.3
       it-to-stream: 1.0.0
       merge-options: 3.0.4
-      multiaddr: 10.0.1(node-fetch@2.6.9)
-      multiaddr-to-uri: 8.0.0(node-fetch@2.6.9)
+      multiaddr: 10.0.1
+      multiaddr-to-uri: 8.0.0
       multiformats: 9.9.0
       nanoid: 3.3.4
       parse-duration: 1.0.3
@@ -2955,7 +2977,7 @@ packages:
     resolution: {integrity: sha512-fBYkRjN3/fc6IQujUF4WBEyOXegK715w+wx9IErV6H2B5JXsMnHOBceUKn3L90dj+wJfHs6T+hM/OZiTT6mQCw==}
     dependencies:
       cborg: 1.10.0
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       err-code: 3.0.1
       interface-datastore: 6.1.1
       libp2p-crypto: 0.21.2
@@ -3361,21 +3383,21 @@ packages:
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
 
-  /multiaddr-to-uri@8.0.0(node-fetch@2.6.9):
+  /multiaddr-to-uri@8.0.0:
     resolution: {integrity: sha512-dq4p/vsOOUdVEd1J1gl+R2GFrXJQH8yjLtz4hodqdVbieg39LvBOdMQRdQnfbg5LSM/q1BYNVf5CBbwZFFqBgA==}
     deprecated: This module is deprecated, please upgrade to @multiformats/multiaddr-to-uri
     dependencies:
-      multiaddr: 10.0.1(node-fetch@2.6.9)
+      multiaddr: 10.0.1
     transitivePeerDependencies:
       - node-fetch
       - supports-color
     dev: false
 
-  /multiaddr@10.0.1(node-fetch@2.6.9):
+  /multiaddr@10.0.1:
     resolution: {integrity: sha512-G5upNcGzEGuTHkzxezPrrD6CaIHR9uo+7MwqhNVcXTs33IInon4y7nMiGxl2CY5hG7chvYQUQhz5V52/Qe3cbg==}
     deprecated: This module is deprecated, please upgrade to @multiformats/multiaddr
     dependencies:
-      dns-over-http-resolver: 1.2.3(node-fetch@2.6.9)
+      dns-over-http-resolver: 1.2.3
       err-code: 3.0.1
       is-ip: 3.1.0
       multiformats: 9.9.0
@@ -3439,6 +3461,12 @@ packages:
       abort-controller: '*'
     dependencies:
       abort-controller: 3.0.0
+    dev: false
+
+  /native-fetch@3.0.0:
+    resolution: {integrity: sha512-G3Z7vx0IFb/FQ4JxvtqGABsOTIqRWvgQz6e+erkB+JJD6LrszQtMozEHI4EkmgZQvnGHrpLVzUWk7t4sJCIkVw==}
+    peerDependencies:
+      node-fetch: '*'
     dev: false
 
   /native-fetch@3.0.0(node-fetch@2.6.9):
@@ -3676,7 +3704,7 @@ packages:
     dependencies:
       '@assemblyscript/loader': 0.9.4
       bl: 5.1.0
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       minimist: 1.2.8
       node-fetch: 2.6.9
       readable-stream: 3.6.2
@@ -4107,7 +4135,7 @@ packages:
       min-indent: 1.0.1
     dev: false
 
-  /styled-components@5.3.6(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
+  /styled-components@5.3.6(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-hGTZquGAaTqhGWldX7hhfzjnIYBZ0IXQXkCYdvF1Sq3DsUaLx6+NTHC5Jj1ooM2F68sBiVz3lvhfwQs/S3l6qg==}
     engines: {node: '>=10'}
     requiresBuild: true
@@ -4126,7 +4154,6 @@ packages:
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-is: 18.2.0
       shallowequal: 1.1.0
       supports-color: 5.5.0
     dev: false
@@ -4375,7 +4402,7 @@ packages:
     engines: {node: '>= 8'}
     dev: false
 
-  /web3.storage@4.5.4(node-fetch@2.6.9):
+  /web3.storage@4.5.4:
     resolution: {integrity: sha512-QSdiPEMgXCkk9Y0y3U1pyTu8n1TOOctwq7h9Loz7NYPla9QZesbg4lSxe0XWPltzyJEkI43yC1hy8gNxNEiizA==}
     dependencies:
       '@ipld/car': 3.2.4
@@ -4387,7 +4414,7 @@ packages:
       carbites: 1.0.6
       cborg: 1.10.0
       files-from-path: 0.2.6
-      ipfs-car: 0.7.0(node-fetch@2.6.9)
+      ipfs-car: 0.7.0
       libp2p-crypto: 0.21.2
       p-retry: 4.6.2
       streaming-iterables: 6.2.0
