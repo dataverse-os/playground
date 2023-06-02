@@ -5,9 +5,10 @@ import { CustomMirrorFile, PostStream } from "@/types";
 
 export interface TextProps {
   postStream: PostStream;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Text: React.FC<TextProps> = ({ postStream }) => {
+const Text: React.FC<TextProps> = ({ postStream, onClick }) => {
   const showContent = (postStream: PostStream) => {
     if (postStream.streamContent.fileType === FileType.Public) {
       return postStream.streamContent.content.text;
@@ -26,7 +27,7 @@ const Text: React.FC<TextProps> = ({ postStream }) => {
       return "" as string;
     }
   };
-  return <TextWrapper>{showContent(postStream)}</TextWrapper>;
+  return <TextWrapper onClick={onClick}>{showContent(postStream)}</TextWrapper>;
 };
 
 export default Text;

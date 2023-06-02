@@ -6,6 +6,7 @@ export const ImgWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  cursor: pointer;
 `;
 
 export const Secret = styled.div`
@@ -37,4 +38,5 @@ export const ImageWrapperGrid = styled.div`
   gap: 0.75rem;
   grid-template-columns: repeat(2,50%);
   grid-template-rows: repeat(2,50%);
+  cursor: pointer;
 `

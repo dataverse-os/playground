@@ -89,7 +89,7 @@ const PrivacySettings: React.FC = () => {
         id="privacySettings"
         title="Privacy Settings"
         mask
-        width={280}
+        // width={280}
         controlVisible={modalVisible}
         showCloseButton
         onOk={saveSettings}

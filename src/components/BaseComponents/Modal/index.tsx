@@ -9,7 +9,7 @@ import { css, FlattenSimpleInterpolation } from "styled-components";
 
 export interface ModalProps {
   title?: string;
-  width: number;
+  width?: number;
   children?: ReactNode;
   onCancel: () => void;
   onOk?: () => void;

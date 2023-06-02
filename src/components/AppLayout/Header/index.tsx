@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper } from "./styled";
 import githubLogo from "@/assets/github.png";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const GitHubLink = styled.img`
   height: 36px;
@@ -16,6 +17,7 @@ const GitHubLink = styled.img`
 
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { did, isConnectingIdentity } = useSelector((state) => state.identity);
 
   useEffect(() => {
@@ -26,7 +28,13 @@ const Header = (): React.ReactElement => {
 
   return (
     <Wrapper>
-      <Brand>Playground</Brand>
+      <Brand
+        onClick={() => {
+          navigate("/");
+        }}
+      >
+        Playground
+      </Brand>
       <HeaderRightRender>
         {/* <Button
           css={css`

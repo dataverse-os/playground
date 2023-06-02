@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 scripts/s3-deploy/*
 scripts/upload.js
+
+pnpm-lock.yaml

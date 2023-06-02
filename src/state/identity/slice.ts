@@ -3,6 +3,7 @@ import {
   connectIdentity as _connectIdentity,
   connectWallet,
   getCurrentDID,
+  getWalletByDID,
 } from "@/sdk/identity";
 import {
   detectDataverseExtension,
@@ -10,6 +11,7 @@ import {
 } from "@/utils/checkIsExtensionInjected";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { noExtensionSlice } from "../noExtension/slice";
+import { RootState } from "../store";
 
 interface Props {
   did: string;
@@ -25,10 +27,11 @@ const initialState: Props = {
 
 export const connectIdentity = createAsyncThunk(
   "identity/connectIdentity",
-  async (undefined, { dispatch }) => {
-    const rootStore = await import("@/state/store");
-    const { isConnectingIdentity } =
-      rootStore.default.store.getState().identity;
+  async (undefined, { dispatch, getState }) => {
+    // const rootStore = await import("@/state/store");
+    // const { isConnectingIdentity } =
+    //   rootStore.default.store.getState().identity;
+    const { isConnectingIdentity } = (getState() as RootState).identity;
 
     if (!(await detectDataverseExtension())) {
       // installDataverseMessage();
@@ -41,7 +44,8 @@ export const connectIdentity = createAsyncThunk(
     const did = await getCurrentDID();
     const isValid = await checkIsCurrentDIDValid();
     if (did && isValid) {
-      await connectWallet();
+      const wallet = await getWalletByDID(did);
+      await connectWallet(wallet);
       return did;
     }
     if (isConnectingIdentity) {

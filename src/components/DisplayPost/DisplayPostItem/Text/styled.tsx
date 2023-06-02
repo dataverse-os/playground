@@ -12,4 +12,7 @@ export const TextWrapper = styled.div`
   margin-left: 0.57rem;
   color: #000000;
   margin-bottom: 0.8rem;
+  width: fit-content;
+  text-align: justify;
+  cursor: pointer;
 `;
