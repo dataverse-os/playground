@@ -14,8 +14,8 @@ dependencies:
     specifier: 0.4.0
     version: 0.4.0
   '@dataverse/runtime-connector':
-    specifier: 1.0.44
-    version: 1.0.44
+    specifier: 1.0.46
+    version: 1.0.46
   '@reduxjs/toolkit':
     specifier: 1.9.0
     version: 1.9.0(react-redux@8.0.5)(react@18.2.0)
@@ -536,8 +536,8 @@ packages:
       uuid: 9.0.0
     dev: false
 
-  /@dataverse/runtime-connector@1.0.44:
-    resolution: {integrity: sha512-K9oe/JHYkERey7RzUE4a/lrwHnIbZGhW+5t1pSvPB1owBgypBHKXFrwCMRZBPVJ4CdF/utyT0WSXfx8kEr1mRQ==}
+  /@dataverse/runtime-connector@1.0.46:
+    resolution: {integrity: sha512-QYq7Y/1MiATMZhaKWVY5UiJmEwdEwkVxX0tIZDdwcG+vkwAIPRuhLfG7pqTp9AXXZUtYUANpPL6biH1MkaBsAQ==}
     dependencies:
       '@dataverse/communicator': 1.0.23
       ethers: 5.6.9
