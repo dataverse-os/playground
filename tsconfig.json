@@ -21,6 +21,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "public/**/*"],
+  "include": ["src", "public/**/*"],
   "exclude": ["node_modules"]
 }

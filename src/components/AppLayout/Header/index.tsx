@@ -7,6 +7,8 @@ import { Brand, HeaderRightRender, Wrapper } from "./styled";
 import githubLogo from "@/assets/github.png";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useStream, useWallet } from "@/hooks";
+import { appName } from "@/sdk";
 
 const GitHubLink = styled.img`
   height: 36px;
@@ -19,12 +21,29 @@ const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { did, isConnectingIdentity } = useSelector((state) => state.identity);
+  const {
+    connectWallet,
+    getCurrentWallet,
+    switchNetwork,
+    sign,
+    contractCall,
+  } = useWallet();
+  const {
+    createCapability
+  } = useStream(appName);
 
   useEffect(() => {
     if (self !== top && !did) {
       dispatch(connectIdentity());
     }
   }, [did]);
+
+  const handleClickSignin = async () => {
+    await connectWallet();
+    await switchNetwork(137);
+    const pkh = await createCapability();
+    console.log("pkh:", pkh);
+  }
 
   return (
     <Wrapper>

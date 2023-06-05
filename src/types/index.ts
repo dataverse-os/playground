@@ -122,3 +122,9 @@ export type CustomMirrors = CustomMirror[];
 export type CustomFolder = Omit<StructuredFolder, "mirrors"> & {
   mirrors: CustomMirror[];
 };
+
+export interface Model {
+  name: string;
+  stream_id: string;
+  isPublicDomain: boolean;
+}
