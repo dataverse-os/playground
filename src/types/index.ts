@@ -10,8 +10,8 @@ import {
 
 export enum PostType {
   Public,
-  Private,
-  Datatoken,
+  Encrypted,
+  Payable,
 }
 
 export interface StructuredPost {

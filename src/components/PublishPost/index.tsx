@@ -33,9 +33,10 @@ import { IconArrowRight } from "@arco-design/web-react/icon";
 import CreateLensProfile from "../CreateLensProfile";
 import { getLensProfiles } from "@/sdk/monetize";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { useModel, useStream } from "@/hooks";
+import { useModel, useStream, useWallet } from "@/hooks";
 import { appName, appVersion } from "@/sdk";
 import { PostStream, PostType } from "@/types";
+import { identitySlice } from "@/state/identity/slice";
 
 export interface PublishPostProps {
   createPublicStream: any,
@@ -59,6 +60,16 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
+
+  const {
+    wallet,
+    connectWallet,
+    switchNetwork
+  } = useWallet();
+
+  const {
+    createCapability
+  } = useStream(appName, wallet);
 
   const {
     postModel
@@ -147,6 +158,20 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
     profileId?: string;
     postImages: string[];
   }) => {
+    if(!pkh) {
+      try {
+        dispatch(identitySlice.actions.setIsConnectingIdentity(true));
+        await connectWallet();
+        await switchNetwork(137);
+        const pkh = await createCapability();
+        dispatch(identitySlice.actions.setPkh(pkh))
+      } catch (error) {
+        console.error(error)
+        return
+      } finally {
+        dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+      }
+    }
     try {
       let res;
       const date = new Date().toISOString();
@@ -168,9 +193,9 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
           });
           console.log("[Branch PostType.Public]: After createPublicStream, res:", res)
           break;
-        case PostType.Private:
+        case PostType.Encrypted:
           break;
-        case PostType.Datatoken:
+        case PostType.Payable:
           res = await createPayableStream({
             pkh,
             model: postModel,
@@ -192,7 +217,7 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
               videos: false,
             }
           });
-          console.log("[Branch PostType.Datatoken]: After createPayableStream, res:", res)
+          console.log("[Branch PostType.Payable]: After createPayableStream, res:", res)
           break;
       }
       Message.success({

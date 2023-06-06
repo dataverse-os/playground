@@ -58,7 +58,7 @@ const PrivacySettings: React.FC = () => {
         setInputWarn(false);
         dispatch(
           privacySettingsSlice.actions.setSettings({
-            postType: PostType.Datatoken,
+            postType: PostType.Payable,
             currency: currency.value,
             amount: parseFloat(amount),
             collectLimit: checked ? 2 ** 52 : parseFloat(limit),

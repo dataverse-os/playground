@@ -25,25 +25,16 @@ const Header = (): React.ReactElement => {
     createCapability
   } = useStream(appName, wallet);
 
-  // useEffect(() => {
-  //   if (self !== top && !did) {
-  //     dispatch(connectIdentity());
-  //   }
-  // }, [did]);
-
   const handleClickSignin = async () => {
     try {
       dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-      // setIsConnectingIdentity(true);
       await connectWallet();
       await switchNetwork(137);
       const pkh = await createCapability();
-      console.log("pkh:", pkh);
       dispatch(identitySlice.actions.setPkh(pkh))
     } catch (error) {
       console.error(error)
     } finally {
-      // setIsConnectingIdentity(false);
       dispatch(identitySlice.actions.setIsConnectingIdentity(false));
     }
   }

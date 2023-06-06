@@ -11,9 +11,10 @@ import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
 import { uuid } from "@/utils/uuid";
 import { getCurrencyNameByCurrencyAddress } from "@/sdk/monetize";
-import { useModel, useStream } from "@/hooks";
+import { useModel, useStream, useWallet } from "@/hooks";
 import { appName } from "@/sdk";
 import { Message } from "@arco-design/web-react";
+import { identitySlice } from "@/state/identity/slice";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -21,7 +22,7 @@ interface DisplayPostItemProps {
 
 const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
-  const did = useSelector((state) => state.identity.pkh);
+  const pkh = useSelector((state) => state.identity.pkh);
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const [datatokenInfo, setDatatokenInfo] = useState({
     sold_num: 0,
@@ -32,10 +33,17 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       currency_addr: "",
     },
   });
+
+  const {
+    wallet,
+    connectWallet,
+    switchNetwork
+  } = useWallet();
   
   const {
-    unlockStream
-  } = useStream(appName);
+    unlockStream,
+    createCapability
+  } = useStream(appName, wallet);
 
   const {
     postModel
@@ -65,19 +73,29 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   }, [postStream.streamContent.datatokenInfo]);
 
   const unlock = async () => {
-    // const { payload: did } = await dispatch(connectIdentity());
+    if(!pkh) {
+      try {
+        dispatch(identitySlice.actions.setIsConnectingIdentity(true));
+        await connectWallet();
+        await switchNetwork(137);
+        const pkh = await createCapability();
+        dispatch(identitySlice.actions.setPkh(pkh))
+      } catch (error) {
+        console.error(error)
+        return
+      } finally {
+        dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+      }
+    }
+    
     if (postStream.isUnlocking || postStream.hasUnlockedSuccessfully) {
       console.log("cannot unlock")
       return;
     }
-    // await dispatch(unlockPost({ postStream }));
-    console.log("postStream:", postStream)
     let streamList: PostStream[] = postStreamList;
-    console.log("streamList before:", streamList)
     try {
       _unlockPending();
       const {stream, streamId} = await unlockStream(postStream.streamId);
-      console.log("after unlockStream, res:", {stream, streamId})
       _unlockSucceed(stream, streamId);
     } catch (error: any) {
       Message.error((error?.message ?? error));
@@ -101,55 +119,24 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     if (postStream.hasUnlockedSuccessfully) {
       setDatatokenInfo({
         ...datatokenInfo,
-        sold_num: postStream.streamContent.controller === did ? datatokenInfo.sold_num : ++datatokenInfo.sold_num,
+        sold_num: postStream.streamContent.controller === pkh ? datatokenInfo.sold_num : ++datatokenInfo.sold_num,
       });
     }
   }, [postStream.hasUnlockedSuccessfully]);
 
   const _unlockPending = async () => {
-    // streamList.find((post) => {
-    //   if (post.streamId === postStream.streamId) {
-    //     post = {
-    //       ...postStream,
-    //       isUnlocking: true,
-    //     };
-    //     console.log("unlock pending, post:", post)
-    //   }
-    // });
-    
     const streamList = postStreamList.map((post) => {
       if (post.streamId === postStream.streamId) {
-        console.log(`unlock pending, post=${post}, postStream=${postStream}`)
         post = {
           ...postStream,
           isUnlocking: true,
         };
-        console.log("unlock pending, post:", post)
       } 
       return post
     })
-
     dispatch(postSlice.actions.setPostStreamList(streamList));
   }
   const _unlockSucceed = async (decryptedStream: MirrorFile, streamId: string) => {
-    // streamList.find((post, index) => {
-    //   if (post.streamId === postStream.streamId) {
-    //     console.log("unlock success(before), post:", post)
-    //     console.log("index:", index)
-    //     post = {
-    //       ...postStream,
-    //       isUnlocking: false,
-    //       hasUnlockedSuccessfully: true,
-    //     };
-    //     console.log("unlock success(after), post:", post)
-    //     // post = Object.assign(post, {
-    //       //   ...postStream,
-    //       //   isUnlocking: false,
-    //       //   hasUnlockedSuccessfully: true,
-    //       // });
-    //     }
-    //   });
-    console.log("decryptedStream:", decryptedStream)
     const streamList = postStreamList.map((post) => {
       if (post.streamId === streamId) {
         post = {
@@ -161,12 +148,9 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           isUnlocking: false,
           hasUnlockedSuccessfully: true,
         };
-        console.log("unlock succeed, post:", post)
       } 
       return post
     })
-      
-    console.log("unlock success(after), streamList:", streamList)
     dispatch(postSlice.actions.setPostStreamList(streamList));
   }
   const _unlockFailed = async () => {
