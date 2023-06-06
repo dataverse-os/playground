@@ -1,4 +1,3 @@
-import { DatatokenVars, ModelNames } from "@dataverse/runtime-connector";
 import { appName, client, runtimeConnector } from ".";
 import { gql } from "graphql-request";
 
@@ -68,8 +67,6 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
 };
 
 export const unlock = async (params: { streamId: string}) => {
-  console.log("======before unlock")
   const res = await runtimeConnector.unlock({ ...params, app: appName });
-  console.log("======after unlock, res:", res)
   return res;
 };

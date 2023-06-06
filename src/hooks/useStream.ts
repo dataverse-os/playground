@@ -50,7 +50,6 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
         modelId,
       });
     }
-    console.log("///////streams:", streams)
     setStreamRecord(streams);
     return streams;
   };
@@ -63,8 +62,6 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
     model: Model;
     stream?: object;
   }) => {
-    console.log("model:", model);
-    console.log("stream:", stream);
     let encrypted = {} as any;
     if (stream && Object.keys(stream).length > 0) {
       Object.keys(stream).forEach((key) => {
