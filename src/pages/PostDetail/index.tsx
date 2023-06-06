@@ -40,8 +40,6 @@ const Wrapper = styled.div`
 `;
 
 export default function PostDetail() {
-  // const streamId =
-  //   "kjzl6kcym7w8y8tsf43pvswchf4dbdoevtr3swmt28m4vrwqa8pi49yhly4ga3b";
   const { streamId } = useParams();
   const postStreamList = useSelector((state) => state.post.postStreamList);
   console.log({ postStreamList });

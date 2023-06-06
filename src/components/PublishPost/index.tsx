@@ -37,9 +37,13 @@ import { useModel, useStream } from "@/hooks";
 import { appName, appVersion } from "@/sdk";
 import { PostStream, PostType } from "@/types";
 
-export interface PublishPostProps {}
+export interface PublishPostProps {
+  createPublicStream: any,
+  createPayableStream: any,
+  loadStream: any,
+}
 
-const PublishPost: React.FC<PublishPostProps> = ({}) => {
+const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPayableStream, loadStream}) => {
   const dispatch = useAppDispatch();
   const pkh = useSelector((state) => state.identity.pkh);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
@@ -57,42 +61,8 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const [postImages, setPostImages] = useState<string[]>([]);
 
   const {
-    streamRecord,
-    createPublicStream,
-    createPayableStream,
-    loadStream,
-  } = useStream(appName);
-
-  const {
     postModel
   } = useModel();
-
-  useEffect(()=>{
-    const streamList: PostStream[] = [];
-    Object.entries(streamRecord).forEach(([streamId, streamContent]) => {
-      streamList.push({
-        streamId,
-        streamContent,
-      });
-    });
-    console.log("pushed, streamList:", streamList)
-    const sortedList = streamList
-      .filter(
-        (el) =>
-          el.streamContent.content?.appVersion === appVersion &&
-          (el.streamContent.content.text ||
-            (el.streamContent.content.images &&
-              el.streamContent.content.images?.length > 0) ||
-            (el.streamContent.content.videos &&
-              el.streamContent.content.videos?.length > 0))
-      )
-      .sort(
-        (a, b) =>
-          Date.parse(b.streamContent.createdAt) -
-          Date.parse(a.streamContent.createdAt)
-      );
-    dispatch(postSlice.actions.setPostStreamList(sortedList));
-  }, [streamRecord])
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -108,27 +78,8 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     setContent(e.currentTarget.value);
   };
 
-  // const encrypt = async () => {
-  //   if (isEncrypting || isEncryptedSuccessfully) return;
-  //   if (!did) {
-  //     Message.info("Please connect identity first.");
-  //     return;
-  //   }
-  //   dispatch(
-  //     encryptPost({
-  //       did,
-  //       postContent: {
-  //         text: content,
-  //         images: images.map((image) => image["upload"]),
-  //         videos: [],
-  //       },
-  //     })
-  //   );
-  // };
-
   const handleProfileAndPost = async () => {
     if (isPublishingPost) return;
-    // const { payload: did } = await dispatch(connectIdentity());
 
     const postImages = await handlePostImages();
     if (!postImages) return;
@@ -268,7 +219,7 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       });
       setContent("");
       setImages([]);
-      loadStream({pkh, modelId: postModel.modelId});
+      await loadStream({modelId: postModel.modelId});
     } catch (error: any) {
       Message.error((error?.message ?? error));
     } finally {

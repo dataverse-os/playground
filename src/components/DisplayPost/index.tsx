@@ -8,7 +8,6 @@ import styled from "styled-components";
 import { useModel, useStream } from "@/hooks";
 import { appName, appVersion } from "@/sdk";
 import { Model, PostStream } from "@/types";
-import app from "@/output/app.json";
 
 export interface PublishPostProps {}
 
@@ -20,6 +19,7 @@ const Wrapper = styled.div`
 `;
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
+  const pkh = useSelector((state) => state.identity.pkh);
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const postListLeft = useMemo(() => {
     return postStreamList
@@ -39,28 +39,15 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
         return element !== undefined;
       });
   }, [postStreamList]);
-  const pkh = useSelector((state) => state.identity.pkh);
   const dispatch = useAppDispatch();
-  // const leftRef = useMemo(
-  //   () =>
-  //     Array(postStreamList.length)
-  //       .fill(0)
-  //       .map((i) => createRef<HTMLDivElement>()),
-  //   [postStreamList]
-  // );
-  // const rightRef = useMemo(
-  //   () =>
-  //     Array(postStreamList.length)
-  //       .fill(0)
-  //       .map((i) => createRef<HTMLDivElement>()),
-  //   [postStreamList]
-  // );
-  const { streamRecord, loadStream } = useStream(appName);
+
+  const { streamRecord, loadStream, createPublicStream, createPayableStream } =
+    useStream(appName);
 
   const { postModel } = useModel();
 
   useEffect(() => {
-    loadStream({ pkh, modelId: postModel.modelId });
+    loadStream({ modelId: postModel.modelId });
   }, [postModel]);
 
   useEffect(() => {
@@ -71,7 +58,6 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
         streamContent,
       });
     });
-    console.log("pushed, streamList:", streamList);
     const sortedList = streamList
       .filter(
         (el) =>
@@ -93,7 +79,11 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   return (
     <>
       <Wrapper>
-        <PublishPost />
+        <PublishPost
+          createPublicStream={createPublicStream}
+          createPayableStream={createPayableStream}
+          loadStream={loadStream}
+        />
         {postListLeft.map((postStream, index) => (
           <DisplayPostItem
             postStream={postStream!}

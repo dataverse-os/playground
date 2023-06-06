@@ -50,6 +50,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
         modelId,
       });
     }
+    console.log("///////streams:", streams)
     setStreamRecord(streams);
     return streams;
   };
@@ -129,7 +130,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       streamId: newFile.contentId!,
     };
 
-    _updateStreamRecord(streamObject);
+    // _updateStreamRecord(streamObject);
 
     return streamObject;
   };

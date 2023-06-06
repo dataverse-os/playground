@@ -20,6 +20,8 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const navigate = useNavigate();
+  const pkh = useSelector((state) => state.identity.pkh);
+
   return (
     <Wrapper>
       <Content>
@@ -28,10 +30,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
             <AccountStatus
               name={
                 addressAbbreviation(
-                  getAddressFromDid(postStream.streamContent.controller)
+                  getAddressFromDid(postStream.streamContent.controller || pkh)
                 ) ?? ""
               }
-              did={postStream.streamContent.controller}
+              did={postStream.streamContent.controller || pkh}
             />
             <CreatedAt>
               {"• " + timeAgo(Date.parse(postStream.streamContent.createdAt))}

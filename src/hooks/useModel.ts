@@ -1,6 +1,6 @@
 import { Model } from "@/types";
 import { useEffect, useState } from "react";
-import app from "@/output/app.json";
+import app from "../../output/app.json";
 
 export const useModel = () => {
     const [postModel, setPostModel] = useState<Model>({
