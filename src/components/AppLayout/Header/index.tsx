@@ -1,48 +1,51 @@
 import Button from "@/components/BaseComponents/Button";
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { connectIdentity } from "@/state/identity/slice";
+import { identitySlice } from "@/state/identity/slice";
 import { didAbbreviation } from "@/utils/didAndAddress";
 import styled, { css } from "styled-components";
-import { Brand, HeaderRightRender, Wrapper } from "./styled";
+import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStream, useWallet } from "@/hooks";
 import { appName } from "@/sdk";
 
-const GitHubLink = styled.img`
-  height: 36px;
-  width: 36px;
-  margin-right: 10px;
-  cursor: pointer;
-`;
-
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { did, isConnectingIdentity } = useSelector((state) => state.identity);
+  const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
+
   const {
+    wallet,
     connectWallet,
-    getCurrentWallet,
     switchNetwork,
-    sign,
-    contractCall,
   } = useWallet();
+
   const {
     createCapability
-  } = useStream(appName);
+  } = useStream(appName, wallet);
 
-  useEffect(() => {
-    if (self !== top && !did) {
-      dispatch(connectIdentity());
-    }
-  }, [did]);
+  // useEffect(() => {
+  //   if (self !== top && !did) {
+  //     dispatch(connectIdentity());
+  //   }
+  // }, [did]);
 
   const handleClickSignin = async () => {
-    await connectWallet();
-    await switchNetwork(137);
-    const pkh = await createCapability();
-    console.log("pkh:", pkh);
+    try {
+      dispatch(identitySlice.actions.setIsConnectingIdentity(true));
+      // setIsConnectingIdentity(true);
+      await connectWallet();
+      await switchNetwork(137);
+      const pkh = await createCapability();
+      console.log("pkh:", pkh);
+      dispatch(identitySlice.actions.setPkh(pkh))
+    } catch (error) {
+      console.error(error)
+    } finally {
+      // setIsConnectingIdentity(false);
+      dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+    }
   }
 
   return (
@@ -78,14 +81,12 @@ const Header = (): React.ReactElement => {
         <Button
           loading={isConnectingIdentity}
           type="primary"
-          onClick={() => {
-            dispatch(connectIdentity());
-          }}
+          onClick={handleClickSignin}
           css={css`
             min-width: 150px;
           `}
         >
-          {didAbbreviation(did, 2) || "Sign in"}
+          {didAbbreviation(pkh, 2) || "Sign in"}
         </Button>
       </HeaderRightRender>
     </Wrapper>

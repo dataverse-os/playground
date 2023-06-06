@@ -15,48 +15,48 @@ import { RootState } from "../store";
 import { getNamespaceAndReferenceFromDID } from "@/utils/didAndAddress";
 
 interface Props {
-  did: string;
+  pkh: string;
   isConnectingIdentity: boolean;
   isDataverseExtension: boolean;
 }
 
 const initialState: Props = {
-  did: "",
+  pkh: "",
   isConnectingIdentity: false,
   isDataverseExtension: true,
 };
 
-export const connectIdentity = createAsyncThunk(
-  "identity/connectIdentity",
-  async (undefined, { dispatch, getState }) => {
-    // const rootStore = await import("@/state/store");
-    // const { isConnectingIdentity } =
-    //   rootStore.default.store.getState().identity;
-    const { isConnectingIdentity ,did} = (getState() as RootState).identity;
+// export const connectIdentity = createAsyncThunk(
+//   "identity/connectIdentity",
+//   async (undefined, { dispatch, getState }) => {
+//     // const rootStore = await import("@/state/store");
+//     // const { isConnectingIdentity } =
+//     //   rootStore.default.store.getState().identity;
+//     const { isConnectingIdentity ,did} = (getState() as RootState).identity;
 
-    if (!(await detectDataverseExtension())) {
-      // installDataverseMessage();
-      dispatch(noExtensionSlice.actions.setIsDataverseExtension(false));
-      dispatch(noExtensionSlice.actions.setModalVisible(true));
-    } else {
-      dispatch(noExtensionSlice.actions.setIsDataverseExtension(true));
-    }
+//     if (!(await detectDataverseExtension())) {
+//       // installDataverseMessage();
+//       dispatch(noExtensionSlice.actions.setIsDataverseExtension(false));
+//       dispatch(noExtensionSlice.actions.setModalVisible(true));
+//     } else {
+//       dispatch(noExtensionSlice.actions.setIsDataverseExtension(true));
+//     }
     
-    if (did || isConnectingIdentity) {
-      return;
-    }
+//     if (did || isConnectingIdentity) {
+//       return;
+//     }
 
-    dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-    try {
-      const did = await _connectIdentity();
-      dispatch(identitySlice.actions.setIsConnectingIdentity(false));
-      return did;
-    } catch (error) {
-      dispatch(identitySlice.actions.setIsConnectingIdentity(false));
-      throw error;
-    }
-  }
-);
+//     dispatch(identitySlice.actions.setIsConnectingIdentity(true));
+//     try {
+//       const did = await _connectIdentity();
+//       dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+//       return did;
+//     } catch (error) {
+//       dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+//       throw error;
+//     }
+//   }
+// );
 
 export const identitySlice = createSlice({
   name: "post",
@@ -68,14 +68,17 @@ export const identitySlice = createSlice({
     setIsDataverseExtension: (state, action: PayloadAction<boolean>) => {
       state.isDataverseExtension = action.payload;
     },
+    setPkh: (state, action: PayloadAction<string>) => {
+      state.pkh = action.payload;
+    }
   },
-  extraReducers: (builder) => {
-    builder.addCase(connectIdentity.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.did = action.payload;
-      }
-    });
-  },
+  // extraReducers: (builder) => {
+  //   builder.addCase(connectIdentity.fulfilled, (state, action) => {
+  //     if (action.payload) {
+  //       state.did = action.payload;
+  //     }
+  //   });
+  // },
 });
 
 export default identitySlice.reducer;

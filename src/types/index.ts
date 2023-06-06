@@ -124,7 +124,8 @@ export type CustomFolder = Omit<StructuredFolder, "mirrors"> & {
 };
 
 export interface Model {
-  name: string;
-  stream_id: string;
+  modelName: string;
+  modelId: string;
   isPublicDomain: boolean;
+  encryptable?: string[];
 }

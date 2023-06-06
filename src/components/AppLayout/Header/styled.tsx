@@ -24,3 +24,10 @@ export const HeaderRightRender = styled.div`
   justify-items: center;
   align-items: center;
 `
+
+export const GitHubLink = styled.img`
+  height: 36px;
+  width: 36px;
+  margin-right: 10px;
+  cursor: pointer;
+`;

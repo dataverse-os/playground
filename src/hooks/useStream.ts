@@ -12,7 +12,6 @@ import { getAddressFromDid } from "../utils/didAndAddress";
 
 export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
   const { runtimeConnector } = useContext(Context);
-  console.log("runtimeCOnnector:", runtimeConnector)
   const [pkh, setPkh] = useState("");
   const [streamRecord, setStreamRecord] = useState<Record<string, MirrorFile>>(
     {}
@@ -80,7 +79,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
         }),
     };
     const { newFile, existingFile } = await runtimeConnector.createStream({
-      modelId: model.stream_id,
+      modelId: model.modelId,
       streamContent,
     });
 
@@ -115,7 +114,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       }),
     };
     const { newFile } = await runtimeConnector.createStream({
-      modelId: model.stream_id,
+      modelId: model.modelId,
       streamContent,
     });
 
@@ -138,6 +137,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
   const createPayableStream = async ({
     pkh,
     model,
+    profileId,
     stream,
     lensNickName,
     currency,
@@ -147,6 +147,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
   }: {
     pkh: string;
     model: Model;
+    profileId?: string;
     stream: object;
     lensNickName?: string;
     currency: Currency;
@@ -154,7 +155,9 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
     collectLimit: number;
     encrypted: object;
   }) => {
-    const profileId = await _getProfileId({ pkh, lensNickName });
+    if (!profileId) {
+      profileId = await _getProfileId({ pkh, lensNickName });
+    }
 
     const res = await createEncryptedStream({
       model,
@@ -248,7 +251,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       streamId,
       content: await _reloadStreamRecord({
         pkh,
-        modelId: model.stream_id,
+        modelId: model.modelId,
         streamId,
       }),
     };
@@ -295,7 +298,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       streamId,
       stream: await _reloadStreamRecord({
         pkh,
-        modelId: model.stream_id,
+        modelId: model.modelId,
         streamId,
       }),
     };

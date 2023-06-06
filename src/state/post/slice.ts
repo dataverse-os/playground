@@ -42,17 +42,17 @@ const initialState: Props = {
   postStreamList: [],
 };
 
-export const unlockPost = createAsyncThunk(
-  "post/unlockPost",
-  async ({ postStream }: { postStream: PostStream }) => {
-    const res = await unlock({
-      streamId: postStream.streamId,
-    });
-    const postStreamCopy = JSON.parse(JSON.stringify(postStream));
-    postStreamCopy.streamContent = res;
-    return postStreamCopy;
-  }
-);
+// export const unlockPost = createAsyncThunk(
+//   "post/unlockPost",
+//   async ({ postStream }: { postStream: PostStream }) => {
+//     const res = await unlock({
+//       streamId: postStream.streamId,
+//     });
+//     const postStreamCopy = JSON.parse(JSON.stringify(postStream));
+//     postStreamCopy.streamContent = res;
+//     return postStreamCopy;
+//   }
+// );
 
 export const uploadImg = createAsyncThunk(
   "post/uploadImg",
@@ -65,77 +65,77 @@ export const uploadImg = createAsyncThunk(
   }
 );
 
-export const publishPost = createAsyncThunk(
-  "post/publishPost",
-  async ({
-    profileId,
-    text,
-    images,
-    videos,
-    encrypted,
-  }: {
-    profileId?: string;
-    text: string;
-    images: string[];
-    videos: string[];
-    encrypted?: {
-      appVersion?: boolean;
-      text?: boolean;
-      images?: boolean;
-      videos?: boolean;
-      postType?: boolean;
-      options?: boolean;
-      createdAt?: boolean;
-      updatedAt?: boolean;
-    };
-  }) => {
-    const rootStore = await import("@/state/store");
-    const { settings } = rootStore.default.store.getState().privacySettings;
-    const { postType, currency, amount, collectLimit } = settings;
+// export const publishPost = createAsyncThunk(
+//   "post/publishPost",
+//   async ({
+//     profileId,
+//     text,
+//     images,
+//     videos,
+//     encrypted,
+//   }: {
+//     profileId?: string;
+//     text: string;
+//     images: string[];
+//     videos: string[];
+//     encrypted?: {
+//       appVersion?: boolean;
+//       text?: boolean;
+//       images?: boolean;
+//       videos?: boolean;
+//       postType?: boolean;
+//       options?: boolean;
+//       createdAt?: boolean;
+//       updatedAt?: boolean;
+//     };
+//   }) => {
+//     const rootStore = await import("@/state/store");
+//     const { settings } = rootStore.default.store.getState().privacySettings;
+//     const { postType, currency, amount, collectLimit } = settings;
 
-    const date = new Date().toISOString();
+//     const date = new Date().toISOString();
 
-    const post = {
-      appVersion,
-      text,
-      images,
-      videos,
-      createdAt: date,
-      updatedAt: date,
-      encrypted
-    } as StructuredPost;
+//     const post = {
+//       appVersion,
+//       text,
+//       images,
+//       videos,
+//       createdAt: date,
+//       updatedAt: date,
+//       encrypted
+//     } as StructuredPost;
 
-    try {
-      let res;
-      if (postType === PostType.Public) {
-        res = await createPublicPost({ post });
-      } else if (postType === PostType.Private) {
-        // res = await createPrivatePostStream({ did, content, litKit });
-      } else {
-        res = await createPayablePost({
-          post,
-          profileId: profileId!,
-          currency: currency!,
-          amount: amount!,
-          collectLimit: collectLimit!,
-        });
-      }
-      return res;
-    } catch (error: any) {
-      (error?.message ?? error) &&
-        Message.error((error?.message ?? error).slice(0, 100));
-      throw error;
-    }
-  }
-);
+//     try {
+//       let res;
+//       if (postType === PostType.Public) {
+//         res = await createPublicPost({ post });
+//       } else if (postType === PostType.Private) {
+//         // res = await createPrivatePostStream({ did, content, litKit });
+//       } else {
+//         res = await createPayablePost({
+//           post,
+//           profileId: profileId!,
+//           currency: currency!,
+//           amount: amount!,
+//           collectLimit: collectLimit!,
+//         });
+//       }
+//       return res;
+//     } catch (error: any) {
+//       (error?.message ?? error) &&
+//         Message.error((error?.message ?? error).slice(0, 100));
+//       throw error;
+//     }
+//   }
+// );
 
-export const displayPostList = createAsyncThunk(
-  "post/displayPostList",
-  async () => {
-    const res = await loadAllPostStreams();
-    return res;
-  }
-);
+// export const displayPostList = createAsyncThunk(
+//   "post/displayPostList",
+//   async () => {
+//     const res = await loadAllPostStreams();
+//     return res;
+//   }
+// );
 
 export const getDatatokenInfo = createAsyncThunk(
   "post/getDatatokenInfo",
@@ -154,11 +154,14 @@ export const postSlice = createSlice({
     setIsPublishingPost: (state, action: PayloadAction<boolean>) => {
       state.isPublishingPost = action.payload;
     },
+    setPostStreamList: (state, action: PayloadAction<PostStream[]>) => {
+      state.postStreamList = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(displayPostList.fulfilled, (state, action) => {
-      state.postStreamList = action.payload;
-    });
+    // builder.addCase(displayPostList.fulfilled, (state, action) => {
+    //   state.postStreamList = action.payload;
+    // });
 
     builder.addCase(uploadImg.pending, (state) => {
       state.isPublishingPost = true;
@@ -170,60 +173,60 @@ export const postSlice = createSlice({
       state.isPublishingPost = false;
     });
 
-    builder.addCase(publishPost.pending, (state) => {
-      state.isPublishingPost = true;
-    });
+    // builder.addCase(publishPost.pending, (state) => {
+    //   state.isPublishingPost = true;
+    // });
 
-    builder.addCase(publishPost.rejected, (state) => {
-      state.isPublishingPost = false;
-    });
+    // builder.addCase(publishPost.rejected, (state) => {
+    //   state.isPublishingPost = false;
+    // });
 
     //buyPostListener
-    builder.addCase(unlockPost.pending, (state, action) => {
-      const postStreamList = JSON.parse(
-        JSON.stringify(current(state.postStreamList))
-      ) as PostStream[];
-      postStreamList.find((postStream) => {
-        if (postStream.streamId === action.meta.arg.postStream.streamId) {
-          postStream = Object.assign(postStream, {
-            ...action.meta.arg.postStream,
-            isUnlocking: true,
-          });
-        }
-      });
-      state.postStreamList = postStreamList;
-    });
-    builder.addCase(unlockPost.fulfilled, (state, action) => {
-      const postStreamList = JSON.parse(
-        JSON.stringify(current(state.postStreamList))
-      ) as PostStream[];
-      postStreamList.find((postStream) => {
-        if (postStream.streamId === action.meta.arg.postStream.streamId) {
-          postStream = Object.assign(postStream, {
-            ...action.payload,
-            isUnlocking: false,
-            hasUnlockedSuccessfully: true,
-          });
-        }
-      });
-      state.postStreamList = postStreamList;
-    });
-    builder.addCase(unlockPost.rejected, (state, action) => {
-      const postStreamList = JSON.parse(
-        JSON.stringify(current(state.postStreamList))
-      ) as PostStream[];
-      postStreamList.find((postStream) => {
-        if (postStream.streamId === action.meta.arg.postStream.streamId) {
-          postStream = Object.assign(postStream, {
-            ...action.meta.arg.postStream,
-            isUnlocking: false,
-            hasUnlockedSuccessfully: false,
-          });
-        }
-      });
-      state.postStreamList = postStreamList;
-      action.error.message && Message.error(action.error.message.slice(0, 100));
-    });
+    // builder.addCase(unlockPost.pending, (state, action) => {
+    //   const postStreamList = JSON.parse(
+    //     JSON.stringify(current(state.postStreamList))
+    //   ) as PostStream[];
+    //   postStreamList.find((postStream) => {
+    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
+    //       postStream = Object.assign(postStream, {
+    //         ...action.meta.arg.postStream,
+    //         isUnlocking: true,
+    //       });
+    //     }
+    //   });
+    //   state.postStreamList = postStreamList;
+    // });
+    // builder.addCase(unlockPost.fulfilled, (state, action) => {
+    //   const postStreamList = JSON.parse(
+    //     JSON.stringify(current(state.postStreamList))
+    //   ) as PostStream[];
+    //   postStreamList.find((postStream) => {
+    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
+    //       postStream = Object.assign(postStream, {
+    //         ...action.payload,
+    //         isUnlocking: false,
+    //         hasUnlockedSuccessfully: true,
+    //       });
+    //     }
+    //   });
+    //   state.postStreamList = postStreamList;
+    // });
+    // builder.addCase(unlockPost.rejected, (state, action) => {
+    //   const postStreamList = JSON.parse(
+    //     JSON.stringify(current(state.postStreamList))
+    //   ) as PostStream[];
+    //   postStreamList.find((postStream) => {
+    //     if (postStream.streamId === action.meta.arg.postStream.streamId) {
+    //       postStream = Object.assign(postStream, {
+    //         ...action.meta.arg.postStream,
+    //         isUnlocking: false,
+    //         hasUnlockedSuccessfully: false,
+    //       });
+    //     }
+    //   });
+    //   state.postStreamList = postStreamList;
+    //   action.error.message && Message.error(action.error.message.slice(0, 100));
+    // });
     //getDatatokenInfo
     builder.addCase(getDatatokenInfo.pending, (state, action) => {
       const postStreamList = JSON.parse(
