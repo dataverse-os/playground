@@ -1,0 +1,16 @@
+type indexFolders
+  @createModel(accountRelation: LIST, description: "indexFolders") {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  appVersion: String! @string(maxLength: 100)
+  folderType: Int!
+  contentFolderIds: [String!]!
+    @list(minLength: 1, maxLength: 10000)
+    @string(maxLength: 2000)
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  options: String @string(maxLength: 300000000)
+  parentFolderId: String @string(maxLength: 1000)
+  childFolderIds: [String] @list(maxLength: 10000) @string(maxLength: 2000)
+  deleted: Boolean
+}

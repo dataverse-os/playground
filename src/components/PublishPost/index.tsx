@@ -33,10 +33,9 @@ import { IconArrowRight } from "@arco-design/web-react/icon";
 import CreateLensProfile from "../CreateLensProfile";
 import { getLensProfiles } from "@/sdk/monetize";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { useStream } from "@/hooks";
+import { useModel, useStream } from "@/hooks";
 import { appName, appVersion } from "@/sdk";
-import { Model, PostStream, PostType } from "@/types";
-import app from "@/output/app.json"
+import { PostStream, PostType } from "@/types";
 
 export interface PublishPostProps {}
 
@@ -57,28 +56,43 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
 
-  const [postModel, setPostModel] = useState<Model>({
-    modelName: "",
-    modelId: "",
-    isPublicDomain: false,
-  });
-
   const {
+    streamRecord,
     createPublicStream,
     createPayableStream,
     loadStream,
   } = useStream(appName);
 
-  const maxNumber = 69;
+  const {
+    postModel
+  } = useModel();
 
-  useEffect(() => {
-    setPostModel(
-      // app.models.find(
-      //   (model) => model.name === `${app.createDapp.slug}_post`
-      // ) as Model
-      Object.values(app.models).find((model) => model.modelName === 'playground_post') as Model
-    );
-  }, []);
+  useEffect(()=>{
+    const streamList: PostStream[] = [];
+    Object.entries(streamRecord).forEach(([streamId, streamContent]) => {
+      streamList.push({
+        streamId,
+        streamContent,
+      });
+    });
+    console.log("pushed, streamList:", streamList)
+    const sortedList = streamList
+      .filter(
+        (el) =>
+          el.streamContent.content?.appVersion === appVersion &&
+          (el.streamContent.content.text ||
+            (el.streamContent.content.images &&
+              el.streamContent.content.images?.length > 0) ||
+            (el.streamContent.content.videos &&
+              el.streamContent.content.videos?.length > 0))
+      )
+      .sort(
+        (a, b) =>
+          Date.parse(b.streamContent.createdAt) -
+          Date.parse(a.streamContent.createdAt)
+      );
+    dispatch(postSlice.actions.setPostStreamList(sortedList));
+  }, [streamRecord])
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -182,20 +196,6 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
     profileId?: string;
     postImages: string[];
   }) => {
-    // const res = await dispatch(
-    //   publishPost({
-    //     profileId,
-    //     text: content,
-    //     images: postImages,
-    //     videos: [],
-    //     encrypted: {
-    //       text: true,
-    //       images: true,
-    //       videos: false,
-    //     }
-    //   })
-    // );
-    // settings
     try {
       let res;
       const date = new Date().toISOString();
@@ -268,42 +268,12 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
       });
       setContent("");
       setImages([]);
-      // dispatch(displayPostList());
-      initStreamList();
+      loadStream({pkh, modelId: postModel.modelId});
     } catch (error: any) {
       Message.error((error?.message ?? error));
     } finally {
       dispatch(postSlice.actions.setIsPublishingPost(false));
     }
-    
-    // if (res.meta.requestStatus === "fulfilled") {
-    //   Message.success({
-    //     content: (
-    //       <>
-    //         Post successfully!
-    //         <a
-    //           href={`${process.env.DATAVERSE_OS}/finder`}
-    //           target="_blank"
-    //           style={{ marginLeft: "5px", color: "black" }}
-    //         >
-    //           <span style={{ textDecoration: "underline" }}>
-    //             View on DataverseOS File System
-    //           </span>
-    //           <IconArrowRight
-    //             style={{
-    //               color: "black",
-    //               transform: "rotate(-45deg)",
-    //             }}
-    //           />
-    //         </a>
-    //       </>
-    //     ),
-    //   });
-    //   setContent("");
-    //   setImages([]);
-    //   dispatch(displayPostList());
-    // }
-    // dispatch(postSlice.actions.setIsPublishingPost(false));
   };
 
   useEffect(() => {
@@ -324,37 +294,6 @@ const PublishPost: React.FC<PublishPostProps> = ({}) => {
   const openPrivacySettings = () => {
     dispatch(privacySettingsSlice.actions.setModalVisible(true));
   };
-
-  const initStreamList = async () => {
-    console.log("load with hooks, modelId:", postModel.modelId)
-    const streams = await loadStream({pkh, modelId: postModel.modelId});
-    console.log("load with hooks, streams:", streams)
-    const streamList: PostStream[] = [];
-
-    Object.entries(streams).forEach(([streamId, streamContent]) => {
-      streamList.push({
-        streamId,
-        streamContent,
-      });
-    });
-    console.log("pushed, streamList:", streamList)
-    const sortedList = streamList
-      .filter(
-        (el) =>
-          el.streamContent.content?.appVersion === appVersion &&
-          (el.streamContent.content.text ||
-            (el.streamContent.content.images &&
-              el.streamContent.content.images?.length > 0) ||
-            (el.streamContent.content.videos &&
-              el.streamContent.content.videos?.length > 0))
-      )
-      .sort(
-        (a, b) =>
-          Date.parse(b.streamContent.createdAt) -
-          Date.parse(a.streamContent.createdAt)
-      );
-    dispatch(postSlice.actions.setPostStreamList(sortedList));
-  }
 
   return (
     <Wrapper>

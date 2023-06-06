@@ -1,18 +1,18 @@
-import {
-  checkIsCurrentDIDValid,
-  connectIdentity as _connectIdentity,
-  getCurrentDID,
-  getCurrentWallet,
-  selectWallet,
-} from "@/sdk/identity";
-import {
-  detectDataverseExtension,
-  detectExtension,
-} from "@/utils/checkIsExtensionInjected";
+// import {
+//   checkIsCurrentDIDValid,
+//   connectIdentity as _connectIdentity,
+//   getCurrentDID,
+//   getCurrentWallet,
+//   selectWallet,
+// } from "@/sdk/identity";
+// import {
+//   detectDataverseExtension,
+//   detectExtension,
+// } from "@/utils/checkIsExtensionInjected";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { noExtensionSlice } from "../noExtension/slice";
-import { RootState } from "../store";
-import { getNamespaceAndReferenceFromDID } from "@/utils/didAndAddress";
+// import { noExtensionSlice } from "../noExtension/slice";
+// import { RootState } from "../store";
+// import { getNamespaceAndReferenceFromDID } from "@/utils/didAndAddress";
 
 interface Props {
   pkh: string;

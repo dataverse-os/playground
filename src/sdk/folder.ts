@@ -1,8 +1,5 @@
-import { CustomMirrorFile, PostStream } from "@/types";
-import { getAddressFromDid } from "@/utils/didAndAddress";
-import { decode } from "@/utils/encodeAndDecode";
-import { FolderType, IndexFileContentType, Mirrors } from "@dataverse/runtime-connector";
-import { runtimeConnector, appName, modelName } from ".";
+import { FolderType } from "@dataverse/runtime-connector";
+import { runtimeConnector, appName } from ".";
 
 export const readOthersFolders = async (pkh: string) => {
   const othersFolders = await runtimeConnector.readFolders(appName);

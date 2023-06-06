@@ -25,7 +25,7 @@ const PrivacySettings: React.FC = () => {
   const modalVisible = useSelector(
     (state) => state.privacySettings.modalVisible
   );
-  const settings = useSelector((state) => state.privacySettings.settings);
+  // const settings = useSelector((state) => state.privacySettings.settings);
 
   const dispatch = useAppDispatch();
   const [needEncrypt, setNeedEncrypt] = useState(false);
@@ -88,7 +88,6 @@ const PrivacySettings: React.FC = () => {
       <Modal
         id="privacySettings"
         title="Privacy Settings"
-        mask
         // width={280}
         controlVisible={modalVisible}
         showCloseButton

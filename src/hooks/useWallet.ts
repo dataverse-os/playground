@@ -5,7 +5,6 @@ import { Context } from "../main";
 export function useWallet() {
   const { runtimeConnector } = useContext(Context);
   const [wallet, setWallet] = useState<CRYPTO_WALLET>();
-  console.log("runtimeCOnnector:", runtimeConnector)
 
   const selectWallet = async () => {
     const res = await getCurrentWallet();

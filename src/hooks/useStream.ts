@@ -13,7 +13,7 @@ import { getAddressFromDid } from "../utils/didAndAddress";
 export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
   const { runtimeConnector } = useContext(Context);
   const [pkh, setPkh] = useState("");
-  const [streamRecord, setStreamRecord] = useState<Record<string, MirrorFile>>(
+  const [streamRecord, setStreamRecord] = useState<StreamContent>(
     {}
   );
 
@@ -220,7 +220,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       const res = await runtimeConnector.monetizeFile({
         app: appName,
         streamId,
-        indexFileId: mirrorFile.indexFileId,
+        indexFileId: mirrorFile!.indexFileId,
         datatokenVars: {
           profileId,
           currency,
@@ -235,9 +235,9 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       throw error;
     }
 
-    (mirrorFile.content as { encrypted: string }).encrypted =
+    (mirrorFile!.content as { encrypted: string }).encrypted =
       JSON.stringify(encrypted);
-    (mirrorFile.content as { updatedAt: string }).updatedAt =
+    (mirrorFile!.content as { updatedAt: string }).updatedAt =
       new Date().toISOString();
 
     await runtimeConnector.updateStream({

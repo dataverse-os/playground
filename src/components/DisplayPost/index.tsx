@@ -5,10 +5,10 @@ import { uuid } from "@/utils/uuid";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
 import styled from "styled-components";
-import { useStream } from "@/hooks";
+import { useModel, useStream } from "@/hooks";
 import { appName, appVersion } from "@/sdk";
 import { Model, PostStream } from "@/types";
-import app from "@/output/app.json"
+import app from "@/output/app.json";
 
 export interface PublishPostProps {}
 
@@ -21,75 +21,57 @@ const Wrapper = styled.div`
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const postStreamList = useSelector((state) => state.post.postStreamList);
-  const postListLeft = postStreamList
-    .map((post, index) => {
-      if (index % 2 === 1) return post;
-    })
-    .filter((element) => {
-      return element !== undefined;
-    });
-  const postListRight = postStreamList
-    .map((post, index) => {
-      if (index % 2 === 0) return post;
-    })
-    .filter((element) => {
-      return element !== undefined;
-    });
+  const postListLeft = useMemo(() => {
+    return postStreamList
+      .map((post, index) => {
+        if (index % 2 === 1) return post;
+      })
+      .filter((element) => {
+        return element !== undefined;
+      });
+  }, [postStreamList]);
+  const postListRight = useMemo(() => {
+    return postStreamList
+      .map((post, index) => {
+        if (index % 2 === 0) return post;
+      })
+      .filter((element) => {
+        return element !== undefined;
+      });
+  }, [postStreamList]);
   const pkh = useSelector((state) => state.identity.pkh);
   const dispatch = useAppDispatch();
-  const leftRef = useMemo(
-    () =>
-      Array(postStreamList.length)
-        .fill(0)
-        .map((i) => createRef<HTMLDivElement>()),
-    [postStreamList]
-  );
-  const rightRef = useMemo(
-    () =>
-      Array(postStreamList.length)
-        .fill(0)
-        .map((i) => createRef<HTMLDivElement>()),
-    [postStreamList]
-  );
+  // const leftRef = useMemo(
+  //   () =>
+  //     Array(postStreamList.length)
+  //       .fill(0)
+  //       .map((i) => createRef<HTMLDivElement>()),
+  //   [postStreamList]
+  // );
+  // const rightRef = useMemo(
+  //   () =>
+  //     Array(postStreamList.length)
+  //       .fill(0)
+  //       .map((i) => createRef<HTMLDivElement>()),
+  //   [postStreamList]
+  // );
+  const { streamRecord, loadStream } = useStream(appName);
 
-  const [postModel, setPostModel] = useState<Model>({
-    modelName: "",
-    modelId: "",
-    isPublicDomain: false,
-  });
+  const { postModel } = useModel();
 
   useEffect(() => {
-    setPostModel(
-      // app.models.find(
-      //   (model) => model.name === `${app.createDapp.slug}_post`
-      // ) as Model
-      Object.values(app.models).find((model) => model.modelName === 'playground_post') as Model
-    );
-  }, []);
-
-  const {
-    loadStream
-  } = useStream(appName);
-
-  useEffect(() => {
-    // dispatch(displayPostList());
-    console.log("model inited, start to init stream list")
-    initStreamList();
+    loadStream({ pkh, modelId: postModel.modelId });
   }, [postModel]);
-  
-  const initStreamList = async () => {
-    console.log("load with hooks, modelId:", postModel.modelId)
-    const streams = await loadStream({pkh, modelId: postModel.modelId});
-    console.log("load with hooks, streams:", streams)
-    const streamList: PostStream[] = [];
 
-    Object.entries(streams).forEach(([streamId, streamContent]) => {
+  useEffect(() => {
+    const streamList: PostStream[] = [];
+    Object.entries(streamRecord).forEach(([streamId, streamContent]) => {
       streamList.push({
         streamId,
         streamContent,
       });
     });
-    console.log("pushed, streamList:", streamList)
+    console.log("pushed, streamList:", streamList);
     const sortedList = streamList
       .filter(
         (el) =>
@@ -106,7 +88,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
           Date.parse(a.streamContent.createdAt)
       );
     dispatch(postSlice.actions.setPostStreamList(sortedList));
-  }
+  }, [streamRecord]);
 
   return (
     <>

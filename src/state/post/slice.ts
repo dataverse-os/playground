@@ -3,11 +3,11 @@ import {
   isCollected,
   unlock,
 } from "@/sdk/monetize";
-import {
-  createPayablePost,
-  createPublicPost,
-  loadAllPostStreams,
-} from "@/sdk/post";
+// import {
+//   createPayablePost,
+//   createPublicPost,
+//   // loadAllPostStreams,
+// } from "@/sdk/post";
 import {
   CustomMirrorFile,
   PostStream,
@@ -22,9 +22,9 @@ import {
   PayloadAction,
   current,
 } from "@reduxjs/toolkit";
-import { Message } from "@arco-design/web-react";
-import { connectIdentity } from "@/sdk/identity";
-import { appName, appVersion } from "@/sdk";
+// import { Message } from "@arco-design/web-react";
+// import { connectIdentity } from "@/sdk/identity";
+// import { appName, appVersion } from "@/sdk";
 
 interface Props {
   isEncrypting?: boolean;
