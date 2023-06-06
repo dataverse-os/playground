@@ -4,7 +4,7 @@ import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import { PostStream } from "@/types";
-import { FileType } from "@dataverse/runtime-connector";
+import { FileType, MirrorFile } from "@dataverse/runtime-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 // import { connectIdentity } from "@/state/identity/slice";
 import Loading from "@/components/BaseComponents/Loading";
@@ -76,9 +76,9 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     console.log("streamList before:", streamList)
     try {
       _unlockPending();
-      const res = await unlockStream(postStream.streamId);
-      console.log("after unlockStream, res:", res)
-      _unlockSucceed();
+      const {stream, streamId} = await unlockStream(postStream.streamId);
+      console.log("after unlockStream, res:", {stream, streamId})
+      _unlockSucceed(stream, streamId);
     } catch (error: any) {
       Message.error((error?.message ?? error));
       _unlockFailed();
@@ -116,9 +116,10 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     //     console.log("unlock pending, post:", post)
     //   }
     // });
-
+    
     const streamList = postStreamList.map((post) => {
       if (post.streamId === postStream.streamId) {
+        console.log(`unlock pending, post=${post}, postStream=${postStream}`)
         post = {
           ...postStream,
           isUnlocking: true,
@@ -130,7 +131,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
     dispatch(postSlice.actions.setPostStreamList(streamList));
   }
-  const _unlockSucceed = async () => {
+  const _unlockSucceed = async (decryptedStream: MirrorFile, streamId: string) => {
     // streamList.find((post, index) => {
     //   if (post.streamId === postStream.streamId) {
     //     console.log("unlock success(before), post:", post)
@@ -148,14 +149,19 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     //       // });
     //     }
     //   });
+    console.log("decryptedStream:", decryptedStream)
     const streamList = postStreamList.map((post) => {
-      if (post.streamId === postStream.streamId) {
+      if (post.streamId === streamId) {
         post = {
-          ...postStream,
+          ...post,
+          streamContent: {
+            ...post.streamContent,
+            content: decryptedStream.content,
+          },
           isUnlocking: false,
           hasUnlockedSuccessfully: true,
         };
-        console.log("unlock pending, post:", post)
+        console.log("unlock succeed, post:", post)
       } 
       return post
     })
