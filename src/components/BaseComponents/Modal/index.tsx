@@ -67,7 +67,7 @@ const Modal: React.FC<ModalProps> = ({
         trigger.props?.onClick?.(e);
       },
     });
-  }, [setVisible, trigger, visible]);
+  }, [trigger, visible]);
 
   const handleClose = () => {
     setVisible(false);
