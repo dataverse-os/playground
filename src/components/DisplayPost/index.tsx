@@ -8,8 +8,9 @@ import { useStream } from "@/hooks";
 // import { appName, appVersion } from "@/sdk";
 import { Model, PostStream } from "@/types";
 import { Context } from "@/context";
-import { detectDataverseExtension } from "@/utils";
-import { ceramic, ceramicClient } from "@/sdk";
+import { decode, detectDataverseExtension } from "@/utils";
+import { ceramic } from "@/sdk";
+import { IndexFileContentType, StructuredFiles } from "@dataverse/runtime-connector";
 
 export interface PublishPostProps {}
 
@@ -21,7 +22,7 @@ const Wrapper = styled.div`
 `;
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const { postModel, appVersion } = useContext(Context);
+  const { postModel, indexFilesModel, appVersion } = useContext(Context);
   const [hasExtension, setHasExtension] = useState<boolean>();
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const postListLeft = useMemo(() => {
@@ -54,7 +55,6 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
 
   useEffect(()=>{
     detectDataverseExtension().then((res)=>{
-      console.log("hasExtension? :", res)
       setHasExtension(res);
     })
   }, [])
@@ -63,18 +63,13 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
     if(postModel) {
       if(hasExtension === true) {
         loadStream({ modelId: postModel.stream_id });
-      }
-      else if(hasExtension === false) {
-        console.log("start load by ceramic")
+      } else if(hasExtension === false) {
         loadStreamByCeramic();
-      } else {
-        // do nothing
       }
     }
   }, [postModel, hasExtension]);
 
   useEffect(() => {
-    console.log("streamRecord changed:", streamRecord)
     const streamList: PostStream[] = [];
     Object.entries(streamRecord).forEach(([streamId, streamContent]) => {
       streamList.push({
@@ -82,7 +77,6 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
         streamContent,
       });
     });
-    console.log("streamList:", streamList)
     const sortedList = streamList
       .filter(
         (el) =>
@@ -98,17 +92,52 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
           Date.parse(b.streamContent.createdAt) -
           Date.parse(a.streamContent.createdAt)
       );
-    console.log("sortedList:", sortedList)
     dispatch(postSlice.actions.setPostStreamList(sortedList));
   }, [streamRecord]);
 
   const loadStreamByCeramic = async () => {
-    const streams = await ceramic.loadStreamsByModel({
-      model: postModel.stream_id,
-      ceramic: ceramicClient,
+    const postStreams = await ceramic.loadStreamsByModel(
+      postModel.stream_id
+    );
+    const indexedFilesStreams = await ceramic.loadStreamsByModel(
+      indexFilesModel.stream_id
+    );
+
+    const structuredFiles = {} as StructuredFiles;
+    Object.entries(indexedFilesStreams).forEach(([indexFileId, indexFile]) => {
+      structuredFiles[indexFileId] = {
+        indexFileId,
+        ...indexFile,
+        comment: decode(indexFile.comment),
+        ...(indexFile.relation && {
+          relation: decode(indexFile.relation),
+        }),
+        ...(indexFile.additional && {
+          additional: decode(indexFile.additional),
+        }),
+        ...(indexFile.decryptionConditions && {
+          decryptionConditions: decode(indexFile.decryptionConditions),
+        }),
+      };
     });
-    console.log("streams load by ceramic:", streams)
-    setStreamRecord(streams);
+
+    Object.values(structuredFiles).forEach((structuredFile) => {
+      const { contentId, contentType, controller } = structuredFile;
+      if (
+        postStreams[contentId] &&
+        postStreams[contentId].controller === controller
+      ) {
+        postStreams[contentId] = {
+          ...(!(contentType in IndexFileContentType) &&
+            postStreams[contentId] && {
+            content: postStreams[contentId],
+          }),
+          ...structuredFile,
+        };
+      }
+    });
+
+    setStreamRecord(postStreams);
   }
 
   return (
