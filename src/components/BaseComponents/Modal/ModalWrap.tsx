@@ -3,7 +3,6 @@ import styled, { FlattenSimpleInterpolation } from "styled-components";
 export const ModalWrap = styled.div<{
   width: number;
   visible: boolean;
-  mask: boolean;
   cssStyle?: FlattenSimpleInterpolation;
 }>`
   .modalContainer {
@@ -30,8 +29,7 @@ export const ModalWrap = styled.div<{
     align-items: center;
     justify-content: center;
     visibility: ${(props) => (props.visible ? "visible" : "hidden")};
-    background: ${(props) =>
-      props.mask ? "rgba(1, 1, 1, 0.6)" : "rgba(0, 0, 0, 0)"};
+    background: rgba(1, 1, 1, 0.6);
     opacity: ${(props) => (props.visible ? 1 : 0)};
     transition: opacity 0.15s;
   }

@@ -21,7 +21,6 @@ export interface ModalProps {
   hiddenScroll?: boolean;
   portal?: boolean;
   parentId?: string;
-  mask?: boolean;
   cssStyle?: FlattenSimpleInterpolation;
 }
 
@@ -39,7 +38,6 @@ const Modal: React.FC<ModalProps> = ({
   portal = false,
   parentId = "root",
   trigger,
-  mask = false,
   cssStyle,
 }) => {
   const [visible, setVisible] = useState(controlVisible);
@@ -91,7 +89,7 @@ const Modal: React.FC<ModalProps> = ({
 
   const target = usePortal(parentId);
   const elements = (
-    <ModalWrap visible={visible} mask={mask} width={width} cssStyle={cssStyle}>
+    <ModalWrap visible={visible} width={width} cssStyle={cssStyle}>
       <div id={id} className="maskContainer">
         <div className="modalContainer" ref={modalRef}>
           <div className="headerContainer">
