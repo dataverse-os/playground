@@ -1,5 +1,12 @@
-import { appName, client, runtimeConnector } from ".";
-import { gql } from "graphql-request";
+import { contextStore } from "@/context";
+import { GraphQLClient, gql } from "graphql-request";
+
+const client = new GraphQLClient(
+  `${process.env.DATAVERSE_ENDPOINT}/graphql`,
+  {}
+);
+
+const {runtimeConnector, output} = contextStore;
 
 export const createLensProfile = async (handle: string) => {
   const res = await runtimeConnector.createProfile(handle);
@@ -67,6 +74,6 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
 };
 
 export const unlock = async (params: { streamId: string}) => {
-  const res = await runtimeConnector.unlock({ ...params, app: appName });
+  const res = await runtimeConnector.unlock({ ...params, app: output.createDapp.name });
   return res;
 };

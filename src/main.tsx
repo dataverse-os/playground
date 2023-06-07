@@ -1,17 +1,10 @@
-import { Extension, RuntimeConnector } from "@dataverse/runtime-connector";
-import React, { createContext } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App";
-
-interface Context {
-  runtimeConnector: RuntimeConnector;
-}
-
-export const Context = createContext<Context>({} as Context);
-const runtimeConnector = new RuntimeConnector(Extension);
+import { Context, contextStore } from "./context";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Context.Provider value={{ runtimeConnector }}>
+  <Context.Provider value={contextStore}>
     <App />
   </Context.Provider>
 );

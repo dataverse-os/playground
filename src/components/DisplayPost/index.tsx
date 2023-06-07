@@ -1,13 +1,20 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { useEffect, useRef, useMemo, createRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useMemo,
+  createRef,
+  useState,
+  useContext,
+} from "react";
 import { postSlice } from "@/state/post/slice";
-import { uuid } from "@/utils/uuid";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
 import styled from "styled-components";
-import { useModel, useStream } from "@/hooks";
-import { appName, appVersion } from "@/sdk";
+import { useStream } from "@/hooks";
+// import { appName, appVersion } from "@/sdk";
 import { Model, PostStream } from "@/types";
+import { Context } from "@/context";
 
 export interface PublishPostProps {}
 
@@ -19,7 +26,7 @@ const Wrapper = styled.div`
 `;
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const pkh = useSelector((state) => state.identity.pkh);
+  const { postModel, appVersion } = useContext(Context);
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const postListLeft = useMemo(() => {
     return postStreamList
@@ -42,12 +49,10 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
 
   const { streamRecord, loadStream, createPublicStream, createPayableStream } =
-    useStream(appName);
-
-  const { postModel } = useModel();
+    useStream();
 
   useEffect(() => {
-    loadStream({ modelId: postModel.modelId });
+    loadStream({ modelId: postModel.stream_id });
   }, [postModel]);
 
   useEffect(() => {

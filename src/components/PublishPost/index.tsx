@@ -13,7 +13,7 @@ import {
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
 import { uuid } from "@/utils/uuid";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
@@ -33,10 +33,11 @@ import { IconArrowRight } from "@arco-design/web-react/icon";
 import CreateLensProfile from "../CreateLensProfile";
 import { getLensProfiles } from "@/sdk/monetize";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { useModel, useStream, useWallet } from "@/hooks";
-import { appName, appVersion } from "@/sdk";
+import { useStream, useWallet } from "@/hooks";
+// import { appName, appVersion } from "@/sdk";
 import { PostStream, PostType } from "@/types";
 import { identitySlice } from "@/state/identity/slice";
+import { Context } from "@/context";
 
 export interface PublishPostProps {
   createPublicStream: any,
@@ -46,6 +47,7 @@ export interface PublishPostProps {
 
 const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPayableStream, loadStream}) => {
   const dispatch = useAppDispatch();
+  const {postModel, appVersion} = useContext(Context)
   const pkh = useSelector((state) => state.identity.pkh);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
   const settings = useSelector((state) => state.privacySettings.settings);
@@ -69,11 +71,7 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
 
   const {
     createCapability
-  } = useStream(appName, wallet);
-
-  const {
-    postModel
-  } = useModel();
+  } = useStream(wallet);
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -244,7 +242,7 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
       });
       setContent("");
       setImages([]);
-      await loadStream({modelId: postModel.modelId});
+      await loadStream({modelId: postModel.stream_id});
     } catch (error: any) {
       Message.error((error?.message ?? error));
     } finally {

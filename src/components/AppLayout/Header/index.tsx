@@ -5,14 +5,16 @@ import { didAbbreviation } from "@/utils/didAndAddress";
 import styled, { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStream, useWallet } from "@/hooks";
-import { appName } from "@/sdk";
+import { Context } from "@/context";
+// import { appName } from "@/sdk";
 
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const {postModel} = useContext(Context);
   const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
 
   const {
@@ -23,7 +25,7 @@ const Header = (): React.ReactElement => {
 
   const {
     createCapability
-  } = useStream(appName, wallet);
+  } = useStream(wallet);
 
   const handleClickSignin = async () => {
     try {

@@ -6,26 +6,26 @@ import {
   CRYPTO_WALLET,
   StreamContent
 } from "@dataverse/runtime-connector";
-import { Context } from "../main";
+import { Context } from "../context";
 import { Model } from "../types";
 import { getAddressFromDid } from "../utils/didAndAddress";
 
-export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
-  const { runtimeConnector } = useContext(Context);
+export function useStream(wallet?: CRYPTO_WALLET) {
+  const { runtimeConnector, output } = useContext(Context);
   const [pkh, setPkh] = useState("");
   const [streamRecord, setStreamRecord] = useState<StreamContent>(
     {}
   );
 
   const checkCapability = async () => {
-    const res = await runtimeConnector.checkCapability(appName);
+    const res = await runtimeConnector.checkCapability(output.createDapp.name);
     return res;
   };
 
   const createCapability = async () => {
     const currentPkh = await runtimeConnector.createCapability({
       wallet,
-      app: appName,
+      app: output.createDapp.name,
     });
 
     setPkh(currentPkh);
@@ -77,7 +77,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
         }),
     };
     const { newFile, existingFile } = await runtimeConnector.createStream({
-      modelId: model.modelId,
+      modelId: model.stream_id,
       streamContent,
     });
 
@@ -112,7 +112,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       }),
     };
     const { newFile } = await runtimeConnector.createStream({
-      modelId: model.modelId,
+      modelId: model.stream_id,
       streamContent,
     });
 
@@ -216,7 +216,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
 
     try {
       const res = await runtimeConnector.monetizeFile({
-        app: appName,
+        app: output.createDapp.name,
         streamId,
         indexFileId: mirrorFile!.indexFileId,
         datatokenVars: {
@@ -239,7 +239,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       new Date().toISOString();
 
     await runtimeConnector.updateStream({
-      app: appName,
+      app: output.createDapp.name,
       streamId,
       streamContent,
       syncImmediately: true,
@@ -249,7 +249,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       streamId,
       content: await _reloadStreamRecord({
         pkh,
-        modelId: model.modelId,
+        modelId: model.stream_id,
         streamId,
       }),
     };
@@ -286,7 +286,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
     };
 
     await runtimeConnector.updateStream({
-      app: appName,
+      app: output.createDapp.name,
       streamId,
       streamContent,
       syncImmediately: true,
@@ -296,7 +296,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
       streamId,
       stream: await _reloadStreamRecord({
         pkh,
-        modelId: model.modelId,
+        modelId: model.stream_id,
         streamId,
       }),
     };
@@ -306,7 +306,7 @@ export function useStream(appName: string, wallet?: CRYPTO_WALLET) {
     let stream = streamRecord[streamId];
 
     const res = await runtimeConnector.unlock({
-      app: appName,
+      app: output.createDapp.name,
       streamId,
     });
 
