@@ -119,3 +119,11 @@ export const DefaultAvatarImg = styled.div`
   box-shadow: -6px -6px 12px rgba(255, 255, 255, 0.04),
     6px 6px 12px rgba(0, 0, 0, 0.16);
 `;
+
+export const Mask = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;

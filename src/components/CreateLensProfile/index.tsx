@@ -56,7 +56,7 @@ const CreateLensProfile = function () {
       width={512}
       cssStyle={modelWrapper}
       onCancel={closeModel}
-      mask
+      
     >
       <div className="header">
         <img src={createSvg} className="icon" />

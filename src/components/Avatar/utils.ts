@@ -1,14 +1,14 @@
-export const checkImgExists = (imgUrl: string) =>
-  new Promise((resolve, reject) => {
-    const imgObj = new Image();
-    imgObj.src = imgUrl;
-    imgObj.addEventListener("load", (res) => {
-      resolve(res);
-    });
-    imgObj.addEventListener("onerror", (err) => {
-      reject(err);
-    });
-  });
+// export const checkImgExists = (imgUrl: string) =>
+//   new Promise((resolve, reject) => {
+//     const imgObj = new Image();
+//     imgObj.src = imgUrl;
+//     imgObj.addEventListener("load", (res) => {
+//       resolve(res);
+//     });
+//     imgObj.addEventListener("onerror", (err) => {
+//       reject(err);
+//     });
+//   });
 
 export const getDidFromAddress = (address: string) =>
   `did:pkh:eip155:${
