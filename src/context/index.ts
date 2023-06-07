@@ -7,7 +7,7 @@ interface ContextType {
   runtimeConnector: RuntimeConnector;
   appVersion: string;
   postModel: Model;
-  indexFilesModel: Model,
+  indexFilesModel: Model;
   output: Output;
 }
 
@@ -20,9 +20,9 @@ const indexFilesModel = getIndexFilesModel();
 const output = getOutput();
 
 export const contextStore = {
-    runtimeConnector,
-    appVersion,
-    postModel,
-    indexFilesModel,
-    output
-}
+  runtimeConnector,
+  appVersion,
+  postModel,
+  indexFilesModel,
+  output,
+};
