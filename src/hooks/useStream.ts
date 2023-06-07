@@ -388,6 +388,7 @@ export function useStream(wallet?: CRYPTO_WALLET) {
   return {
     pkh,
     streamRecord,
+    setStreamRecord,
     checkCapability,
     createCapability,
     loadStream,
