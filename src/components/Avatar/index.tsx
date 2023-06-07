@@ -1,5 +1,5 @@
 import React, { memo, useContext, useEffect, useState } from "react";
-import { getAddressFromDid, getDidFromAddress, proxy } from "./utils";
+import { getAddressFromDid, getDidFromAddress, proxy, checkImgExists } from "./utils";
 import userIcon from "@/assets/icons/userIcon.svg";
 import {
   AvatarContainer,
@@ -7,7 +7,6 @@ import {
   AvatarImg,
   DefaultAvatarImg,
 } from "./styles";
-import { checkImgExists } from "./utils";
 import styled from "styled-components";
 import { BasicProfile } from "./types";
 import { useSelector } from "@/state/hook";

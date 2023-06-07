@@ -3,7 +3,7 @@ import { motion, useAnimation } from "framer-motion";
 import { LoadingWrap } from "./LoadingWrap";
 import iconSpinner from "@/assets/icons/spinner_white.svg";
 import iconSpinnerBlack from "@/assets/icons/spinner_black.svg";
-import { fade, show } from "@/utils/framer";
+import { fade, show } from "@/utils";
 import { FlattenSimpleInterpolation } from "styled-components";
 
 export interface LoadingProps {

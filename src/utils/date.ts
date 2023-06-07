@@ -1,20 +1,19 @@
 export function timeAgo(dateTimeStamp: number) {
-  var minute = 1000 * 60;
-  var hour = minute * 60;
-  var day = hour * 24;
-  var week = day * 7;
-  var halfamonth = day * 15;
-  var month = day * 30;
-  var now = Date.now();
-  var diffValue = now - dateTimeStamp;
+  const minute = 1000 * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+  const week = day * 7;
+  const month = day * 30;
+  const now = Date.now();
+  const diffValue = now - dateTimeStamp;
   if (diffValue < 0) {
     return;
   }
-  var minC = Number.parseInt(String(diffValue / minute));
-  var hourC = Number.parseInt(String(diffValue / hour));
-  var dayC = Number.parseInt(String(diffValue / day));
-  var weekC = Number.parseInt(String(diffValue / week));
-  var monthC = Number.parseInt(String(diffValue / month));
+  const minC = Number.parseInt(String(diffValue / minute));
+  const hourC = Number.parseInt(String(diffValue / hour));
+  const dayC = Number.parseInt(String(diffValue / day));
+  const weekC = Number.parseInt(String(diffValue / week));
+  const monthC = Number.parseInt(String(diffValue / month));
   let result;
   const en = true;
   if (monthC >= 1 && monthC <= 3) {
@@ -32,24 +31,24 @@ export function timeAgo(dateTimeStamp: number) {
   } else if (diffValue >= 0 && diffValue <= minute) {
     result = "just now";
   } else {
-    var datetime = new Date();
+    const datetime = new Date();
     datetime.setTime(dateTimeStamp);
-    var Nyear = datetime.getFullYear();
-    var Nmonth =
+    const Nyear = datetime.getFullYear();
+    const Nmonth =
       datetime.getMonth() + 1 < 10
         ? `0${datetime.getMonth() + 1}`
         : datetime.getMonth() + 1;
-    var Ndate =
+    const Ndate =
       datetime.getDate() < 10 ? `0${datetime.getDate()}` : datetime.getDate();
-    var Nhour =
+    const Nhour =
       datetime.getHours() < 10
         ? `0${datetime.getHours()}`
         : datetime.getHours();
-    var Nminute =
+    const Nminute =
       datetime.getMinutes() < 10
         ? `0${datetime.getMinutes()}`
         : datetime.getMinutes();
-    var Nsecond =
+    const Nsecond =
       datetime.getSeconds() < 10
         ? `0${datetime.getSeconds()}`
         : datetime.getSeconds();

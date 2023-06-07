@@ -2,9 +2,9 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Button from "../Button";
 import { ModalWrap } from "./ModalWrap";
-import usePortal from "@/utils/usePortal";
-import { uuid } from "@/utils/uuid";
-import { useClickOutside } from "@/utils/useClickOutSide";
+import usePortal from "@/hooks/usePortal";
+import { uuid } from "@/utils";
+import { useClickOutside } from "@/hooks/useClickOutSide";
 import { css, FlattenSimpleInterpolation } from "styled-components";
 
 export interface ModalProps {

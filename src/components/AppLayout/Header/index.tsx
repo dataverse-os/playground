@@ -1,7 +1,7 @@
 import Button from "@/components/BaseComponents/Button";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { identitySlice } from "@/state/identity/slice";
-import { didAbbreviation } from "@/utils/didAndAddress";
+import { didAbbreviation } from "@/utils";
 import styled, { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";

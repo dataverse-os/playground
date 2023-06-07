@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
 import { SelectWrap } from "./SelectWrap";
 import Input from "@/components/BaseComponents/Input";
-import { uuid } from "@/utils/uuid";
-import { useClickOutside } from "@/utils/useClickOutSide";
+import { uuid } from "@/utils";
+import { useClickOutside } from "@/hooks/useClickOutSide";
 import iconDown from "@/assets/icons/down.svg";
 import { css, FlattenSimpleInterpolation } from "styled-components";
 

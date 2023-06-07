@@ -11,8 +11,7 @@ import {
   uploadImg,
 } from "@/state/post/slice";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
-import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
-import { uuid } from "@/utils/uuid";
+import { addressAbbreviation, getAddressFromDid, uuid } from "@/utils";
 import { useContext, useEffect, useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";

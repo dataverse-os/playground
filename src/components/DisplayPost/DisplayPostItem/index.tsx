@@ -1,5 +1,5 @@
 import AccountStatus from "@/components/AccountStatus";
-import { addressAbbreviation, getAddressFromDid } from "@/utils/didAndAddress";
+import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
 import { FileType } from "@dataverse/runtime-connector";
@@ -10,7 +10,6 @@ import Text from "./Text";
 import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
-import { timeAgo } from "@/utils/dateFormat";
 import { FlexRow } from "@/components/App/styled";
 import { useNavigate } from "react-router-dom";
 

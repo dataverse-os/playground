@@ -8,7 +8,7 @@ import {
 } from "@dataverse/runtime-connector";
 import { Context } from "../context";
 import { Model } from "../types";
-import { getAddressFromDid } from "../utils/didAndAddress";
+import { getAddressFromDid } from "../utils";
 
 export function useStream(wallet?: CRYPTO_WALLET) {
   const { runtimeConnector, output } = useContext(Context);
