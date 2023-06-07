@@ -8,7 +8,7 @@ import { FileType, MirrorFile } from "@dataverse/runtime-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
-import { getCurrencyNameByCurrencyAddress } from "@/sdk/monetize";
+import { getCurrencyNameByCurrencyAddress } from "@/sdk";
 import { useStream, useWallet } from "@/hooks";
 import { Message } from "@arco-design/web-react";
 import { identitySlice } from "@/state/identity/slice";

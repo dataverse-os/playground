@@ -1,4 +1,4 @@
-import { getDatatokenInfo as _getDatatokenInfo } from "@/sdk/monetize";
+import { getDatatokenInfo as _getDatatokenInfo } from "@/sdk";
 import { PostStream } from "@/types";
 import { web3Storage } from "@/utils/web3Storage";
 import {

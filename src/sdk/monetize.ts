@@ -1,12 +1,8 @@
 import { contextStore } from "@/context";
-import { GraphQLClient, gql } from "graphql-request";
+import { gql } from "graphql-request";
+import { gqlClient } from "./gql";
 
-const client = new GraphQLClient(
-  `${process.env.DATAVERSE_ENDPOINT}/graphql`,
-  {}
-);
-
-const {runtimeConnector, output} = contextStore;
+const { runtimeConnector, output } = contextStore;
 
 export const createLensProfile = async (handle: string) => {
   const res = await runtimeConnector.createProfile(handle);
@@ -59,7 +55,7 @@ export const getDatatokenInfo = async (variables: { address: string }) => {
       }
     }
   `;
-  const res: any = await client.request(query, { ...variables });
+  const res: any = await gqlClient.request(query, { ...variables });
   return res;
 };
 
@@ -73,7 +69,10 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
   return map[currencyAddress];
 };
 
-export const unlock = async (params: { streamId: string}) => {
-  const res = await runtimeConnector.unlock({ ...params, app: output.createDapp.name });
+export const unlock = async (params: { streamId: string }) => {
+  const res = await runtimeConnector.unlock({
+    ...params,
+    app: output.createDapp.name,
+  });
   return res;
 };

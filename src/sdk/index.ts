@@ -1,2 +1,2 @@
-// export * from "./folder";
+export * from "./gql";
 export * from "./monetize";

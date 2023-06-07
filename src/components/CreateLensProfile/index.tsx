@@ -10,7 +10,7 @@ import { buttonStyle, inputStyle, modelWrapper } from "./styled";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { noExtensionSlice } from "@/state/noExtension/slice";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { createLensProfile } from "@/sdk/monetize";
+import { createLensProfile } from "@/sdk";
 
 const CreateLensProfile = function () {
   const [handle, setHandle] = useState("");
