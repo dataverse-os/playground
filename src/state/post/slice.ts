@@ -41,7 +41,7 @@ export const getDatatokenInfo = createAsyncThunk(
     const res = await _getDatatokenInfo({
       address,
     });
-    return res.dataToken;
+    return res;
   }
 );
 
@@ -72,7 +72,7 @@ export const postSlice = createSlice({
         JSON.stringify(current(state.postStreamList))
       ) as PostStream[];
       postStreamList.find((postStream) => {
-        if (postStream.streamContent.datatokenId === action.meta.arg.address) {
+        if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
           postStream = {
             ...postStream,
             isGettingDatatokenInfo: true,
@@ -86,9 +86,9 @@ export const postSlice = createSlice({
         JSON.stringify(current(state.postStreamList))
       ) as PostStream[];
       postStreamList.find((postStream) => {
-        if (postStream.streamContent.datatokenId === action.meta.arg.address) {
-          postStream.streamContent.datatokenInfo = {
-            ...postStream.streamContent.datatokenInfo,
+        if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
+          postStream.datatokenInfo = {
+            ...postStream.datatokenInfo,
             ...action.payload,
           };
           postStream = {
@@ -106,7 +106,7 @@ export const postSlice = createSlice({
         JSON.stringify(current(state.postStreamList))
       ) as PostStream[];
       postStreamList.find((postStream) => {
-        if (postStream.streamContent.datatokenId === action.meta.arg.address) {
+        if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
           postStream = {
             ...postStream,
             isGettingDatatokenInfo: false,

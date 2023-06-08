@@ -29,34 +29,37 @@ export const isCollected = async ({
 };
 
 export const getDatatokenInfo = async (variables: { address: string }) => {
-  const query = gql`
-    query DataToken($address: String!) {
-      dataToken(address: $address) {
-        address
-        collect_info {
-          collect_nft_address
-          sold_list {
-            owner
-            token_id
-          }
-          price {
-            amount
-            currency
-            currency_addr
-          }
-          sold_num
-          total
-          who_can_free_collect
-        }
+  // const query = gql`
+  //   query DataToken($address: String!) {
+  //     dataToken(address: $address) {
+  //       address
+  //       collect_info {
+  //         collect_nft_address
+  //         sold_list {
+  //           owner
+  //           token_id
+  //         }
+  //         price {
+  //           amount
+  //           currency
+  //           currency_addr
+  //         }
+  //         sold_num
+  //         total
+  //         who_can_free_collect
+  //       }
 
-        content_uri
-        owner
-        source
-      }
-    }
-  `;
-  const res: any = await gqlClient.request(query, { ...variables });
-  return res;
+  //       content_uri
+  //       owner
+  //       source
+  //     }
+  //   }
+  // `;
+  // const res: any = await gqlClient.request(query, { ...variables });
+  // console.log("res:", res);
+  const datatokenInfo = await runtimeConnector.getDatatokenBaseInfo(variables.address);
+  // console.log("result:", result)
+  return datatokenInfo;
 };
 
 export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
@@ -72,7 +75,6 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
 export const unlock = async (params: { streamId: string }) => {
   const res = await runtimeConnector.unlock({
     ...params,
-    app: output.createDapp.name,
   });
   return res;
 };

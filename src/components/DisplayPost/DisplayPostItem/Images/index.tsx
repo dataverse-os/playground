@@ -12,12 +12,12 @@ export interface TextProps {
 const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
   const [images, setImages] = useState<string[]>([]);
   const showImage = (postStream: PostStream) => {
-    if (postStream.streamContent.fileType === FileType.Public) {
-      return postStream.streamContent.content?.images ?? [];
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Public) {
+      return postStream.streamRecord.streamContent.content?.images ?? [];
     }
-    if (postStream.streamContent.fileType === FileType.Private) {
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Private) {
       if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamContent.content?.images ?? [];
+        return postStream.streamRecord.streamContent.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -25,9 +25,9 @@ const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
         }).fill("?") ?? []
       );
     }
-    if (postStream.streamContent.fileType === FileType.Datatoken) {
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken) {
       if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamContent.content?.images ?? [];
+        return postStream.streamRecord.streamContent.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -42,7 +42,7 @@ const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
     let nowImages = showImage(postStream);
     if (
       nowImages.length === 0 &&
-      postStream.streamContent.fileType !== FileType.Public &&
+      postStream.streamRecord.streamContent.file.fileType !== FileType.Public &&
       !postStream.hasUnlockedSuccessfully
     ) {
       nowImages = ["?"];

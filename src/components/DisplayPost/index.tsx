@@ -46,9 +46,9 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const dispatch = useAppDispatch();
 
   const { 
-    streamRecord, 
-    setStreamRecord,
-    loadStream, 
+    streamsRecord, 
+    setStreamsRecord,
+    loadStreams, 
     createPublicStream, 
     createPayableStream 
   } = useStream();
@@ -62,7 +62,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   useEffect(() => {
     if(postModel) {
       if(hasExtension === true) {
-        loadStream({ modelId: postModel.stream_id });
+        loadStreams({ modelId: postModel.stream_id });
       } else if(hasExtension === false) {
         loadStreamByCeramic();
       }
@@ -71,29 +71,31 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
 
   useEffect(() => {
     const streamList: PostStream[] = [];
-    Object.entries(streamRecord).forEach(([streamId, streamContent]) => {
+    Object.entries(streamsRecord).forEach(([streamId, streamRecord]) => {
       streamList.push({
         streamId,
-        streamContent,
+        streamRecord,
       });
     });
+    console.log("pushed, streamList:", streamList)
     const sortedList = streamList
       .filter(
         (el) =>
-          el.streamContent.content?.appVersion === appVersion &&
-          (el.streamContent.content.text ||
-            (el.streamContent.content.images &&
-              el.streamContent.content.images?.length > 0) ||
-            (el.streamContent.content.videos &&
-              el.streamContent.content.videos?.length > 0))
+          el.streamRecord.streamContent.content?.appVersion === appVersion &&
+          (el.streamRecord.streamContent.content.text ||
+            (el.streamRecord.streamContent.content.images &&
+              el.streamRecord.streamContent.content.images?.length > 0) ||
+            (el.streamRecord.streamContent.content.videos &&
+              el.streamRecord.streamContent.content.videos?.length > 0))
       )
       .sort(
         (a, b) =>
-          Date.parse(b.streamContent.createdAt) -
-          Date.parse(a.streamContent.createdAt)
+          Date.parse(b.streamRecord.streamContent.content.createdAt) -
+          Date.parse(a.streamRecord.streamContent.content.createdAt)
       );
+    console.log("sorted, sortedList:", sortedList)
     dispatch(postSlice.actions.setPostStreamList(sortedList));
-  }, [streamRecord]);
+  }, [streamsRecord]);
 
   const loadStreamByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -137,7 +139,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
       }
     });
 
-    setStreamRecord(postStreams);
+    setStreamsRecord(postStreams);
   }
 
   return (
@@ -146,7 +148,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
         <PublishPost
           createPublicStream={createPublicStream}
           createPayableStream={createPayableStream}
-          loadStream={loadStream}
+          loadStream={loadStreams}
         />
         {postListLeft.map((postStream, index) => (
           <DisplayPostItem

@@ -20,7 +20,6 @@ const NoExtensionTip = function () {
       width={542}
       cssStyle={modelWrapper}
       onCancel={closeModel}
-      mask
     >
       <div className="header">
         <img src={logoSvg} className="icon" />

@@ -1,36 +1,14 @@
-import { CRYPTO_WALLET, Mode, SignMethod } from "@dataverse/runtime-connector";
-import { useContext, useState } from "react";
+import { WALLET, Mode, SignMethod } from "@dataverse/runtime-connector";
+import { useContext, useEffect, useState } from "react";
 import { Context } from "../context";
 
 export function useWallet() {
   const { runtimeConnector } = useContext(Context);
-  const [wallet, setWallet] = useState<CRYPTO_WALLET>();
-
-  const selectWallet = async () => {
-    const res = await getCurrentWallet();
-    if (res?.wallet) {
-      setWallet(res?.wallet);
-      return res?.wallet;
-    }
-    const wallet = await runtimeConnector.selectWallet();
-    setWallet(wallet);
-    return wallet;
-  };
+  const [wallet, setWallet] = useState<WALLET>();
 
   const connectWallet = async () => {
-    let currentWallet;
-    if (!wallet) {
-      currentWallet = await selectWallet();
-    } else {
-      currentWallet = wallet;
-    }
-    const address = await runtimeConnector.connectWallet(currentWallet);
+    const address = await runtimeConnector.connectWallet();
     return address;
-  };
-
-  const getCurrentWallet = async () => {
-    const res = await runtimeConnector.getCurrentWallet();
-    return res;
   };
 
   const switchNetwork = async (chainId: number) => {
@@ -61,7 +39,6 @@ export function useWallet() {
   return {
     wallet,
     connectWallet,
-    getCurrentWallet,
     switchNetwork,
     sign,
     contractCall,

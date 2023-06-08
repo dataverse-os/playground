@@ -4,7 +4,7 @@ import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import { PostStream } from "@/types";
-import { FileType, MirrorFile } from "@dataverse/runtime-connector";
+import { FileType, MirrorFile, StreamContent } from "@dataverse/runtime-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
@@ -39,10 +39,10 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
   useEffect(() => {
     const postStreamCopy = JSON.parse(JSON.stringify(postStream));
-    if (!postStreamCopy.streamContent.datatokenInfo) {
+    if (!postStreamCopy.datatokenInfo) {
       return;
     }
-    const price = postStreamCopy.streamContent.datatokenInfo?.collect_info
+    const price = postStreamCopy.datatokenInfo?.collect_info
       ?.price ?? {
       amount: "",
       currency: "",
@@ -53,12 +53,12 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     }
     setDatatokenInfo({
       sold_num:
-        postStreamCopy.streamContent.datatokenInfo?.collect_info?.sold_num ?? 0,
+        postStreamCopy.datatokenInfo?.collect_info?.sold_num ?? 0,
       total:
-        postStreamCopy.streamContent.datatokenInfo?.collect_info?.total ?? "",
+        postStreamCopy.datatokenInfo?.collect_info?.total ?? "",
       price,
     });
-  }, [postStream.streamContent.datatokenInfo]);
+  }, [postStream.datatokenInfo]);
 
   const unlock = async () => {
     if (!pkh) {
@@ -83,8 +83,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     let streamList: PostStream[] = postStreamList;
     try {
       _unlockPending();
-      const { stream, streamId } = await unlockStream(postStream.streamId);
-      _unlockSucceed(stream, streamId);
+      const { streamContent, streamId } = await unlockStream(postStream.streamId);
+      _unlockSucceed(streamContent, streamId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
       _unlockFailed();
@@ -96,9 +96,9 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       return;
     }
 
-    if (postStream.streamContent.fileType === FileType.Datatoken) {
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken) {
       dispatch(
-        getDatatokenInfo({ address: postStream.streamContent.datatokenId! })
+        getDatatokenInfo({ address: postStream.streamRecord.streamContent.file.datatokenId! })
       );
     }
   }, [postStreamList.length]);
@@ -108,7 +108,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       setDatatokenInfo({
         ...datatokenInfo,
         sold_num:
-          postStream.streamContent.controller === pkh
+          postStream.streamRecord.pkh === pkh
             ? datatokenInfo.sold_num
             : ++datatokenInfo.sold_num,
       });
@@ -128,16 +128,16 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     dispatch(postSlice.actions.setPostStreamList(streamList));
   };
   const _unlockSucceed = async (
-    decryptedStream: MirrorFile,
+    decryptedStreamContent: StreamContent,
     streamId: string
   ) => {
     const streamList = postStreamList.map((post) => {
       if (post.streamId === streamId) {
         post = {
           ...post,
-          streamContent: {
-            ...post.streamContent,
-            content: decryptedStream.content,
+          streamRecord: {
+            ...post.streamRecord,
+            streamContent: decryptedStreamContent
           },
           isUnlocking: false,
           hasUnlockedSuccessfully: true,
@@ -182,7 +182,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           onClick={unlock}
         ></img>
       )}
-      {postStream.streamContent.fileType === FileType.Datatoken && (
+      {postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">{datatokenInfo.price.amount}</span>
           <span className="currency">{datatokenInfo.price.currency}</span>

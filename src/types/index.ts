@@ -5,6 +5,7 @@ import {
   IndexFileContentType,
   Mirror,
   MirrorFile,
+  StreamContent,
   StructuredFolder,
 } from "@dataverse/runtime-connector";
 
@@ -51,46 +52,68 @@ export interface NativePost {
 
 export interface PostStream {
   streamId: string;
-  streamContent: {
-    appVersion: string;
-    content: StructuredPost;
-    controller: string;
-    indexFileId: string;
-    contentId: string;
-    contentType: IndexFileContentType;
-    comment: object;
-    relation?: object;
-    additional?: object;
-    datatokenId?: string;
-    fileType: FileType;
-    encryptedSymmetricKey?: string;
-    decryptionConditions?: any[];
-    decryptionConditionsType?: DecryptionConditionsTypes;
-    createdAt: string;
-    updatedAt: string;
-    deleted?: boolean;
-    datatokenInfo?: {
-      address: string;
-      collect_info: {
-        collect_nft_address: string;
-        sold_list: {
-          owner: string;
-          token_id: string;
-        }[];
-        price: {
-          amount: string;
-          currency: string;
-          currency_addr: string;
-        };
-        sold_num: number;
-        total: string;
-        who_can_free_collect: string[];
+  streamRecord: StreamRecord;
+  datatokenInfo?: {
+    address: string;
+    collect_info: {
+      collect_nft_address: string;
+      sold_list: {
+        owner: string;
+        token_id: string;
+      }[];
+      price: {
+        amount: string;
+        currency: string;
+        currency_addr: string;
       };
-      content_uri: string;
-      owner: string;
-      source: string;
+      sold_num: number;
+      total: string;
+      who_can_free_collect: string[];
     };
+    content_uri: string;
+    owner: string;
+    source: string;
   };
+  // streamContent: {
+  //   appVersion: string;
+  //   content: StructuredPost;
+  //   controller: string;
+  //   indexFileId: string;
+  //   contentId: string;
+  //   contentType: IndexFileContentType;
+  //   comment: object;
+  //   relation?: object;
+  //   additional?: object;
+  //   datatokenId?: string;
+  //   fileType: FileType;
+  //   encryptedSymmetricKey?: string;
+  //   decryptionConditions?: any[];
+  //   decryptionConditionsType?: DecryptionConditionsTypes;
+  //   createdAt: string;
+  //   updatedAt: string;
+  //   deleted?: boolean;
+  //   datatokenInfo?: {
+  //     address: string;
+  //     collect_info: {
+  //       collect_nft_address: string;
+  //       sold_list: {
+  //         owner: string;
+  //         token_id: string;
+  //       }[];
+  //       price: {
+  //         amount: string;
+  //         currency: string;
+  //         currency_addr: string;
+  //       };
+  //       sold_num: number;
+  //       total: string;
+  //       who_can_free_collect: string[];
+  //     };
+  //     content_uri: string;
+  //     owner: string;
+  //     source: string;
+  //   };
+  // };
 
   isMonetizing?: boolean;
   isMonetizedSuccessfully?: boolean;
@@ -132,13 +155,24 @@ export interface Model {
 
 export interface Output {
   createDapp: {
-    id: string,
-    streamIDs: Model[],
-    website: string,
-    name: string,
-    slug: string,
-    logo: string,
-    description: string,
-    defaultFolderName: string
-  }
+    id: string;
+    streamIDs: Model[];
+    website: string;
+    name: string;
+    slug: string;
+    logo: string;
+    description: string;
+    defaultFolderName: string;
+  };
+}
+
+export interface StreamsRecord {
+  [streamId: string]: StreamRecord;
+}
+
+export interface StreamRecord {
+  app: string;
+  pkh: string;
+  modelId: string;
+  streamContent: StreamContent;
 }

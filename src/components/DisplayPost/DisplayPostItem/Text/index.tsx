@@ -10,19 +10,19 @@ export interface TextProps {
 
 const Text: React.FC<TextProps> = ({ postStream, onClick }) => {
   const showContent = (postStream: PostStream) => {
-    if (postStream.streamContent.fileType === FileType.Public) {
-      return postStream.streamContent.content.text;
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Public) {
+      return postStream.streamRecord.streamContent.content.text;
     }
-    if (postStream.streamContent.fileType === FileType.Private) {
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Private) {
       if (postStream.hasUnlockedSuccessfully) {
         console.log("====hasUnlockedSuccessfully======unlock===========postStream", postStream)
-        return postStream.streamContent.content?.text;
+        return postStream.streamRecord.streamContent.content?.text;
       }
       return "";
     }
-    if (postStream.streamContent.fileType === FileType.Datatoken) {
+    if (postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken) {
       if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamContent.content?.text;
+        return postStream.streamRecord.streamContent.content?.text;
       }
       return "" as string;
     }

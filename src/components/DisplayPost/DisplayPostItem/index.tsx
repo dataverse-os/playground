@@ -29,16 +29,16 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
             <AccountStatus
               name={
                 addressAbbreviation(
-                  getAddressFromDid(postStream.streamContent.controller || pkh)
+                  getAddressFromDid(postStream.streamRecord.pkh)
                 ) ?? ""
               }
-              did={postStream.streamContent.controller || pkh}
+              did={postStream.streamRecord.pkh}
             />
             <CreatedAt>
-              {"• " + timeAgo(Date.parse(postStream.streamContent.createdAt))}
+              {"• " + timeAgo(Date.parse(postStream.streamRecord.streamContent.content.createdAt))}
             </CreatedAt>
           </FlexRow>
-          {postStream.streamContent.fileType !== FileType.Public && (
+          {postStream.streamRecord.streamContent.file.fileType !== FileType.Public && (
             <UnlockInfo postStream={postStream} />
           )}
         </Header>

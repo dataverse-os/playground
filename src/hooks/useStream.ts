@@ -2,23 +2,20 @@ import { useState, useContext } from "react";
 import {
   FileType,
   Currency,
-  MirrorFile,
-  CRYPTO_WALLET,
-  StreamContent
+  WALLET,
+  StreamContent,
 } from "@dataverse/runtime-connector";
 import { Context } from "../context";
-import { Model } from "../types";
+import { Model, StreamsRecord } from "../types";
 import { getAddressFromDid } from "../utils";
 
-export function useStream(wallet?: CRYPTO_WALLET) {
+export function useStream(wallet?: WALLET) {
   const { runtimeConnector, output } = useContext(Context);
   const [pkh, setPkh] = useState("");
-  const [streamRecord, setStreamRecord] = useState<StreamContent>(
-    {}
-  );
+  const [streamsRecord, setStreamsRecord] = useState<StreamsRecord>({});
 
   const checkCapability = async () => {
-    const res = await runtimeConnector.checkCapability(output.createDapp.name);
+    const res = await runtimeConnector.checkCapability();
     return res;
   };
 
@@ -32,7 +29,7 @@ export function useStream(wallet?: CRYPTO_WALLET) {
     return currentPkh;
   };
 
-  const loadStream = async ({
+  const loadStreams = async ({
     pkh,
     modelId,
   }: {
@@ -50,7 +47,7 @@ export function useStream(wallet?: CRYPTO_WALLET) {
         modelId,
       });
     }
-    setStreamRecord(streams);
+    setStreamsRecord(streams);
     return streams;
   };
 
@@ -62,38 +59,36 @@ export function useStream(wallet?: CRYPTO_WALLET) {
     model: Model;
     stream?: object;
   }) => {
-    let encrypted = {} as any;
+    const encrypted = {} as any;
     if (stream && Object.keys(stream).length > 0) {
       Object.keys(stream).forEach((key) => {
         encrypted[key] = false;
       });
     }
 
-    const streamContent = {
+    const inputStreamContent = {
       ...stream,
       ...(!model.isPublicDomain &&
         stream && {
           encrypted: JSON.stringify(encrypted),
         }),
     };
-    const { newFile, existingFile } = await runtimeConnector.createStream({
-      modelId: model.stream_id,
-      streamContent,
-    });
+    const { pkh, modelId, streamId, streamContent } =
+      await runtimeConnector.createStream({
+        modelId: model.stream_id,
+        streamContent: inputStreamContent,
+      });
 
-    if (!newFile && !existingFile) {
+    if (streamContent) {
+      return _updateStreamRecord({
+        pkh,
+        modelId,
+        streamId,
+        streamContent,
+      });
+    } else {
       throw "Failed to create stream";
     }
-    (existingFile || newFile)!.content = streamContent;
-
-    const streamObject = {
-      stream: (existingFile || newFile)!,
-      streamId: (existingFile || newFile)!.contentId!,
-    };
-
-    _updateStreamRecord(streamObject);
-
-    return streamObject;
   };
 
   const createEncryptedStream = async ({
@@ -105,31 +100,29 @@ export function useStream(wallet?: CRYPTO_WALLET) {
     stream: object;
     encrypted: object;
   }) => {
-    const streamContent = {
+    const inputStreamContent = {
       ...stream,
       ...(stream && {
         encrypted: JSON.stringify(encrypted),
       }),
     };
-    const { newFile } = await runtimeConnector.createStream({
-      modelId: model.stream_id,
-      streamContent,
-    });
+    const { pkh, modelId, streamId, streamContent } =
+      await runtimeConnector.createStream({
+        modelId: model.stream_id,
+        streamContent: inputStreamContent,
+      });
 
-    if (!newFile) {
-      throw "Failed to create content";
+    if (streamContent) {
+      return {
+        streamId,
+        app: output.createDapp.name,
+        pkh,
+        modelId,
+        streamContent,
+      }
+    } else {
+      throw "Failed to create stream";
     }
-
-    newFile.content = streamContent;
-
-    const streamObject = {
-      stream: newFile,
-      streamId: newFile.contentId!,
-    };
-
-    // _updateStreamRecord(streamObject);
-
-    return streamObject;
   };
 
   const createPayableStream = async ({
@@ -157,24 +150,19 @@ export function useStream(wallet?: CRYPTO_WALLET) {
       profileId = await _getProfileId({ pkh, lensNickName });
     }
 
-    const res = await createEncryptedStream({
+    const { modelId, streamId, streamContent } = await createEncryptedStream({
       model,
       stream,
       encrypted,
     });
 
-    console.log("createEncryptedStream res:", res);
-
-    res.stream.content = stream;
-
     return monetizeStream({
       pkh,
-      model,
+      modelId,
       lensNickName,
-      streamId: res.streamId,
-      mirrorFile: res.stream,
+      streamId,
+      streamContent,
       profileId,
-      encrypted,
       currency,
       amount,
       collectLimit,
@@ -183,144 +171,121 @@ export function useStream(wallet?: CRYPTO_WALLET) {
 
   const monetizeStream = async ({
     pkh,
-    model,
+    modelId,
     streamId,
     lensNickName,
     profileId,
-    mirrorFile,
-    encrypted,
+    streamContent,
     currency,
     amount,
     collectLimit,
   }: {
     pkh: string;
-    model: Model;
+    modelId: string;
     streamId: string;
     lensNickName?: string;
-    mirrorFile?: MirrorFile;
+    streamContent?: StreamContent;
     profileId?: string;
-    encrypted: object;
     currency: Currency;
     amount: number;
     collectLimit: number;
   }) => {
-    if (!profileId) {
-      profileId = await _getProfileId({ pkh, lensNickName });
-    }
-    if (!mirrorFile) {
-      mirrorFile = streamRecord[streamId];
-    }
-
-    let streamContent: StreamContent;
-    let currentFile: MirrorFile;
-
     try {
-      const res = await runtimeConnector.monetizeFile({
-        app: output.createDapp.name,
-        streamId,
-        indexFileId: mirrorFile!.indexFileId,
-        datatokenVars: {
-          profileId,
-          currency,
-          amount,
-          collectLimit,
-        },
-      });
-      streamContent = res.streamContent!;
-      currentFile = res.currentFile;
-    } catch (error: any) {
-      console.log(error);
+      if (!profileId) {
+        profileId = await _getProfileId({ pkh, lensNickName });
+      }
+      if(!streamContent) {
+        streamContent = streamsRecord[streamId].streamContent;
+      }
+      const { streamContent: updatedStreamContent } =
+        await runtimeConnector.monetizeFile({
+          streamId,
+          indexFileId: streamContent.file.indexFileId,
+          datatokenVars: {
+            profileId,
+            currency,
+            amount,
+            collectLimit,
+          },
+        });
+      if (updatedStreamContent) {
+        return _updateStreamRecord({
+          pkh,
+          modelId,
+          streamId,
+          streamContent: updatedStreamContent,
+        });
+      } else {
+        throw "Failed to monetize file"
+      }
+    } catch (error) {
+      console.error(error);
       throw error;
     }
-
-    (mirrorFile!.content as { encrypted: string }).encrypted =
-      JSON.stringify(encrypted);
-    (mirrorFile!.content as { updatedAt: string }).updatedAt =
-      new Date().toISOString();
-
-    await runtimeConnector.updateStream({
-      app: output.createDapp.name,
-      streamId,
-      streamContent,
-      syncImmediately: true,
-    });
-
-    return {
-      streamId,
-      content: await _reloadStreamRecord({
-        pkh,
-        modelId: model.stream_id,
-        streamId,
-      }),
-    };
   };
 
   const updateStream = async ({
-    pkh,
     model,
     streamId,
     stream,
     encrypted,
   }: {
-    pkh: string;
     model: Model;
     streamId: string;
     stream: object;
     encrypted?: object;
   }) => {
-    const fileType = streamRecord[streamId]?.fileType;
-
-    if (
-      !model.isPublicDomain &&
-      stream &&
-      encrypted &&
-      fileType === FileType.Public
-    ) {
-      for (let key in encrypted) {
-        (encrypted as any)[key] = false;
+    try {
+      const fileType = streamsRecord[streamId]?.streamContent.fileType;
+      if (
+        !model.isPublicDomain &&
+        stream &&
+        encrypted &&
+        fileType === FileType.Public
+      ) {
+        for (let key in encrypted) {
+          (encrypted as any)[key] = false;
+        }
       }
-    }
-    const streamContent: StreamContent = {
-      ...stream,
-      encrypted: JSON.stringify(encrypted),
-    };
-
-    await runtimeConnector.updateStream({
-      app: output.createDapp.name,
-      streamId,
-      streamContent,
-      syncImmediately: true,
-    });
-
-    return {
-      streamId,
-      stream: await _reloadStreamRecord({
-        pkh,
-        modelId: model.stream_id,
+      const inputStreamContent: StreamContent = {
+        ...stream,
+        encrypted: JSON.stringify(encrypted),
+      };
+  
+      const {streamContent} = await runtimeConnector.updateStream({
         streamId,
-      }),
-    };
+        streamContent: inputStreamContent,
+        syncImmediately: true,
+      });
+
+      return _updateStreamRecord({
+        streamId,
+        streamContent: streamContent,
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   const unlockStream = async (streamId: string) => {
-    let stream = streamRecord[streamId];
-
-    const res = await runtimeConnector.unlock({
-      app: output.createDapp.name,
-      streamId,
-    });
-
-    stream = res;
-
-    const streamObject = {
-      streamId: stream.contentId!,
-      stream,
-    };
-
-    return {
-      streamId,
-      stream: _updateStreamRecord(streamObject),
-    };
+    try {
+      const {streamContent} = await runtimeConnector.unlock({
+        streamId,
+      });
+  
+      if(streamContent) {
+        return _updateStreamRecord({
+          streamId,
+          streamContent
+        })
+      } else {
+        throw "Fail to unlock stream"
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   const _getProfileId = async ({
@@ -346,52 +311,57 @@ export function useStream(wallet?: CRYPTO_WALLET) {
       }
       profileId = await runtimeConnector.createProfile(lensNickName);
     }
-
     return profileId;
   };
 
-  const _reloadStreamRecord = async ({
+  const _updateStreamRecord = ({
     pkh,
     modelId,
     streamId,
+    streamContent,
   }: {
-    pkh: string;
-    modelId: string;
+    pkh?: string;
+    modelId?: string;
     streamId: string;
+    streamContent: StreamContent;
   }) => {
-    const streamRecord = await loadStream({ pkh, modelId });
+    const streamsRecordCopy = JSON.parse(
+      JSON.stringify(streamsRecord)
+    ) as StreamsRecord;
+      
+    console.log("Before update, streamsRecordCopy[streamId]:", streamsRecordCopy[streamId])
+    if( pkh && modelId) {
+      streamsRecordCopy[streamId] = {
+        app: output.createDapp.name,
+        pkh,
+        modelId,
+        streamContent
+      }
+    } else {
+      streamsRecordCopy[streamId] = {
+        ...streamsRecordCopy[streamId],
+        streamContent
+      }
+    }
+    console.log("After update, streamsRecordCopy[streamId]:", streamsRecordCopy[streamId])
+    setStreamsRecord(streamsRecordCopy);
 
-    setStreamRecord(streamRecord);
-
-    return streamRecord[streamId];
-  };
-
-  const _updateStreamRecord = ({
-    streamId,
-    stream,
-  }: {
-    streamId: string;
-    stream: MirrorFile | object;
-  }) => {
-    const streamRecordCopy = JSON.parse(JSON.stringify(streamRecord)) as Record<
-      string,
-      MirrorFile
-    >;
-
-    streamRecordCopy[streamId] = stream as MirrorFile;
-
-    setStreamRecord(streamRecordCopy);
-
-    return streamRecordCopy[streamId];
+    return {
+      streamId,
+      app: streamsRecordCopy[streamId].app,
+      pkh: pkh || streamsRecordCopy[streamId].pkh,
+      modelId: modelId || streamsRecordCopy[streamId].modelId,
+      streamContent,
+    };
   };
 
   return {
     pkh,
-    streamRecord,
-    setStreamRecord,
+    streamsRecord,
+    setStreamsRecord,
     checkCapability,
     createCapability,
-    loadStream,
+    loadStreams,
     createPublicStream,
     createEncryptedStream,
     createPayableStream,
