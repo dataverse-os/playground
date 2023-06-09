@@ -13,15 +13,17 @@ const Header = (): React.ReactElement => {
   const navigate = useNavigate();
   const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
 
-  const { connectWallet } = useWallet();
+  const { connectWallet, getCurrentPkh } = useWallet();
 
   const { createCapability } = useStream();
 
   const handleClickSignin = async () => {
     try {
       dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-      const { wallet } = await connectWallet();
-      const pkh = await createCapability(wallet);
+      if (!getCurrentPkh) {
+        await connectWallet();
+      }
+      const pkh = await createCapability();
       dispatch(identitySlice.actions.setPkh(pkh));
     } catch (error) {
       console.error(error);

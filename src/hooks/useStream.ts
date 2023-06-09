@@ -19,7 +19,7 @@ export function useStream() {
     return res;
   };
 
-  const createCapability = async (wallet: WALLET) => {
+  const createCapability = async (wallet?: WALLET) => {
     const currentPkh = await runtimeConnector.createCapability({
       wallet,
       app: output.createDapp.name,
