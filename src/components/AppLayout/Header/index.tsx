@@ -13,20 +13,22 @@ const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
-  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
+  const isDataverseExtension = useSelector(
+    (state) => state.noExtension.isDataverseExtension
+  );
 
   const { connectWallet, getCurrentPkh } = useWallet();
 
   const { createCapability } = useStream();
 
   const handleClickSignin = async () => {
-    if(!isDataverseExtension) {
+    if (!isDataverseExtension) {
       dispatch(noExtensionSlice.actions.setModalVisible(true));
-      return
+      return;
     }
     try {
       dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-      if (!getCurrentPkh) {
+      if (!(await getCurrentPkh())) {
         await connectWallet();
       }
       const pkh = await createCapability();

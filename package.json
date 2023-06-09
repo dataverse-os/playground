@@ -7,7 +7,8 @@
     "create-dataverse-app": "pnpm build:scripts && env-cmd -f .env node --experimental-specifier-resolution=node ./scripts/build/scripts/createDapp.js",
     "dev": "vite",
     "build": "tsc && vite build && vite preview",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "node scripts/s3-deploy/s3-deploy.js"
   },
   "dependencies": {
     "@arco-design/web-react": "^2.45.2",
