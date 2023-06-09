@@ -11,7 +11,7 @@ import { getAddressFromDid } from "../utils";
 
 export function useStream() {
   const { runtimeConnector, output } = useContext(Context);
-  const [pkh, setPkh] = useState("");
+  const [pkh, setPkh] = useState<string>();
   const [streamsRecord, setStreamsRecord] = useState<StreamsRecord>({});
 
   const checkCapability = async () => {
@@ -46,6 +46,7 @@ export function useStream() {
       streams = await runtimeConnector.loadStreamsBy({
         modelId,
       });
+      console.log("Streams:", streams)
     }
     setStreamsRecord(streams);
     return streams;
@@ -364,6 +365,7 @@ export function useStream() {
   return {
     pkh,
     streamsRecord,
+    setStreamsRecord,
     checkCapability,
     createCapability,
     loadStreams,

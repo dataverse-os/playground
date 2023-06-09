@@ -6,7 +6,7 @@ import PublishPost from "@/components/PublishPost";
 import styled from "styled-components";
 import { useStream } from "@/hooks";
 // import { appName, appVersion } from "@/sdk";
-import { Model, PostStream } from "@/types";
+import { Model, PostStream, StreamsRecord } from "@/types";
 import { Context } from "@/context";
 import { decode, detectDataverseExtension } from "@/utils";
 import { ceramic } from "@/sdk";
@@ -22,7 +22,7 @@ const Wrapper = styled.div`
 `;
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const { postModel, indexFilesModel, appVersion } = useContext(Context);
+  const { postModel, indexFilesModel, appVersion, output } = useContext(Context);
   const [hasExtension, setHasExtension] = useState<boolean>();
   const postStreamList = useSelector((state) => state.post.postStreamList);
   const postListLeft = useMemo(() => {
@@ -77,7 +77,6 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
         streamRecord,
       });
     });
-    console.log("pushed, streamList:", streamList)
     const sortedList = streamList
       .filter(
         (el) =>
@@ -104,42 +103,23 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
       indexFilesModel.stream_id
     );
-
-    const structuredFiles = {} as StructuredFiles;
-    Object.entries(indexedFilesStreams).forEach(([indexFileId, indexFile]) => {
-      structuredFiles[indexFileId] = {
-        indexFileId,
-        ...indexFile,
-        comment: decode(indexFile.comment),
-        ...(indexFile.relation && {
-          relation: decode(indexFile.relation),
-        }),
-        ...(indexFile.additional && {
-          additional: decode(indexFile.additional),
-        }),
-        ...(indexFile.decryptionConditions && {
-          decryptionConditions: decode(indexFile.decryptionConditions),
-        }),
+    const ceramicStreamsRecord: StreamsRecord = {};
+    Object.entries(postStreams).forEach(([streamId, content]) => {
+      ceramicStreamsRecord[streamId] = {
+        app: output.createDapp.name,
+        modelId: postModel.stream_id,
+        pkh: content.controller,
+        streamContent: {
+          content,
+        }
       };
-    });
+    })
 
-    Object.values(structuredFiles).forEach((structuredFile) => {
-      const { contentId, contentType, controller } = structuredFile;
-      if (
-        postStreams[contentId] &&
-        postStreams[contentId].controller === controller
-      ) {
-        postStreams[contentId] = {
-          ...(!(contentType in IndexFileContentType) &&
-            postStreams[contentId] && {
-            content: postStreams[contentId],
-          }),
-          ...structuredFile,
-        };
-      }
-    });
+    Object.values(indexedFilesStreams).forEach((file) => {
+      ceramicStreamsRecord[file.contentId].streamContent.file = file;
+    })
 
-    setStreamsRecord(postStreams);
+    setStreamsRecord(ceramicStreamsRecord);
   }
 
   return (

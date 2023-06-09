@@ -19,7 +19,6 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const navigate = useNavigate();
-  const pkh = useSelector((state) => state.identity.pkh);
 
   return (
     <Wrapper>
@@ -45,15 +44,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
         <Text
           postStream={postStream}
-          onClick={() => {
-            navigate("/post/" + postStream.streamId);
-          }}
+          // onClick={() => {
+          //   navigate("/post/" + postStream.streamId);
+          // }}
+          onClick={() => {}}
         />
         <Images
           postStream={postStream}
-          onClick={() => {
-            navigate("/post/" + postStream.streamId);
-          }}
+          // onClick={() => {
+          //   navigate("/post/" + postStream.streamId);
+          // }}
+          onClick={() => {}}
         />
         {/* <Footer>
           <a
