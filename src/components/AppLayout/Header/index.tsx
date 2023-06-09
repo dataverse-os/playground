@@ -7,17 +7,23 @@ import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";
 import { useNavigate } from "react-router-dom";
 import { useStream, useWallet } from "@/hooks";
+import { noExtensionSlice } from "@/state/noExtension/slice";
 
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
+  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
 
   const { connectWallet } = useWallet();
 
   const { createCapability } = useStream();
 
   const handleClickSignin = async () => {
+    if(!isDataverseExtension) {
+      dispatch(noExtensionSlice.actions.setModalVisible(true));
+      return
+    }
     try {
       dispatch(identitySlice.actions.setIsConnectingIdentity(true));
       const { wallet } = await connectWallet();

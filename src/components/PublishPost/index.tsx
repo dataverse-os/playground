@@ -37,6 +37,7 @@ import { useStream, useWallet } from "@/hooks";
 import { PostStream, PostType } from "@/types";
 import { identitySlice } from "@/state/identity/slice";
 import { Context } from "@/context";
+import { noExtensionSlice } from "@/state/noExtension/slice";
 
 export interface PublishPostProps {
   createPublicStream: any;
@@ -55,10 +56,11 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
   const settings = useSelector((state) => state.privacySettings.settings);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
-  const isEncrypting = useSelector((state) => state.post.isEncrypting);
-  const isEncryptedSuccessfully = useSelector(
-    (state) => state.post.isEncryptedSuccessfully
-  );
+  // const isEncrypting = useSelector((state) => state.post.isEncrypting);
+  // const isEncryptedSuccessfully = useSelector(
+  //   (state) => state.post.isEncryptedSuccessfully
+  // );
+  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
   const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
   const profileId = useSelector((state) => state.lensProfile.profileId);
 
@@ -153,6 +155,11 @@ const PublishPost: React.FC<PublishPostProps> = ({
     profileId?: string;
     postImages: string[];
   }) => {
+    if(!isDataverseExtension) {
+      dispatch(noExtensionSlice.actions.setModalVisible(true));
+      dispatch(postSlice.actions.setIsPublishingPost(false));
+      return
+    }
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));

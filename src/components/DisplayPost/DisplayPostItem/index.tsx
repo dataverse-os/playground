@@ -44,17 +44,15 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
 
         <Text
           postStream={postStream}
-          // onClick={() => {
-          //   navigate("/post/" + postStream.streamId);
-          // }}
-          onClick={() => {}}
+          onClick={() => {
+            navigate("/post/" + postStream.streamId);
+          }}
         />
         <Images
           postStream={postStream}
-          // onClick={() => {
-          //   navigate("/post/" + postStream.streamId);
-          // }}
-          onClick={() => {}}
+          onClick={() => {
+            navigate("/post/" + postStream.streamId);
+          }}
         />
         {/* <Footer>
           <a

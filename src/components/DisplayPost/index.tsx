@@ -11,6 +11,7 @@ import { Context } from "@/context";
 import { decode, detectDataverseExtension } from "@/utils";
 import { ceramic } from "@/sdk";
 import { IndexFileContentType, StructuredFiles } from "@dataverse/runtime-connector";
+import { noExtensionSlice } from "@/state/noExtension/slice";
 
 export interface PublishPostProps {}
 
@@ -23,8 +24,9 @@ const Wrapper = styled.div`
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const { postModel, indexFilesModel, appVersion, output } = useContext(Context);
-  const [hasExtension, setHasExtension] = useState<boolean>();
+  // const [hasExtension, setHasExtension] = useState<boolean>();
   const postStreamList = useSelector((state) => state.post.postStreamList);
+  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
   const postListLeft = useMemo(() => {
     return postStreamList
       .map((post, index) => {
@@ -55,21 +57,21 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
 
   useEffect(()=>{
     detectDataverseExtension().then((res)=>{
-      setHasExtension(res);
+      dispatch(noExtensionSlice.actions.setIsDataverseExtension(res));
     })
   }, [])
 
   useEffect(() => {
     if(postModel) {
-      if(hasExtension === true) {
+      if(isDataverseExtension === true) {
         console.log("load stream with runtime-connector...")
         loadStreams({ modelId: postModel.stream_id });
-      } else if(hasExtension === false) {
+      } else if(isDataverseExtension === false) {
         console.log("load stream with ceramic...")
         loadStreamByCeramic();
       }
     }
-  }, [postModel, hasExtension]);
+  }, [postModel, isDataverseExtension]);
 
   useEffect(() => {
     console.log("streamsRecord loaded:", streamsRecord)
@@ -105,11 +107,9 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
     const postStreams = await ceramic.loadStreamsByModel(
       postModel.stream_id
     );
-    console.log("[ceramic]postStreams:", Object.values(postStreams).length)
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
       indexFilesModel.stream_id
     );
-    console.log("[ceramic]indexedFilesStreams:", Object.values(indexedFilesStreams).length)
     const ceramicStreamsRecord: StreamsRecord = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
       ceramicStreamsRecord[streamId] = {

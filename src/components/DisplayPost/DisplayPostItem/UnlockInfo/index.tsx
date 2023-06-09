@@ -16,6 +16,7 @@ import { getCurrencyNameByCurrencyAddress } from "@/sdk";
 import { useStream, useWallet } from "@/hooks";
 import { Message } from "@arco-design/web-react";
 import { identitySlice } from "@/state/identity/slice";
+import { noExtensionSlice } from "@/state/noExtension/slice";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
@@ -25,6 +26,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
   const pkh = useSelector((state) => state.identity.pkh);
   const postStreamList = useSelector((state) => state.post.postStreamList);
+  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
   const [datatokenInfo, setDatatokenInfo] = useState({
     sold_num: 0,
     total: "",
@@ -60,6 +62,10 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   }, [postStream.datatokenInfo]);
 
   const unlock = async () => {
+    if(!isDataverseExtension) {
+      dispatch(noExtensionSlice.actions.setModalVisible(true));
+      return
+    }
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));

@@ -15,7 +15,6 @@ const Text: React.FC<TextProps> = ({ postStream, onClick }) => {
     }
     if (postStream.streamRecord.streamContent.file.fileType === FileType.Private) {
       if (postStream.hasUnlockedSuccessfully) {
-        console.log("====hasUnlockedSuccessfully======unlock===========postStream", postStream)
         return postStream.streamRecord.streamContent.content?.text;
       }
       return "";
