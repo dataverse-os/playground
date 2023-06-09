@@ -155,7 +155,7 @@ export interface Model {
 
 export interface Output {
   createDapp: {
-    id: string;
+    id?: string;
     streamIDs: Model[];
     website: string;
     name: string;

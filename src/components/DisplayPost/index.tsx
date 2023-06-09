@@ -62,20 +62,25 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   useEffect(() => {
     if(postModel) {
       if(hasExtension === true) {
+        console.log("load stream with runtime-connector...")
         loadStreams({ modelId: postModel.stream_id });
       } else if(hasExtension === false) {
+        console.log("load stream with ceramic...")
         loadStreamByCeramic();
       }
     }
   }, [postModel, hasExtension]);
 
   useEffect(() => {
+    console.log("streamsRecord loaded:", streamsRecord)
     const streamList: PostStream[] = [];
     Object.entries(streamsRecord).forEach(([streamId, streamRecord]) => {
-      streamList.push({
-        streamId,
-        streamRecord,
-      });
+      if(streamRecord.streamContent.file && streamRecord.streamContent.content) {
+        streamList.push({
+          streamId,
+          streamRecord,
+        });
+      }
     });
     const sortedList = streamList
       .filter(
@@ -100,9 +105,11 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
     const postStreams = await ceramic.loadStreamsByModel(
       postModel.stream_id
     );
+    console.log("[ceramic]postStreams:", Object.values(postStreams).length)
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
       indexFilesModel.stream_id
     );
+    console.log("[ceramic]indexedFilesStreams:", Object.values(indexedFilesStreams).length)
     const ceramicStreamsRecord: StreamsRecord = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
       ceramicStreamsRecord[streamId] = {
@@ -115,8 +122,12 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
       };
     })
 
+    console.log("ceramicStreamsRecord:", ceramicStreamsRecord)
+
     Object.values(indexedFilesStreams).forEach((file) => {
-      ceramicStreamsRecord[file.contentId].streamContent.file = file;
+      if(ceramicStreamsRecord[file.contentId]) {
+        ceramicStreamsRecord[file.contentId].streamContent.file = file;
+      }
     })
 
     setStreamsRecord(ceramicStreamsRecord);

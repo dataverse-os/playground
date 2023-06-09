@@ -46,8 +46,8 @@ export function useStream() {
       streams = await runtimeConnector.loadStreamsBy({
         modelId,
       });
-      console.log("Streams:", streams)
     }
+    console.log("streams loaded:", streams)
     setStreamsRecord(streams);
     return streams;
   };

@@ -1,44 +1,37 @@
 {
   "createDapp": {
-    "id": "8d6598f2-5f5c-46d0-a90d-1968d7c93db2",
     "streamIDs": [
       {
-        "name": "PlaygroundTest_contentFolders",
-        "stream_id": "kjzl6hvfrbw6c68gwsnhhirbfu0henq4596g741v6m23s3c4w5l7acw9552mhjj",
+        "stream_id": "kjzl6hvfrbw6c5qdzwi9esxvt1v5mtt7od7hb2947624mn4u0rmq1rh9anjcnxx",
+        "name": "playground_indexFolders",
         "isPublicDomain": false,
         "encryptable": null
       },
       {
-        "name": "PlaygroundTest_post",
-        "stream_id": "kjzl6hvfrbw6ca7rbzdzvbjh8z8xkgdkra64aodabwgvbnkp6dz8rc2blxqocow",
+        "stream_id": "kjzl6hvfrbw6c6ad7ydn0hi4vtamx2v620hdgu6llq49h28rfd6cs02g3cmn9za",
+        "name": "playground_contentFolders",
+        "isPublicDomain": false,
+        "encryptable": null
+      },
+      {
+        "stream_id": "kjzl6hvfrbw6c763ubdhowzao0m4yp84cxzbfnlh4hdi5alqo4yrebmc0qpjdi5",
+        "name": "playground_indexFiles",
+        "isPublicDomain": false,
+        "encryptable": null
+      },
+      {
+        "stream_id": "kjzl6hvfrbw6c7cp6xafsa7ghxh1yfw4bsub1363ehrxhi999vlpxny9k69uoxz",
+        "name": "playground_post",
         "isPublicDomain": false,
         "encryptable": ["text", "images", "videos"]
-      },
-      {
-        "name": "PlaygroundTest_indexFiles",
-        "stream_id": "kjzl6hvfrbw6c5bx8ia90cwooszigmob6x1s3lmcpp7gw49jeum46t60qce8nk7",
-        "isPublicDomain": false,
-        "encryptable": null
-      },
-      {
-        "name": "PlaygroundTest_profile",
-        "stream_id": "kjzl6hvfrbw6car0j3zi6vawakeuenzksidsqghzmx9np9kcukrz0ds4kei7fag",
-        "isPublicDomain": true,
-        "encryptable": null
-      },
-      {
-        "name": "PlaygroundTest_indexFolders",
-        "stream_id": "kjzl6hvfrbw6c93oug847c1qauokrn30o20hswriloh42bgcj0jl725b6h9jiua",
-        "isPublicDomain": false,
-        "encryptable": null
       }
     ],
-    "website": "",
-    "name": "PlaygroundTest",
-    "slug": "PlaygroundTest",
-    "logo": "",
-    "description": "",
+    "website": "https://playground.dataverse-os.com",
+    "name": "Playground",
+    "slug": "playground",
+    "logo": "https://bafkreibeb7b33ellnot6ltu3petnh3x2pkbpblakkqig3gq26mi3jnme7y.ipfs.w3s.link",
+    "description": "A demonstration application developed based on Dataverse SDK",
     "defaultFolderName": "Untitled",
-    "ceramic": "https://local1.dataverseceramicdaemon.com"
+    "ceramic": "https://dataverseceramicdaemon.com"
   }
 }
