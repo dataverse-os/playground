@@ -14,5 +14,5 @@ export const TextWrapper = styled.div`
   margin-bottom: 0.8rem;
   width: fit-content;
   text-align: justify;
-  cursor: pointer;
+  /* cursor: pointer; */
 `;

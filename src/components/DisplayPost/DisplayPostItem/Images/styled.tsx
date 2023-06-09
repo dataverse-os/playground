@@ -6,7 +6,7 @@ export const ImgWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  cursor: pointer;
+  /* cursor: pointer; */
 `;
 
 export const Secret = styled.div`
