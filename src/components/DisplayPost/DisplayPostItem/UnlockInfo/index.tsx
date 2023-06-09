@@ -4,7 +4,11 @@ import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import { PostStream } from "@/types";
-import { FileType, MirrorFile, StreamContent } from "@dataverse/runtime-connector";
+import {
+  FileType,
+  MirrorFile,
+  StreamContent,
+} from "@dataverse/runtime-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
@@ -31,19 +35,16 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     },
   });
 
-  const { wallet, connectWallet, switchNetwork } = useWallet();
+  const { connectWallet, switchNetwork } = useWallet();
 
-  const { unlockStream, createCapability } = useStream(
-    wallet
-  );
+  const { unlockStream, createCapability } = useStream();
 
   useEffect(() => {
     const postStreamCopy = JSON.parse(JSON.stringify(postStream));
     if (!postStreamCopy.datatokenInfo) {
       return;
     }
-    const price = postStreamCopy.datatokenInfo?.collect_info
-      ?.price ?? {
+    const price = postStreamCopy.datatokenInfo?.collect_info?.price ?? {
       amount: "",
       currency: "",
       currency_addr: "",
@@ -52,10 +53,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       price.currency = getCurrencyNameByCurrencyAddress(price.currency_addr);
     }
     setDatatokenInfo({
-      sold_num:
-        postStreamCopy.datatokenInfo?.collect_info?.sold_num ?? 0,
-      total:
-        postStreamCopy.datatokenInfo?.collect_info?.total ?? "",
+      sold_num: postStreamCopy.datatokenInfo?.collect_info?.sold_num ?? 0,
+      total: postStreamCopy.datatokenInfo?.collect_info?.total ?? "",
       price,
     });
   }, [postStream.datatokenInfo]);
@@ -64,9 +63,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        await connectWallet();
-        await switchNetwork(137);
-        const pkh = await createCapability();
+        const {wallet} = await connectWallet();
+        const pkh = await createCapability(wallet);
         dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
         console.error(error);
@@ -80,10 +78,12 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       console.log("cannot unlock");
       return;
     }
-    let streamList: PostStream[] = postStreamList;
+    // let streamList: PostStream[] = postStreamList;
     try {
       _unlockPending();
-      const { streamContent, streamId } = await unlockStream(postStream.streamId);
+      const { streamContent, streamId } = await unlockStream(
+        postStream.streamId
+      );
       _unlockSucceed(streamContent, streamId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
@@ -96,9 +96,13 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
       return;
     }
 
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+    if (
+      postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken
+    ) {
       dispatch(
-        getDatatokenInfo({ address: postStream.streamRecord.streamContent.file.datatokenId! })
+        getDatatokenInfo({
+          address: postStream.streamRecord.streamContent.file.datatokenId!,
+        })
       );
     }
   }, [postStreamList.length]);
@@ -137,7 +141,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           ...post,
           streamRecord: {
             ...post.streamRecord,
-            streamContent: decryptedStreamContent
+            streamContent: decryptedStreamContent,
           },
           isUnlocking: false,
           hasUnlockedSuccessfully: true,
@@ -182,7 +186,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           onClick={unlock}
         ></img>
       )}
-      {postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken && (
+      {postStream.streamRecord.streamContent.file.fileType ===
+        FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">{datatokenInfo.price.amount}</span>
           <span className="currency">{datatokenInfo.price.currency}</span>

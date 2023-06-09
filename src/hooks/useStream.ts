@@ -9,7 +9,7 @@ import { Context } from "../context";
 import { Model, StreamsRecord } from "../types";
 import { getAddressFromDid } from "../utils";
 
-export function useStream(wallet?: WALLET) {
+export function useStream() {
   const { runtimeConnector, output } = useContext(Context);
   const [pkh, setPkh] = useState("");
   const [streamsRecord, setStreamsRecord] = useState<StreamsRecord>({});
@@ -19,7 +19,7 @@ export function useStream(wallet?: WALLET) {
     return res;
   };
 
-  const createCapability = async () => {
+  const createCapability = async (wallet: WALLET) => {
     const currentPkh = await runtimeConnector.createCapability({
       wallet,
       app: output.createDapp.name,
@@ -119,7 +119,7 @@ export function useStream(wallet?: WALLET) {
         pkh,
         modelId,
         streamContent,
-      }
+      };
     } else {
       throw "Failed to create stream";
     }
@@ -194,7 +194,7 @@ export function useStream(wallet?: WALLET) {
       if (!profileId) {
         profileId = await _getProfileId({ pkh, lensNickName });
       }
-      if(!streamContent) {
+      if (!streamContent) {
         streamContent = streamsRecord[streamId].streamContent;
       }
       const { streamContent: updatedStreamContent } =
@@ -216,7 +216,7 @@ export function useStream(wallet?: WALLET) {
           streamContent: updatedStreamContent,
         });
       } else {
-        throw "Failed to monetize file"
+        throw "Failed to monetize file";
       }
     } catch (error) {
       console.error(error);
@@ -251,8 +251,8 @@ export function useStream(wallet?: WALLET) {
         ...stream,
         encrypted: JSON.stringify(encrypted),
       };
-  
-      const {streamContent} = await runtimeConnector.updateStream({
+
+      const { streamContent } = await runtimeConnector.updateStream({
         streamId,
         streamContent: inputStreamContent,
         syncImmediately: true,
@@ -270,17 +270,17 @@ export function useStream(wallet?: WALLET) {
 
   const unlockStream = async (streamId: string) => {
     try {
-      const {streamContent} = await runtimeConnector.unlock({
+      const { streamContent } = await runtimeConnector.unlock({
         streamId,
       });
-  
-      if(streamContent) {
+
+      if (streamContent) {
         return _updateStreamRecord({
           streamId,
-          streamContent
-        })
+          streamContent,
+        });
       } else {
-        throw "Fail to unlock stream"
+        throw "Fail to unlock stream";
       }
     } catch (error) {
       console.error(error);
@@ -328,22 +328,28 @@ export function useStream(wallet?: WALLET) {
     const streamsRecordCopy = JSON.parse(
       JSON.stringify(streamsRecord)
     ) as StreamsRecord;
-      
-    console.log("Before update, streamsRecordCopy[streamId]:", streamsRecordCopy[streamId])
-    if( pkh && modelId) {
+
+    console.log(
+      "Before update, streamsRecordCopy[streamId]:",
+      streamsRecordCopy[streamId]
+    );
+    if (pkh && modelId) {
       streamsRecordCopy[streamId] = {
         app: output.createDapp.name,
         pkh,
         modelId,
-        streamContent
-      }
+        streamContent,
+      };
     } else {
       streamsRecordCopy[streamId] = {
         ...streamsRecordCopy[streamId],
-        streamContent
-      }
+        streamContent,
+      };
     }
-    console.log("After update, streamsRecordCopy[streamId]:", streamsRecordCopy[streamId])
+    console.log(
+      "After update, streamsRecordCopy[streamId]:",
+      streamsRecordCopy[streamId]
+    );
     setStreamsRecord(streamsRecordCopy);
 
     return {
@@ -358,7 +364,6 @@ export function useStream(wallet?: WALLET) {
   return {
     pkh,
     streamsRecord,
-    setStreamsRecord,
     checkCapability,
     createCapability,
     loadStreams,

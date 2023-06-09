@@ -5,41 +5,30 @@ import { didAbbreviation } from "@/utils";
 import styled, { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";
-import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStream, useWallet } from "@/hooks";
-import { Context } from "@/context";
-// import { appName } from "@/sdk";
 
 const Header = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const {postModel} = useContext(Context);
   const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
 
-  const {
-    wallet,
-    connectWallet,
-    switchNetwork,
-  } = useWallet();
+  const { connectWallet } = useWallet();
 
-  const {
-    createCapability
-  } = useStream(wallet);
+  const { createCapability } = useStream();
 
   const handleClickSignin = async () => {
     try {
       dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-      await connectWallet();
-      await switchNetwork(137);
-      const pkh = await createCapability();
-      dispatch(identitySlice.actions.setPkh(pkh))
+      const { wallet } = await connectWallet();
+      const pkh = await createCapability(wallet);
+      dispatch(identitySlice.actions.setPkh(pkh));
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
       dispatch(identitySlice.actions.setIsConnectingIdentity(false));
     }
-  }
+  };
 
   return (
     <Wrapper>

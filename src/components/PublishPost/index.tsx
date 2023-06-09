@@ -39,14 +39,18 @@ import { identitySlice } from "@/state/identity/slice";
 import { Context } from "@/context";
 
 export interface PublishPostProps {
-  createPublicStream: any,
-  createPayableStream: any,
-  loadStream: any,
+  createPublicStream: any;
+  createPayableStream: any;
+  loadStream: any;
 }
 
-const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPayableStream, loadStream}) => {
+const PublishPost: React.FC<PublishPostProps> = ({
+  createPublicStream,
+  createPayableStream,
+  loadStream,
+}) => {
   const dispatch = useAppDispatch();
-  const {postModel, appVersion} = useContext(Context)
+  const { postModel, appVersion } = useContext(Context);
   const pkh = useSelector((state) => state.identity.pkh);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
   const settings = useSelector((state) => state.privacySettings.settings);
@@ -62,15 +66,9 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
 
-  const {
-    wallet,
-    connectWallet,
-    switchNetwork
-  } = useWallet();
+  const { connectWallet } = useWallet();
 
-  const {
-    createCapability
-  } = useStream(wallet);
+  const { createCapability } = useStream();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -155,16 +153,15 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
     profileId?: string;
     postImages: string[];
   }) => {
-    if(!pkh) {
+    if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        await connectWallet();
-        await switchNetwork(137);
-        const pkh = await createCapability();
-        dispatch(identitySlice.actions.setPkh(pkh))
+        const { wallet } = await connectWallet();
+        const pkh = await createCapability(wallet);
+        dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
-        console.error(error)
-        return
+        console.error(error);
+        return;
       } finally {
         dispatch(identitySlice.actions.setIsConnectingIdentity(false));
       }
@@ -172,8 +169,8 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
     try {
       let res;
       const date = new Date().toISOString();
-      console.log("Before create stream, settings:", settings)
-      switch(settings.postType) {
+      console.log("Before create stream, settings:", settings);
+      switch (settings.postType) {
         case PostType.Public:
           res = await createPublicStream({
             pkh,
@@ -188,7 +185,10 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
               updatedAt: date,
             },
           });
-          console.log("[Branch PostType.Public]: After createPublicStream, res:", res)
+          console.log(
+            "[Branch PostType.Public]: After createPublicStream, res:",
+            res
+          );
           break;
         case PostType.Encrypted:
           break;
@@ -212,9 +212,12 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
               text: true,
               images: true,
               videos: false,
-            }
+            },
           });
-          console.log("[Branch PostType.Payable]: After createPayableStream, res:", res)
+          console.log(
+            "[Branch PostType.Payable]: After createPayableStream, res:",
+            res
+          );
           break;
       }
       Message.success({
@@ -241,9 +244,9 @@ const PublishPost: React.FC<PublishPostProps> = ({createPublicStream, createPaya
       });
       setContent("");
       setImages([]);
-      await loadStream({modelId: postModel.stream_id});
+      await loadStream({ modelId: postModel.stream_id });
     } catch (error: any) {
-      Message.error((error?.message ?? error));
+      Message.error(error?.message ?? error);
     } finally {
       dispatch(postSlice.actions.setIsPublishingPost(false));
     }

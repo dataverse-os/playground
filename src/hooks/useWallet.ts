@@ -1,5 +1,5 @@
 import { WALLET, Mode, SignMethod } from "@dataverse/runtime-connector";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Context } from "../context";
 
 export function useWallet() {
@@ -7,8 +7,13 @@ export function useWallet() {
   const [wallet, setWallet] = useState<WALLET>();
 
   const connectWallet = async () => {
-    const address = await runtimeConnector.connectWallet();
-    return address;
+    const { address, wallet } = await runtimeConnector.connectWallet();
+    console.log("Connect res:", { address, wallet });
+    setWallet(wallet);
+    return {
+      address,
+      wallet,
+    };
   };
 
   const switchNetwork = async (chainId: number) => {
@@ -32,9 +37,23 @@ export function useWallet() {
     return res;
   };
 
-  // const ethereumRequest = async () => {
-  //   const res = await runtimeConnector
-  // }
+  const ethereumRequest = async (params: { method: string; params?: any }) => {
+    const res = await runtimeConnector.ethereumRequest(params);
+    return res;
+  };
+
+  const connectPkpWallet = async () => {
+    const { address } = await runtimeConnector.connectPKPWallet();
+    return address;
+  };
+
+  const executeLitAction = async (params: {
+    code: string;
+    jsParams: object;
+  }) => {
+    const res = await runtimeConnector.executeLitAction(params);
+    return res;
+  };
 
   return {
     wallet,
@@ -42,5 +61,8 @@ export function useWallet() {
     switchNetwork,
     sign,
     contractCall,
+    ethereumRequest,
+    connectPkpWallet,
+    executeLitAction,
   };
 }
