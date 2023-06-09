@@ -53,7 +53,7 @@ export interface NativePost {
 export interface PostStream {
   streamId: string;
   streamRecord: StreamRecord;
-  datatokenInfo?: {
+  datatokenInfo?: Partial<{
     address: string;
     collect_info: {
       collect_nft_address: string;
@@ -73,7 +73,7 @@ export interface PostStream {
     content_uri: string;
     owner: string;
     source: string;
-  };
+  }>;
   // streamContent: {
   //   appVersion: string;
   //   content: StructuredPost;
