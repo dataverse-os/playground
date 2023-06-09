@@ -42,6 +42,11 @@ export function useWallet() {
     return res;
   };
 
+  const getCurrentPkh = async () => {
+    const res = await runtimeConnector.wallet.getCurrentPkh();
+    return res;
+  };
+
   const connectPkpWallet = async () => {
     const { address } = await runtimeConnector.connectPKPWallet();
     return address;
@@ -62,6 +67,7 @@ export function useWallet() {
     sign,
     contractCall,
     ethereumRequest,
+    getCurrentPkh,
     connectPkpWallet,
     executeLitAction,
   };
