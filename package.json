@@ -15,7 +15,7 @@
     "@ceramicnetwork/common": "2.5.0",
     "@ceramicnetwork/http-client": "2.3.3",
     "@ceramicnetwork/stream-model-instance": "0.4.0",
-    "@dataverse/runtime-connector": "1.0.55",
+    "@dataverse/runtime-connector": "1.0.56",
     "@reduxjs/toolkit": "1.9.0",
     "convert-yaml": "^2.0.5",
     "ethers": "5.6.9",

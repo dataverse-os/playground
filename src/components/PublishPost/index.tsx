@@ -60,7 +60,9 @@ const PublishPost: React.FC<PublishPostProps> = ({
   // const isEncryptedSuccessfully = useSelector(
   //   (state) => state.post.isEncryptedSuccessfully
   // );
-  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
+  const isDataverseExtension = useSelector(
+    (state) => state.noExtension.isDataverseExtension
+  );
   const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
   const profileId = useSelector((state) => state.lensProfile.profileId);
 
@@ -68,7 +70,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
 
-  const { connectWallet } = useWallet();
+  const { connectWallet, getCurrentPkh } = useWallet();
 
   const { createCapability } = useStream();
 
@@ -155,16 +157,18 @@ const PublishPost: React.FC<PublishPostProps> = ({
     profileId?: string;
     postImages: string[];
   }) => {
-    if(!isDataverseExtension) {
+    if (!isDataverseExtension) {
       dispatch(noExtensionSlice.actions.setModalVisible(true));
       dispatch(postSlice.actions.setIsPublishingPost(false));
-      return
+      return;
     }
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        const { wallet } = await connectWallet();
-        const pkh = await createCapability(wallet);
+        if (!(await getCurrentPkh())) {
+          await connectWallet();
+        }
+        const pkh = await createCapability();
         dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
         console.error(error);

@@ -26,7 +26,9 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   const dispatch = useAppDispatch();
   const pkh = useSelector((state) => state.identity.pkh);
   const postStreamList = useSelector((state) => state.post.postStreamList);
-  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
+  const isDataverseExtension = useSelector(
+    (state) => state.noExtension.isDataverseExtension
+  );
   const [datatokenInfo, setDatatokenInfo] = useState({
     sold_num: 0,
     total: "",
@@ -37,7 +39,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     },
   });
 
-  const { connectWallet, switchNetwork } = useWallet();
+  const { connectWallet, getCurrentPkh, switchNetwork } = useWallet();
 
   const { unlockStream, createCapability } = useStream();
 
@@ -62,15 +64,17 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
   }, [postStream.datatokenInfo]);
 
   const unlock = async () => {
-    if(!isDataverseExtension) {
+    if (!isDataverseExtension) {
       dispatch(noExtensionSlice.actions.setModalVisible(true));
-      return
+      return;
     }
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        const {wallet} = await connectWallet();
-        const pkh = await createCapability(wallet);
+        if (!(await getCurrentPkh())) {
+          await connectWallet();
+        }
+        const pkh = await createCapability();
         dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
         console.error(error);
