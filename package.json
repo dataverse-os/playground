@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build && vite preview",
     "preview": "vite preview",
+    "github-build": "tsc && vite build",
     "deploy": "node scripts/s3-deploy/s3-deploy.js"
   },
   "dependencies": {
