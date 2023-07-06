@@ -4,23 +4,23 @@ import {
   Currency,
   WALLET,
   StreamContent,
-} from "@dataverse/runtime-connector";
+} from "@dataverse/dataverse-connector";
 import { Context } from "../context";
 import { Model, StreamsRecord } from "../types";
 import { getAddressFromDid } from "../utils";
 
 export function useStream() {
-  const { runtimeConnector, output } = useContext(Context);
+  const { dataverseConnector, output } = useContext(Context);
   const [pkh, setPkh] = useState<string>();
   const [streamsRecord, setStreamsRecord] = useState<StreamsRecord>({});
 
   const checkCapability = async () => {
-    const res = await runtimeConnector.checkCapability();
+    const res = await dataverseConnector.checkCapability();
     return res;
   };
 
   const createCapability = async (wallet?: WALLET) => {
-    const currentPkh = await runtimeConnector.createCapability({
+    const currentPkh = await dataverseConnector.createCapability({
       wallet,
       app: output.createDapp.name,
     });
@@ -38,12 +38,12 @@ export function useStream() {
   }) => {
     let streams;
     if (pkh) {
-      streams = await runtimeConnector.loadStreamsBy({
+      streams = await dataverseConnector.loadStreamsBy({
         modelId,
         pkh,
       });
     } else {
-      streams = await runtimeConnector.loadStreamsBy({
+      streams = await dataverseConnector.loadStreamsBy({
         modelId,
       });
     }
@@ -75,7 +75,7 @@ export function useStream() {
         }),
     };
     const { pkh, modelId, streamId, streamContent } =
-      await runtimeConnector.createStream({
+      await dataverseConnector.createStream({
         modelId: model.stream_id,
         streamContent: inputStreamContent,
       });
@@ -108,7 +108,7 @@ export function useStream() {
       }),
     };
     const { pkh, modelId, streamId, streamContent } =
-      await runtimeConnector.createStream({
+      await dataverseConnector.createStream({
         modelId: model.stream_id,
         streamContent: inputStreamContent,
       });
@@ -199,7 +199,7 @@ export function useStream() {
         streamContent = streamsRecord[streamId].streamContent;
       }
       const { streamContent: updatedStreamContent } =
-        await runtimeConnector.monetizeFile({
+        await dataverseConnector.monetizeFile({
           streamId,
           indexFileId: streamContent.file.indexFileId,
           datatokenVars: {
@@ -253,7 +253,7 @@ export function useStream() {
         encrypted: JSON.stringify(encrypted),
       };
 
-      const { streamContent } = await runtimeConnector.updateStream({
+      const { streamContent } = await dataverseConnector.updateStream({
         streamId,
         streamContent: inputStreamContent,
         syncImmediately: true,
@@ -271,7 +271,7 @@ export function useStream() {
 
   const unlockStream = async (streamId: string) => {
     try {
-      const { streamContent } = await runtimeConnector.unlock({
+      const { streamContent } = await dataverseConnector.unlock({
         streamId,
       });
 
@@ -296,7 +296,7 @@ export function useStream() {
     pkh: string;
     lensNickName?: string;
   }) => {
-    const lensProfiles = await runtimeConnector.getProfiles(
+    const lensProfiles = await dataverseConnector.getProfiles(
       getAddressFromDid(pkh)
     );
 
@@ -310,7 +310,7 @@ export function useStream() {
       if (!/^[\da-z]{5,26}$/.test(lensNickName) || lensNickName.length > 26) {
         throw "Only supports lower case characters, numbers, must be minimum of 5 length and maximum of 26 length";
       }
-      profileId = await runtimeConnector.createProfile(lensNickName);
+      profileId = await dataverseConnector.createProfile(lensNickName);
     }
     return profileId;
   };

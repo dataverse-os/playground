@@ -1,13 +1,13 @@
-import { WALLET, Mode, SignMethod } from "@dataverse/runtime-connector";
+import { WALLET, Mode, SignMethod } from "@dataverse/dataverse-connector";
 import { useContext, useState } from "react";
 import { Context } from "../context";
 
 export function useWallet() {
-  const { runtimeConnector } = useContext(Context);
+  const { dataverseConnector } = useContext(Context);
   const [wallet, setWallet] = useState<WALLET>();
 
   const connectWallet = async () => {
-    const { address, wallet } = await runtimeConnector.connectWallet();
+    const { address, wallet } = await dataverseConnector.connectWallet();
     console.log("Connect res:", { address, wallet });
     setWallet(wallet);
     return {
@@ -17,12 +17,12 @@ export function useWallet() {
   };
 
   const switchNetwork = async (chainId: number) => {
-    const res = await runtimeConnector.switchNetwork(chainId);
+    const res = await dataverseConnector.switchNetwork(chainId);
     return res;
   };
 
   const sign = async (params: { method: SignMethod; params: any[] }) => {
-    const res = await runtimeConnector.sign(params);
+    const res = await dataverseConnector.sign(params);
     return res;
   };
 
@@ -33,22 +33,22 @@ export function useWallet() {
     params: any[];
     mode?: Mode | undefined;
   }) => {
-    const res = await runtimeConnector.contractCall(params);
+    const res = await dataverseConnector.contractCall(params);
     return res;
   };
 
   const ethereumRequest = async (params: { method: string; params?: any }) => {
-    const res = await runtimeConnector.ethereumRequest(params);
+    const res = await dataverseConnector.ethereumRequest(params);
     return res;
   };
 
   const getCurrentPkh = async () => {
-    const res = await runtimeConnector.wallet.getCurrentPkh();
+    const res = await dataverseConnector.getCurrentPkh();
     return res;
   };
 
   const getPKP = async () => {
-    const { address } = await runtimeConnector.getPKP();
+    const { address } = await dataverseConnector.getPKP();
     return address;
   };
 
@@ -56,7 +56,7 @@ export function useWallet() {
     code: string;
     jsParams: object;
   }) => {
-    const res = await runtimeConnector.executeLitAction(params);
+    const res = await dataverseConnector.executeLitAction(params);
     return res;
   };
 

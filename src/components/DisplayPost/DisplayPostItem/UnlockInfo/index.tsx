@@ -8,7 +8,7 @@ import {
   FileType,
   MirrorFile,
   StreamContent,
-} from "@dataverse/runtime-connector";
+} from "@dataverse/dataverse-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";

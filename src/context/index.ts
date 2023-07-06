@@ -1,10 +1,10 @@
-import { Extension, RuntimeConnector } from "@dataverse/runtime-connector";
+import { Extension, DataverseConnector } from "@dataverse/dataverse-connector";
 import { createContext } from "react";
 import { Model, Output } from "../types";
 import { getOutput, getPostModel, getIndexFilesModel } from "../utils";
 
 interface ContextType {
-  runtimeConnector: RuntimeConnector;
+  dataverseConnector: DataverseConnector;
   appVersion: string;
   postModel: Model;
   indexFilesModel: Model;
@@ -13,14 +13,14 @@ interface ContextType {
 
 export const Context = createContext<ContextType>({} as ContextType);
 
-const runtimeConnector = new RuntimeConnector(Extension);
+const dataverseConnector = new DataverseConnector(Extension);
 const appVersion = "0.0.1";
 const postModel = getPostModel();
 const indexFilesModel = getIndexFilesModel();
 const output = getOutput();
 
 export const contextStore = {
-  runtimeConnector,
+  dataverseConnector,
   appVersion,
   postModel,
   indexFilesModel,

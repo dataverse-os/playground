@@ -3,7 +3,7 @@ export const checkIsExtensionInjected = (): Promise<boolean> => {
     let flag = false;
     const interval = setInterval(() => {
       try {
-        const res = document.querySelector("#__dataverse__");
+        const res = (window as any).dataverse.isDataverse;
         if (res) {
           clearInterval(interval);
           flag = true;

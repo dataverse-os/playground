@@ -7,7 +7,7 @@ import {
   MirrorFile,
   StreamContent,
   StructuredFolder,
-} from "@dataverse/runtime-connector";
+} from "@dataverse/dataverse-connector";
 
 export enum PostType {
   Public,
