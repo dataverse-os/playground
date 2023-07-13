@@ -4,25 +4,29 @@ import {
   Currency,
   WALLET,
   StreamContent,
-} from "@dataverse/dataverse-connector";
+  Methods,
+} from "@dataverse/core-connector";
 import { Context } from "../context";
 import { Model, StreamsRecord } from "../types";
 import { getAddressFromDid } from "../utils";
 
 export function useStream() {
-  const { dataverseConnector, output } = useContext(Context);
+  const { coreConnector, output } = useContext(Context);
   const [pkh, setPkh] = useState<string>();
   const [streamsRecord, setStreamsRecord] = useState<StreamsRecord>({});
 
   const checkCapability = async () => {
-    const res = await dataverseConnector.checkCapability();
+    const res = await coreConnector.runOS({ method: Methods.checkCapability });
     return res;
   };
 
   const createCapability = async (wallet?: WALLET) => {
-    const currentPkh = await dataverseConnector.createCapability({
-      wallet,
-      app: output.createDapp.name,
+    const currentPkh = await coreConnector.runOS({
+      method: Methods.createCapability,
+      params: {
+        wallet,
+        app: output.createDapp.name,
+      },
     });
 
     setPkh(currentPkh);
@@ -38,16 +42,22 @@ export function useStream() {
   }) => {
     let streams;
     if (pkh) {
-      streams = await dataverseConnector.loadStreamsBy({
-        modelId,
-        pkh,
+      streams = await coreConnector.runOS({
+        method: Methods.loadStreamsBy,
+        params: {
+          modelId,
+          pkh,
+        },
       });
     } else {
-      streams = await dataverseConnector.loadStreamsBy({
-        modelId,
+      streams = await coreConnector.runOS({
+        method: Methods.loadStreamsBy,
+        params: {
+          modelId,
+        },
       });
     }
-    console.log("streams loaded:", streams)
+    console.log("streams loaded:", streams);
     setStreamsRecord(streams);
     return streams;
   };
@@ -74,11 +84,15 @@ export function useStream() {
           encrypted: JSON.stringify(encrypted),
         }),
     };
-    const { pkh, modelId, streamId, streamContent } =
-      await dataverseConnector.createStream({
-        modelId: model.stream_id,
-        streamContent: inputStreamContent,
-      });
+    const { pkh, modelId, streamId, streamContent } = await coreConnector.runOS(
+      {
+        method: Methods.createStream,
+        params: {
+          modelId: model.stream_id,
+          streamContent: inputStreamContent,
+        },
+      }
+    );
 
     if (streamContent) {
       return _updateStreamRecord({
@@ -107,11 +121,15 @@ export function useStream() {
         encrypted: JSON.stringify(encrypted),
       }),
     };
-    const { pkh, modelId, streamId, streamContent } =
-      await dataverseConnector.createStream({
-        modelId: model.stream_id,
-        streamContent: inputStreamContent,
-      });
+    const { pkh, modelId, streamId, streamContent } = await coreConnector.runOS(
+      {
+        method: Methods.createStream,
+        params: {
+          modelId: model.stream_id,
+          streamContent: inputStreamContent,
+        },
+      }
+    );
 
     if (streamContent) {
       return {
@@ -198,17 +216,21 @@ export function useStream() {
       if (!streamContent) {
         streamContent = streamsRecord[streamId].streamContent;
       }
-      const { streamContent: updatedStreamContent } =
-        await dataverseConnector.monetizeFile({
-          streamId,
-          indexFileId: streamContent.file.indexFileId,
-          datatokenVars: {
-            profileId,
-            currency,
-            amount,
-            collectLimit,
+      const { streamContent: updatedStreamContent } = await coreConnector.runOS(
+        {
+          method: Methods.monetizeFile,
+          params: {
+            streamId,
+            indexFileId: streamContent.file.indexFileId,
+            datatokenVars: {
+              profileId,
+              currency,
+              amount,
+              collectLimit,
+            },
           },
-        });
+        }
+      );
       if (updatedStreamContent) {
         return _updateStreamRecord({
           pkh,
@@ -253,10 +275,13 @@ export function useStream() {
         encrypted: JSON.stringify(encrypted),
       };
 
-      const { streamContent } = await dataverseConnector.updateStream({
-        streamId,
-        streamContent: inputStreamContent,
-        syncImmediately: true,
+      const { streamContent } = await coreConnector.runOS({
+        method: Methods.updateStream,
+        params: {
+          streamId,
+          streamContent: inputStreamContent,
+          syncImmediately: true,
+        },
       });
 
       return _updateStreamRecord({
@@ -271,8 +296,11 @@ export function useStream() {
 
   const unlockStream = async (streamId: string) => {
     try {
-      const { streamContent } = await dataverseConnector.unlock({
-        streamId,
+      const { streamContent } = await coreConnector.runOS({
+        method: Methods.unlock,
+        params: {
+          streamId,
+        },
       });
 
       if (streamContent) {
@@ -296,9 +324,10 @@ export function useStream() {
     pkh: string;
     lensNickName?: string;
   }) => {
-    const lensProfiles = await dataverseConnector.getProfiles(
-      getAddressFromDid(pkh)
-    );
+    const lensProfiles = await coreConnector.runOS({
+      method: Methods.getProfiles,
+      params: getAddressFromDid(pkh),
+    });
 
     let profileId;
     if (lensProfiles?.[0]?.id) {
@@ -310,7 +339,10 @@ export function useStream() {
       if (!/^[\da-z]{5,26}$/.test(lensNickName) || lensNickName.length > 26) {
         throw "Only supports lower case characters, numbers, must be minimum of 5 length and maximum of 26 length";
       }
-      profileId = await dataverseConnector.createProfile(lensNickName);
+      profileId = await coreConnector.runOS({
+        method: Methods.createProfile,
+        params: lensNickName,
+      });
     }
     return profileId;
   };

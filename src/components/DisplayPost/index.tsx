@@ -8,9 +8,8 @@ import { useStream } from "@/hooks";
 // import { appName, appVersion } from "@/sdk";
 import { Model, PostStream, StreamsRecord } from "@/types";
 import { Context } from "@/context";
-import { decode, detectDataverseExtension } from "@/utils";
+import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
-import { IndexFileContentType, StructuredFiles } from "@dataverse/dataverse-connector";
 import { noExtensionSlice } from "@/state/noExtension/slice";
 
 export interface PublishPostProps {}
@@ -64,7 +63,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   useEffect(() => {
     if(postModel) {
       if(isDataverseExtension === true) {
-        console.log("load stream with dataverse-connector...")
+        console.log("load stream with core-connector...")
         loadStreams({ modelId: postModel.stream_id });
       } else if(isDataverseExtension === false) {
         console.log("load stream with ceramic...")

@@ -1,5 +1,5 @@
 import { PostType } from "@/types";
-import { Currency } from "@dataverse/dataverse-connector";
+import { Currency } from "@dataverse/core-connector";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface Props {

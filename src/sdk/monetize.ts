@@ -1,16 +1,23 @@
 import { contextStore } from "@/context";
 import { gql } from "graphql-request";
 import { gqlClient } from "./gql";
+import { Methods } from "@dataverse/core-connector";
 
-const { dataverseConnector, output } = contextStore;
+const { coreConnector, output } = contextStore;
 
 export const createLensProfile = async (handle: string) => {
-  const res = await dataverseConnector.createProfile(handle);
+  const res = await coreConnector.runOS({
+    method: Methods.createProfile,
+    params: handle,
+  });
   return res;
 };
 
 export const getLensProfiles = async (address: string) => {
-  const res = await dataverseConnector.getProfiles(address);
+  const res = await coreConnector.runOS({
+    method: Methods.getProfiles,
+    params: address,
+  });
   return res;
 };
 
@@ -21,9 +28,9 @@ export const isCollected = async ({
   datatokenId: string;
   address: string;
 }) => {
-  const res = await dataverseConnector.isCollected({
-    datatokenId,
-    address,
+  const res = await coreConnector.runOS({
+    method: Methods.isCollected,
+    params: { datatokenId, address },
   });
   return res;
 };
@@ -57,7 +64,10 @@ export const getDatatokenInfo = async (variables: { address: string }) => {
   // `;
   // const res: any = await gqlClient.request(query, { ...variables });
   // console.log("res:", res);
-  const datatokenInfo = await dataverseConnector.getDatatokenBaseInfo(variables.address);
+  const datatokenInfo = await coreConnector.runOS({
+    method: Methods.getDatatokenBaseInfo,
+    params: variables.address,
+  });
   // console.log("result:", result)
   return datatokenInfo;
 };
@@ -73,8 +83,11 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
 };
 
 export const unlock = async (params: { streamId: string }) => {
-  const res = await dataverseConnector.unlock({
-    ...params,
+  const res = await coreConnector.runOS({
+    method: Methods.unlock,
+    params: {
+      ...params,
+    },
   });
   return res;
 };

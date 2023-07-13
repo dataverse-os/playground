@@ -1,10 +1,10 @@
-import { Extension, DataverseConnector } from "@dataverse/dataverse-connector";
+import { Extension, CoreConnector } from "@dataverse/core-connector";
 import { createContext } from "react";
 import { Model, Output } from "../types";
 import { getOutput, getPostModel, getIndexFilesModel } from "../utils";
 
 interface ContextType {
-  dataverseConnector: DataverseConnector;
+  coreConnector: CoreConnector;
   appVersion: string;
   postModel: Model;
   indexFilesModel: Model;
@@ -13,14 +13,14 @@ interface ContextType {
 
 export const Context = createContext<ContextType>({} as ContextType);
 
-const dataverseConnector = new DataverseConnector(Extension);
+const coreConnector = new CoreConnector(Extension);
 const appVersion = "0.0.1";
 const postModel = getPostModel();
 const indexFilesModel = getIndexFilesModel();
 const output = getOutput();
 
 export const contextStore = {
-  dataverseConnector,
+  coreConnector,
   appVersion,
   postModel,
   indexFilesModel,

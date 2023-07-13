@@ -1,13 +1,13 @@
-import { WALLET, Mode, SignMethod } from "@dataverse/dataverse-connector";
+import { WALLET, SignMethod, Methods } from "@dataverse/core-connector";
 import { useContext, useState } from "react";
 import { Context } from "../context";
 
 export function useWallet() {
-  const { dataverseConnector } = useContext(Context);
+  const { coreConnector } = useContext(Context);
   const [wallet, setWallet] = useState<WALLET>();
 
   const connectWallet = async () => {
-    const { address, wallet } = await dataverseConnector.connectWallet();
+    const { address, wallet } = await coreConnector.connectWallet();
     console.log("Connect res:", { address, wallet });
     setWallet(wallet);
     return {
@@ -17,12 +17,18 @@ export function useWallet() {
   };
 
   const switchNetwork = async (chainId: number) => {
-    const res = await dataverseConnector.switchNetwork(chainId);
+    const res = await coreConnector.runOS({
+      method: Methods.switchNetwork,
+      params: chainId,
+    });
     return res;
   };
 
   const sign = async (params: { method: SignMethod; params: any[] }) => {
-    const res = await dataverseConnector.sign(params);
+    const res = await coreConnector.runOS({
+      method: Methods.sign,
+      params,
+    });
     return res;
   };
 
@@ -31,24 +37,33 @@ export function useWallet() {
     abi: any[];
     method: string;
     params: any[];
-    mode?: Mode | undefined;
   }) => {
-    const res = await dataverseConnector.contractCall(params);
+    const res = await coreConnector.runOS({
+      method: Methods.contractCall,
+      params,
+    });
     return res;
   };
 
   const ethereumRequest = async (params: { method: string; params?: any }) => {
-    const res = await dataverseConnector.ethereumRequest(params);
+    const res = await coreConnector.runOS({
+      method: Methods.ethereumRequest,
+      params,
+    });
     return res;
   };
 
   const getCurrentPkh = async () => {
-    const res = await dataverseConnector.getCurrentPkh();
+    const res = await coreConnector.runOS({
+      method: Methods.getCurrentPkh,
+    });
     return res;
   };
 
   const getPKP = async () => {
-    const { address } = await dataverseConnector.getPKP();
+    const { address } = await coreConnector.runOS({
+      method: Methods.getPKP,
+    });
     return address;
   };
 
@@ -56,7 +71,10 @@ export function useWallet() {
     code: string;
     jsParams: object;
   }) => {
-    const res = await dataverseConnector.executeLitAction(params);
+    const res = await coreConnector.runOS({
+      method: Methods.executeLitAction,
+      params,
+    });
     return res;
   };
 

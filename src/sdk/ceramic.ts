@@ -2,7 +2,7 @@ import { CeramicClient } from "@ceramicnetwork/http-client";
 import { ModelInstanceDocument } from "@ceramicnetwork/stream-model-instance";
 import { IndexApi, Page, StreamState } from "@ceramicnetwork/common";
 import { decode } from "../utils";
-import { IndexFileContentType,  StructuredFiles } from "@dataverse/dataverse-connector";
+import { IndexFileContentType,  StructuredFiles } from "@dataverse/core-connector";
 
 class Ceramic {
   public ceramicClient: CeramicClient;
