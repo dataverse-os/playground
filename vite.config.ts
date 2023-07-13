@@ -19,9 +19,6 @@ export default defineConfig({
   build: {
     target: "es2020",
     sourcemap: true,
-    rollupOptions: {
-      external: ["@lit-protocol/sdk-nodejs"],
-    },
   },
   server: {
     port: 5173,
