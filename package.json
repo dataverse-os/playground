@@ -17,7 +17,7 @@
     "@ceramicnetwork/http-client": "2.3.3",
     "@ceramicnetwork/stream-model-instance": "0.4.0",
     "@dataverse/dataverse-connector": "latest",
-    "@dataverse/hooks": "^1.0.7",
+    "@dataverse/hooks": "latest",
     "@dataverse/model-parser": "^1.0.2",
     "@dataverse/utils": "latest",
     "@reduxjs/toolkit": "1.9.0",
