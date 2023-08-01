@@ -2,7 +2,7 @@ import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 import { useAppDispatch, useSelector } from "@/state/hook";
 import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
-import { FileType } from "@dataverse/core-connector";
+import { FileType } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
 import { PostStream } from "@/types";

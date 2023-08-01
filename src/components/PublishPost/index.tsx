@@ -26,23 +26,21 @@ import {
   UploadImgWrapper,
   Wrapper,
 } from "./styled";
-// import { connectIdentity } from "@/state/identity/slice";
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
 import CreateLensProfile from "../CreateLensProfile";
 import { getLensProfiles } from "@/sdk/monetize";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { useStream, useWallet } from "@/hooks";
-// import { appName, appVersion } from "@/sdk";
 import { PostStream, PostType } from "@/types";
 import { identitySlice } from "@/state/identity/slice";
 import { Context } from "@/context";
 import { noExtensionSlice } from "@/state/noExtension/slice";
+import { CreateStreamArgs, StreamType, useApp } from "@dataverse/hooks";
 
 export interface PublishPostProps {
-  createPublicStream: any;
-  createPayableStream: any;
-  loadStream: any;
+  createPublicStream: (params: CreateStreamArgs[StreamType.Public]) => any;
+  createPayableStream: (params: CreateStreamArgs[StreamType.Payable]) => any;
+  loadStream: (modelId: string) => any;
 }
 
 const PublishPost: React.FC<PublishPostProps> = ({
@@ -51,6 +49,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
   loadStream,
 }) => {
   const dispatch = useAppDispatch();
+  const {modelParser} = useContext(Context);
   const { postModel, appVersion } = useContext(Context);
   const pkh = useSelector((state) => state.identity.pkh);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
@@ -70,9 +69,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
 
-  const { connectWallet, getCurrentPkh } = useWallet();
-
-  const { createCapability } = useStream();
+  const {connectApp} = useApp();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -165,10 +162,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        if (!(await getCurrentPkh())) {
-          await connectWallet();
-        }
-        const pkh = await createCapability();
+        const {pkh} = await connectApp({appId: modelParser.appId})
         dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
         console.error(error);
@@ -184,8 +178,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       switch (settings.postType) {
         case PostType.Public:
           res = await createPublicStream({
-            pkh,
-            model: postModel,
+            modelId: postModel.streams[postModel.streams.length - 1].modelId,
             stream: {
               appVersion,
               profileId,
@@ -205,8 +198,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
           break;
         case PostType.Payable:
           res = await createPayableStream({
-            pkh,
-            model: postModel,
+            modelId: postModel.streams[postModel.streams.length - 1].modelId,
             profileId,
             stream: {
               appVersion,
@@ -255,7 +247,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       });
       setContent("");
       setImages([]);
-      await loadStream({ modelId: postModel.stream_id });
+      await loadStream(postModel.streams[postModel.streams.length - 1].modelId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
     } finally {

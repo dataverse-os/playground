@@ -1,37 +1,96 @@
 {
-  "createDapp": {
-    "streamIDs": [
-      {
-        "stream_id": "kjzl6hvfrbw6c5qdzwi9esxvt1v5mtt7od7hb2947624mn4u0rmq1rh9anjcnxx",
-        "name": "playground_indexFolders",
-        "isPublicDomain": false,
-        "encryptable": null
-      },
-      {
-        "stream_id": "kjzl6hvfrbw6c6ad7ydn0hi4vtamx2v620hdgu6llq49h28rfd6cs02g3cmn9za",
-        "name": "playground_contentFolders",
-        "isPublicDomain": false,
-        "encryptable": null
-      },
-      {
-        "stream_id": "kjzl6hvfrbw6c763ubdhowzao0m4yp84cxzbfnlh4hdi5alqo4yrebmc0qpjdi5",
-        "name": "playground_indexFiles",
-        "isPublicDomain": false,
-        "encryptable": null
-      },
-      {
-        "stream_id": "kjzl6hvfrbw6c7cp6xafsa7ghxh1yfw4bsub1363ehrxhi999vlpxny9k69uoxz",
-        "name": "playground_post",
-        "isPublicDomain": false,
-        "encryptable": ["text", "images", "videos"]
-      }
-    ],
-    "website": "https://playground.dataverse-os.com",
-    "name": "Playground",
-    "slug": "playground",
-    "logo": "https://bafkreibeb7b33ellnot6ltu3petnh3x2pkbpblakkqig3gq26mi3jnme7y.ipfs.w3s.link",
-    "description": "A demonstration application developed based on Dataverse SDK",
-    "defaultFolderName": "Untitled",
-    "ceramic": "https://dataverseceramicdaemon.com"
-  }
+  "id": "3797759e-3b2a-4b2a-85ad-c678e6225b78",
+  "createdAt": 1690799326,
+  "updatedAt": 1690799326,
+  "deletedAt": null,
+  "name": "dTwitter-playground",
+  "logo": "https://bafybeifozdhcbbfydy2rs6vbkbbtj3wc4vjlz5zg2cnqhb2g4rm2o5ldna.ipfs.w3s.link/dataverse.svg",
+  "website": [
+    "dataverse-os.com"
+  ],
+  "defaultFolderName": "Main",
+  "description": "This is dataverse app example.",
+  "models": [
+    {
+      "modelName": "post",
+      "internal": false,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c93jhmrr2kbonqrcfgnx7xqnwu6zpcgme1pk0bkgtvv463nq4he",
+          "createdAt": 1690799326,
+          "schema": "type post @createModel(accountRelation: LIST, description: \"post\") {  author: DID! @documentAccount  version: CommitID! @documentVersion  appVersion: String! @string(maxLength: 100)  text: String @string(maxLength: 300000000)  images: [String] @list(maxLength: 10000000) @string(maxLength: 2000000)  videos: [String] @list(maxLength: 10000000) @string(maxLength: 2000000)  options: String @string(maxLength: 300000000)  createdAt: DateTime!  updatedAt: DateTime!}",
+          "isPublicDomain": false,
+          "encryptable": [
+            "text",
+            "images",
+            "videos"
+          ],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "profile",
+      "internal": false,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c9dykajiopsiqmay3fn8j3ilr7oklcklsw4h8fbea0jizyr0mmw",
+          "createdAt": 1690799326,
+          "schema": "type profile @createModel(accountRelation: SINGLE, description: \"profile\") {  author: DID! @documentAccount  version: CommitID! @documentVersion  name: String! @string(maxLength: 100)  description: String! @string(maxLength: 10000)  image: String! @string(maxLength: 1000)  background: String! @string(maxLength: 1000)}",
+          "isPublicDomain": true,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "contentFolders",
+      "internal": false,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c9akgdlazksyspusmsn0gasrshkmqhffu2vck55pmu5e8bvd1js",
+          "createdAt": 1690799326,
+          "schema": "type contentFolders @createModel(accountRelation: LIST, description: \"ContentFolder\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  indexFolderId: String! @string(maxLength: 1000)\n  mirrors: String! @string(maxLength: 300000000)\n}",
+          "isPublicDomain": false,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "indexFiles",
+      "internal": false,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c9fa6cfau3uih6d97dt59xv25w45eftrhi5a07k4zdoy5afql3i",
+          "createdAt": 1690799326,
+          "schema": "type indexFiles @createModel(accountRelation: LIST, description: \"IndexFile\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  contentId: String! @string(maxLength: 1000)\n  contentType: String! @string(maxLength: 100)\n  comment: String! @string(maxLength: 300000000)\n  relation: String @string(maxLength: 300000000)\n  additional: String @string(maxLength: 300000000)\n  datatokenId: String @string(maxLength: 1000)\n  fileType: Int!\n  encryptedSymmetricKey: String @string(maxLength: 300000000)\n  decryptionConditions: String @string(maxLength: 300000000)\n  decryptionConditionsType: String @string(maxLength: 100)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  deleted: Boolean\n}",
+          "isPublicDomain": false,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "indexFolders",
+      "internal": false,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6castvluhh61he2ll7tlwzal0ff3avyg31tqo6b6yg6w1pf0nk26",
+          "createdAt": 1690799326,
+          "schema": "type indexFolders @createModel(accountRelation: LIST, description: \"IndexFolder\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  folderType: Int!\n  contentFolderIds: [String!]! @list(minLength: 1, maxLength: 10000) @string(maxLength: 2000)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  options: String @string(maxLength: 300000000)\n  parentFolderId: String @string(maxLength: 1000)\n  childFolderIds: [String] @list(maxLength: 10000) @string(maxLength: 2000)\n  deleted: Boolean\n}",
+          "isPublicDomain": false,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    }
+  ],
+  "address": "0x13a6D1fe418de7e5B03Fb4a15352DfeA3249eAA4",
+  "ceramic": "https://testnet.dataverseceramicdaemon.com"
 }

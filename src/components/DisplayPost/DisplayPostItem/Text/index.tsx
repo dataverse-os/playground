@@ -1,4 +1,4 @@
-import { FileType } from "@dataverse/core-connector";
+import { FileType } from "@dataverse/dataverse-connector";
 import { TextWrapper } from "./styled";
 import React from "react";
 import { CustomMirrorFile, PostStream } from "@/types";

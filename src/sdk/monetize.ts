@@ -1,23 +1,15 @@
 import { contextStore } from "@/context";
-import { gql } from "graphql-request";
-import { gqlClient } from "./gql";
-import { Methods } from "@dataverse/core-connector";
+import { SYSTEM_CALL } from "@dataverse/dataverse-connector";
 
-const { coreConnector, output } = contextStore;
+const { dataverseConnector } = contextStore;
 
 export const createLensProfile = async (handle: string) => {
-  const res = await coreConnector.runOS({
-    method: Methods.createProfile,
-    params: handle,
-  });
+  const res = await dataverseConnector.createProfile(handle);
   return res;
 };
 
 export const getLensProfiles = async (address: string) => {
-  const res = await coreConnector.runOS({
-    method: Methods.getProfiles,
-    params: address,
-  });
+  const res = await dataverseConnector.getProfiles(address);
   return res;
 };
 
@@ -28,10 +20,10 @@ export const isCollected = async ({
   datatokenId: string;
   address: string;
 }) => {
-  const res = await coreConnector.runOS({
-    method: Methods.isCollected,
-    params: { datatokenId, address },
-  });
+  const res = await dataverseConnector.isCollected({
+    datatokenId,
+    address
+  })
   return res;
 };
 
@@ -64,10 +56,11 @@ export const getDatatokenInfo = async (variables: { address: string }) => {
   // `;
   // const res: any = await gqlClient.request(query, { ...variables });
   // console.log("res:", res);
-  const datatokenInfo = await coreConnector.runOS({
-    method: Methods.getDatatokenBaseInfo,
-    params: variables.address,
-  });
+  // const datatokenInfo = await dataverseConnector.runOS({
+  //   method: SYSTEM_CALL.getDatatokenBaseInfo,
+  //   params: variables.address,
+  // });
+  const datatokenInfo = await dataverseConnector.getDatatokenBaseInfo(variables.address);
   // console.log("result:", result)
   return datatokenInfo;
 };
@@ -83,8 +76,8 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
 };
 
 export const unlock = async (params: { streamId: string }) => {
-  const res = await coreConnector.runOS({
-    method: Methods.unlock,
+  const res = await dataverseConnector.runOS({
+    method: SYSTEM_CALL.unlock,
     params: {
       ...params,
     },

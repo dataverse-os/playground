@@ -4,13 +4,19 @@ import { postSlice } from "@/state/post/slice";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
 import styled from "styled-components";
-import { useStream } from "@/hooks";
-// import { appName, appVersion } from "@/sdk";
-import { Model, PostStream, StreamsRecord } from "@/types";
+import { PostStream, StreamRecordMap } from "@/types";
 import { Context } from "@/context";
 import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
 import { noExtensionSlice } from "@/state/noExtension/slice";
+import {
+  StreamType,
+  useApp,
+  useCreateStream,
+  useFeeds,
+  useStore,
+  useWallet,
+} from "@dataverse/hooks";
 
 export interface PublishPostProps {}
 
@@ -22,10 +28,13 @@ const Wrapper = styled.div`
 `;
 
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const { postModel, indexFilesModel, appVersion, output } = useContext(Context);
+  const { postModel, indexFilesModel, appVersion, modelParser } =
+    useContext(Context);
   // const [hasExtension, setHasExtension] = useState<boolean>();
   const postStreamList = useSelector((state) => state.post.postStreamList);
-  const isDataverseExtension = useSelector((state) => state.noExtension.isDataverseExtension);
+  const isDataverseExtension = useSelector(
+    (state) => state.noExtension.isDataverseExtension
+  );
   const postListLeft = useMemo(() => {
     return postStreamList
       .map((post, index) => {
@@ -46,37 +55,56 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   }, [postStreamList]);
   const dispatch = useAppDispatch();
 
-  const { 
-    streamsRecord, 
-    setStreamsRecord,
-    loadStreams, 
-    createPublicStream, 
-    createPayableStream 
-  } = useStream();
+  // const {
+  //   streamsRecord,
+  //   setStreamsRecord,
+  //   loadStreams,
+  //   createPublicStream,
+  //   createPayableStream
+  // } = useStream();
+  const { createStream: createPublicStream } = useCreateStream({
+    streamType: StreamType.Public,
+  });
+  const { createStream: createPayableStream } = useCreateStream({
+    streamType: StreamType.Payable,
+  });
+  const { state } = useStore();
 
-  useEffect(()=>{
-    detectDataverseExtension().then((res)=>{
-      dispatch(noExtensionSlice.actions.setIsDataverseExtension(res));
-    })
-  }, [])
+  const { loadFeeds } = useFeeds();
+  const [ceramicStreamsMap, setCeramicStreamsMap] = useState<StreamRecordMap>({});
 
   useEffect(() => {
-    if(postModel) {
-      if(isDataverseExtension === true) {
-        console.log("load stream with core-connector...")
-        loadStreams({ modelId: postModel.stream_id });
-      } else if(isDataverseExtension === false) {
-        console.log("load stream with ceramic...")
-        loadStreamByCeramic();
+    detectDataverseExtension().then((res) => {
+      dispatch(noExtensionSlice.actions.setIsDataverseExtension(res));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (postModel && state.dataverseConnector) {
+      console.log("state.dataverseConnector:", state.dataverseConnector);
+      if (isDataverseExtension === true) {
+        console.log("load stream with dataverse-connector...");
+        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
+      } else if (isDataverseExtension === false) {
+        console.log("load stream with ceramic...");
+        loadFeedsByCeramic();
       }
     }
-  }, [postModel, isDataverseExtension]);
+  }, [state.dataverseConnector, postModel, isDataverseExtension]);
 
   useEffect(() => {
-    console.log("streamsRecord loaded:", streamsRecord)
     const streamList: PostStream[] = [];
-    Object.entries(streamsRecord).forEach(([streamId, streamRecord]) => {
-      if(streamRecord.streamContent.file && streamRecord.streamContent.content) {
+    let streamsMap: StreamRecordMap = {};
+    if(!isDataverseExtension) {
+      streamsMap = ceramicStreamsMap;
+    } else {
+      streamsMap = state.streamsMap;
+    }
+    Object.entries(streamsMap).forEach(([streamId, streamRecord]) => {
+      if (
+        streamRecord.streamContent.file &&
+        streamRecord.streamContent.content
+      ) {
         streamList.push({
           streamId,
           streamRecord,
@@ -98,39 +126,39 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
           Date.parse(b.streamRecord.streamContent.content.createdAt) -
           Date.parse(a.streamRecord.streamContent.content.createdAt)
       );
-    console.log("sorted, sortedList:", sortedList)
+    console.log("sorted, sortedList:", sortedList);
     dispatch(postSlice.actions.setPostStreamList(sortedList));
-  }, [streamsRecord]);
+  }, [state.streamsMap, ceramicStreamsMap]);
 
-  const loadStreamByCeramic = async () => {
+  const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
-      postModel.stream_id
+      postModel.streams[postModel.streams.length - 1].modelId
     );
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
-      indexFilesModel.stream_id
+      indexFilesModel.streams[postModel.streams.length - 1].modelId
     );
-    const ceramicStreamsRecord: StreamsRecord = {};
+    const ceramicStreamsRecordMap: StreamRecordMap = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
-      ceramicStreamsRecord[streamId] = {
-        app: output.createDapp.name,
-        modelId: postModel.stream_id,
+      ceramicStreamsRecordMap[streamId] = {
+        appId: modelParser.appId,
+        modelId: postModel.streams[postModel.streams.length - 1].modelId,
         pkh: content.controller,
         streamContent: {
           content,
-        }
+        },
       };
-    })
+    });
 
-    console.log("ceramicStreamsRecord:", ceramicStreamsRecord)
+    console.log("ceramicStreamsRecordMap:", ceramicStreamsRecordMap);
 
     Object.values(indexedFilesStreams).forEach((file) => {
-      if(ceramicStreamsRecord[file.contentId]) {
-        ceramicStreamsRecord[file.contentId].streamContent.file = file;
+      if (ceramicStreamsRecordMap[file.contentId]) {
+        ceramicStreamsRecordMap[file.contentId].streamContent.file = file;
       }
-    })
+    });
 
-    setStreamsRecord(ceramicStreamsRecord);
-  }
+    setCeramicStreamsMap(ceramicStreamsRecordMap);
+  };
 
   return (
     <>
@@ -138,7 +166,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
         <PublishPost
           createPublicStream={createPublicStream}
           createPayableStream={createPayableStream}
-          loadStream={loadStreams}
+          loadStream={loadFeeds}
         />
         {postListLeft.map((postStream, index) => (
           <DisplayPostItem
