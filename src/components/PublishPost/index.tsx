@@ -46,19 +46,21 @@ import {
 } from "@dataverse/hooks";
 
 interface PublishPostProps {
+  modelId: string;
   isPending: boolean;
   createPublicStream: Function;
   createPayableStream: Function;
 }
 
 const PublishPost: React.FC<PublishPostProps> = ({
+  modelId,
   isPending,
   createPublicStream,
   createPayableStream
 }) => {
   const dispatch = useAppDispatch();
   const { modelParser } = useContext(Context);
-  const { postModel, appVersion } = useContext(Context);
+  const { appVersion } = useContext(Context);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
   const settings = useSelector((state) => state.privacySettings.settings);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
@@ -182,7 +184,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       switch (settings.postType) {
         case PostType.Public:
           res = await createPublicStream({
-            modelId: postModel.streams[postModel.streams.length - 1].modelId,
+            modelId,
             stream: {
               appVersion,
               profileId,
@@ -202,7 +204,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
           break;
         case PostType.Payable:
           res = await createPayableStream({
-            modelId: postModel.streams[postModel.streams.length - 1].modelId,
+            modelId,
             profileId,
             stream: {
               appVersion,

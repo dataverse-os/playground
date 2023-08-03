@@ -1,67 +1,14 @@
-import { contextStore } from "@/context";
-import { SYSTEM_CALL } from "@dataverse/dataverse-connector";
+import { DataverseConnector } from "@dataverse/dataverse-connector";
 
-const { dataverseConnector } = contextStore;
+const dataverseConnector = new DataverseConnector();
 
 export const createLensProfile = async (handle: string) => {
   const res = await dataverseConnector.createProfile(handle);
   return res;
 };
 
-export const getLensProfiles = async (address: string) => {
-  const res = await dataverseConnector.getProfiles(address);
-  return res;
-};
-
-export const isCollected = async ({
-  datatokenId,
-  address,
-}: {
-  datatokenId: string;
-  address: string;
-}) => {
-  const res = await dataverseConnector.isCollected({
-    datatokenId,
-    address
-  })
-  return res;
-};
-
-export const getDatatokenInfo = async (variables: { address: string }) => {
-  // const query = gql`
-  //   query DataToken($address: String!) {
-  //     dataToken(address: $address) {
-  //       address
-  //       collect_info {
-  //         collect_nft_address
-  //         sold_list {
-  //           owner
-  //           token_id
-  //         }
-  //         price {
-  //           amount
-  //           currency
-  //           currency_addr
-  //         }
-  //         sold_num
-  //         total
-  //         who_can_free_collect
-  //       }
-
-  //       content_uri
-  //       owner
-  //       source
-  //     }
-  //   }
-  // `;
-  // const res: any = await gqlClient.request(query, { ...variables });
-  // console.log("res:", res);
-  // const datatokenInfo = await dataverseConnector.runOS({
-  //   method: SYSTEM_CALL.getDatatokenBaseInfo,
-  //   params: variables.address,
-  // });
-  const datatokenInfo = await dataverseConnector.getDatatokenBaseInfo(variables.address);
-  // console.log("result:", result)
+export const getDatatokenInfo = async (address: string) => {
+  const datatokenInfo = await dataverseConnector.getDatatokenBaseInfo(address);
   return datatokenInfo;
 };
 
@@ -73,14 +20,4 @@ export const getCurrencyNameByCurrencyAddress = (currencyAddress: string) => {
     "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889": "WMATIC",
   };
   return map[currencyAddress];
-};
-
-export const unlock = async (params: { streamId: string }) => {
-  const res = await dataverseConnector.runOS({
-    method: SYSTEM_CALL.unlock,
-    params: {
-      ...params,
-    },
-  });
-  return res;
 };

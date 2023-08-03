@@ -1,7 +1,5 @@
 import { getDatatokenInfo as _getDatatokenInfo } from "@/sdk";
-// import { PostStream } from "@/types";
 import { web3Storage } from "@/utils";
-import { StreamRecord } from "@dataverse/dataverse-connector";
 import {
   createSlice,
   createAsyncThunk,
@@ -39,9 +37,9 @@ export const uploadImg = createAsyncThunk(
 export const getDatatokenInfo = createAsyncThunk(
   "post/getDatatokenInfo",
   async ({ address }: { address: string }) => {
-    const res = await _getDatatokenInfo({
+    const res = await _getDatatokenInfo(
       address,
-    });
+    );
     return res;
   }
 );

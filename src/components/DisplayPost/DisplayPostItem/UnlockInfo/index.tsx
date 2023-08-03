@@ -1,15 +1,10 @@
 import { useAppDispatch, useSelector } from "@/state/hook";
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { DatatokenInfo, StreamContent } from "@/types";
-import {
-  FileType,
-  MirrorFile,
-  StreamRecord,
-  // StreamContent,
-} from "@dataverse/dataverse-connector";
+import { DatatokenInfo } from "@/types";
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
 import { getCurrencyNameByCurrencyAddress } from "@/sdk";
@@ -29,7 +24,6 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
   datatokenInfo,
   unlock,
 }) => {
-
   return (
     <Wrapper>
       {isPending ? (

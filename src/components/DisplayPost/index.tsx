@@ -16,8 +16,6 @@ import {
   useStore,
 } from "@dataverse/hooks";
 
-export interface PublishPostProps {}
-
 const Wrapper = styled.div`
   display: flex;
   flex: 1;
@@ -25,9 +23,14 @@ const Wrapper = styled.div`
   /* width: 48%; */
 `;
 
-const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const { postModel, indexFilesModel, appVersion, modelParser } =
-    useContext(Context);
+const DisplayPost = () => {
+  const { appVersion, modelParser } = useContext(Context);
+  const postModel = useMemo(() => {
+    return modelParser.getModelByName("post");
+  }, []);
+  const indexFilesModel = useMemo(() => {
+    return modelParser.getModelByName("indexFiles");
+  }, []);
   const dispatch = useAppDispatch();
   // const [hasExtension, setHasExtension] = useState<boolean>();
   const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
@@ -117,6 +120,7 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
     <>
       <Wrapper>
         <PublishPost
+          modelId={postModel.streams[postModel.streams.length - 1].modelId}
           isPending={isPublicPending || isPayablePending}
           createPublicStream={createPublicStream}
           createPayableStream={createPayableStream}
