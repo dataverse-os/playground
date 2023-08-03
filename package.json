@@ -6,7 +6,7 @@
     "build:scripts": "npx tsc -p tsconfig.node.json",
     "create-dataverse-app": "pnpm build:scripts && env-cmd -f .env node --experimental-specifier-resolution=node ./scripts/build/scripts/createDapp.js",
     "dev": "vite",
-    "build": "tsc && vite build && vite preview",
+    "build": "vite build && vite preview",
     "preview": "vite preview",
     "github-build": "tsc && vite build",
     "deploy": "node scripts/s3-deploy/s3-deploy.js"
