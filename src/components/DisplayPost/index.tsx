@@ -4,7 +4,7 @@ import { postSlice } from "@/state/post/slice";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
 import styled from "styled-components";
-import { PostStream, StreamRecordMap } from "@/types";
+import { StreamRecordMap } from "@/types";
 import { Context } from "@/context";
 import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
@@ -30,48 +30,19 @@ const Wrapper = styled.div`
 const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   const { postModel, indexFilesModel, appVersion, modelParser } =
     useContext(Context);
+  const dispatch = useAppDispatch();
   // const [hasExtension, setHasExtension] = useState<boolean>();
-  const postStreamList = useSelector((state) => state.post.postStreamList);
+  const sortedStreamsMap = useSelector((state) => state.post.sortedStreamsMap);
+  console.log({ sortedStreamsMap });
   const isDataverseExtension = useSelector(
     (state) => state.noExtension.isDataverseExtension
   );
-  const postListLeft = useMemo(() => {
-    return postStreamList
-      .map((post, index) => {
-        if (index % 2 === 1) return post;
-      })
-      .filter((element) => {
-        return element !== undefined;
-      });
-  }, [postStreamList]);
-  const postListRight = useMemo(() => {
-    return postStreamList
-      .map((post, index) => {
-        if (index % 2 === 0) return post;
-      })
-      .filter((element) => {
-        return element !== undefined;
-      });
-  }, [postStreamList]);
-  const dispatch = useAppDispatch();
-
-  // const {
-  //   streamsRecord,
-  //   setStreamsRecord,
-  //   loadStreams,
-  //   createPublicStream,
-  //   createPayableStream
-  // } = useStream();
-  const { createStream: createPublicStream } = useCreateStream({
-    streamType: StreamType.Public,
-  });
-  const { createStream: createPayableStream } = useCreateStream({
-    streamType: StreamType.Payable,
-  });
   const { state } = useStore();
 
   const { loadFeeds } = useFeeds();
-  const [ceramicStreamsMap, setCeramicStreamsMap] = useState<StreamRecordMap>({});
+  const [ceramicStreamsMap, setCeramicStreamsMap] = useState<StreamRecordMap>(
+    {}
+  );
 
   useEffect(() => {
     detectDataverseExtension().then((res) => {
@@ -93,41 +64,23 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   }, [state.dataverseConnector, postModel, isDataverseExtension]);
 
   useEffect(() => {
-    const streamList: PostStream[] = [];
-    let streamsMap: StreamRecordMap = {};
-    if(!isDataverseExtension) {
-      streamsMap = ceramicStreamsMap;
-    } else {
-      streamsMap = state.streamsMap;
-    }
-    Object.entries(streamsMap).forEach(([streamId, streamRecord]) => {
-      if (
-        streamRecord.streamContent.file &&
-        streamRecord.streamContent.content
-      ) {
-        streamList.push({
-          streamId,
-          streamRecord,
-        });
-      }
-    });
-    const sortedList = streamList
-      .filter(
-        (el) =>
-          el.streamRecord.streamContent.content?.appVersion === appVersion &&
-          (el.streamRecord.streamContent.content.text ||
-            (el.streamRecord.streamContent.content.images &&
-              el.streamRecord.streamContent.content.images?.length > 0) ||
-            (el.streamRecord.streamContent.content.videos &&
-              el.streamRecord.streamContent.content.videos?.length > 0))
-      )
+    console.log("streamsMap changed...");
+    const streamsMap: StreamRecordMap = isDataverseExtension
+      ? state.streamsMap
+      : ceramicStreamsMap;
+    const sortedStreamsMap = Object.entries(streamsMap)
+      .filter(([, el]) => el.streamContent.content.appVersion === appVersion)
       .sort(
-        (a, b) =>
-          Date.parse(b.streamRecord.streamContent.content.createdAt) -
-          Date.parse(a.streamRecord.streamContent.content.createdAt)
-      );
-    console.log("sorted, sortedList:", sortedList);
-    dispatch(postSlice.actions.setPostStreamList(sortedList));
+        ([, a], [, b]) =>
+          Date.parse(b.streamContent.content.createdAt) -
+          Date.parse(a.streamContent.content.createdAt)
+      )
+      .reduce(
+        (acc, [key, value]) => ({ ...acc, [key]: value }),
+        {}
+      ) as StreamRecordMap;
+    console.log("sortedStreamsMap:", sortedStreamsMap);
+    dispatch(postSlice.actions.setSortedStreamsMap(sortedStreamsMap));
   }, [state.streamsMap, ceramicStreamsMap]);
 
   const loadFeedsByCeramic = async () => {
@@ -149,8 +102,6 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
       };
     });
 
-    console.log("ceramicStreamsRecordMap:", ceramicStreamsRecordMap);
-
     Object.values(indexedFilesStreams).forEach((file) => {
       if (ceramicStreamsRecordMap[file.contentId]) {
         ceramicStreamsRecordMap[file.contentId].streamContent.file = file;
@@ -163,25 +114,31 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
   return (
     <>
       <Wrapper>
-        <PublishPost
-          createPublicStream={createPublicStream}
-          createPayableStream={createPayableStream}
-          loadStream={loadFeeds}
-        />
-        {postListLeft.map((postStream, index) => (
-          <DisplayPostItem
-            postStream={postStream!}
-            key={postStream!.streamId}
-          />
-        ))}
+        <PublishPost />
+        {Object.keys(sortedStreamsMap || {}).map((streamId, index) =>
+          index % 2 == 1 ? (
+            <DisplayPostItem
+              streamRecord={sortedStreamsMap[streamId]}
+              streamId={streamId}
+              key={streamId}
+            />
+          ) : (
+            <></>
+          )
+        )}
       </Wrapper>
       <Wrapper>
-        {postListRight.map((postStream, index) => (
-          <DisplayPostItem
-            postStream={postStream!}
-            key={postStream!.streamId}
-          />
-        ))}
+        {Object.keys(sortedStreamsMap || {}).map((streamId, index) =>
+          index % 2 == 0 ? (
+            <DisplayPostItem
+              streamRecord={sortedStreamsMap[streamId]}
+              streamId={streamId}
+              key={streamId}
+            />
+          ) : (
+            <></>
+          )
+        )}
       </Wrapper>
     </>
   );

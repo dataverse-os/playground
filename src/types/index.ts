@@ -47,38 +47,60 @@ export interface NativePost {
   encrypted?: string;
 }
 
-export interface PostStream {
-  streamId: string;
-  streamRecord: StreamRecord;
-  datatokenInfo?: Partial<{
-    address: string;
-    collect_info: {
-      collect_nft_address: string;
-      sold_list: {
-        owner: string;
-        token_id: string;
-      }[];
-      price: {
-        amount: string;
-        currency: string;
-        currency_addr: string;
-      };
-      sold_num: number;
-      total: string;
-      who_can_free_collect: string[];
+export type DatatokenInfo = Partial<{
+  address: string;
+  collect_info: {
+    collect_nft_address: string;
+    sold_list: {
+      owner: string;
+      token_id: string;
+    }[];
+    price: {
+      amount: string;
+      currency: string;
+      currency_addr: string;
     };
-    content_uri: string;
-    owner: string;
-    source: string;
-  }>;
+    sold_num: number;
+    total: string;
+    who_can_free_collect: string[];
+  };
+  content_uri: string;
+  owner: string;
+  source: string;
+}>;
 
-  isMonetizing?: boolean;
-  isMonetizedSuccessfully?: boolean;
-  isUnlocking?: boolean;
-  hasUnlockedSuccessfully?: boolean;
-  isGettingDatatokenInfo?: boolean;
-  hasGotDatatokenInfo?: boolean;
-}
+// export interface PostStream {
+//   streamId: string;
+//   streamRecord: StreamRecord;
+//   datatokenInfo?: Partial<{
+//     address: string;
+//     collect_info: {
+//       collect_nft_address: string;
+//       sold_list: {
+//         owner: string;
+//         token_id: string;
+//       }[];
+//       price: {
+//         amount: string;
+//         currency: string;
+//         currency_addr: string;
+//       };
+//       sold_num: number;
+//       total: string;
+//       who_can_free_collect: string[];
+//     };
+//     content_uri: string;
+//     owner: string;
+//     source: string;
+//   }>;
+
+//   isMonetizing?: boolean;
+//   isMonetizedSuccessfully?: boolean;
+//   isUnlocking?: boolean;
+//   hasUnlockedSuccessfully?: boolean;
+//   isGettingDatatokenInfo?: boolean;
+//   hasGotDatatokenInfo?: boolean;
+// }
 
 export interface CustomMirrorFile extends MirrorFile {
   contentType: IndexFileContentType | string;

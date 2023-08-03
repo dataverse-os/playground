@@ -12,7 +12,7 @@ import {
 } from "@/state/post/slice";
 import { privacySettingsSlice } from "@/state/privacySettings/slice";
 import { addressAbbreviation, getAddressFromDid, uuid } from "@/utils";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
@@ -28,30 +28,35 @@ import {
 } from "./styled";
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
-import CreateLensProfile from "../CreateLensProfile";
-import { getLensProfiles } from "@/sdk/monetize";
+import { CreateLensProfile } from "../CreateLensProfile";
+// import { getLensProfiles } from "@/sdk/monetize";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { PostStream, PostType } from "@/types";
+import { PostType } from "@/types";
 import { identitySlice } from "@/state/identity/slice";
 import { Context } from "@/context";
 import { noExtensionSlice } from "@/state/noExtension/slice";
-import { CreateStreamArgs, StreamType, useApp } from "@dataverse/hooks";
+import {
+  CreateStreamArgs,
+  StreamType,
+  useApp,
+  useCreateStream,
+  useFeeds,
+  useProfiles,
+  useStore,
+} from "@dataverse/hooks";
 
 export interface PublishPostProps {
-  createPublicStream: (params: CreateStreamArgs[StreamType.Public]) => any;
-  createPayableStream: (params: CreateStreamArgs[StreamType.Payable]) => any;
-  loadStream: (modelId: string) => any;
+  // createPublicStream: (params: CreateStreamArgs[StreamType.Public]) => any;
+  // createPayableStream: (params: CreateStreamArgs[StreamType.Payable]) => any;
+  // loadStream: (modelId: string) => any;
 }
 
-const PublishPost: React.FC<PublishPostProps> = ({
-  createPublicStream,
-  createPayableStream,
-  loadStream,
-}) => {
+const PublishPost: React.FC<PublishPostProps> = () => {
   const dispatch = useAppDispatch();
-  const {modelParser} = useContext(Context);
+  // const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const { modelParser } = useContext(Context);
   const { postModel, appVersion } = useContext(Context);
-  const pkh = useSelector((state) => state.identity.pkh);
+  // const pkh = useSelector((state) => state.identity.pkh);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
   const settings = useSelector((state) => state.privacySettings.settings);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
@@ -62,14 +67,28 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const isDataverseExtension = useSelector(
     (state) => state.noExtension.isDataverseExtension
   );
-  const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
-  const profileId = useSelector((state) => state.lensProfile.profileId);
+  // const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
+  // const profileId = useSelector((state) => state.lensProfile.profileId);
+  const { loadFeeds } = useFeeds();
+  const { isPending: isPublicPending, createStream: createPublicStream } =
+    useCreateStream({
+      streamType: StreamType.Public,
+    });
+  const { isPending: isPayablePending, createStream: createPayableStream } =
+    useCreateStream({
+      streamType: StreamType.Payable,
+    });
+
+  const isPublishingPost = useMemo(() => {
+    return isPublicPending || isPayablePending;
+  }, [isPublicPending, isPayablePending]);
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
-
-  const {connectApp} = useApp();
+  const { state } = useStore();
+  const { connectApp } = useApp();
+  const { profileIds, getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -87,24 +106,25 @@ const PublishPost: React.FC<PublishPostProps> = ({
 
   const handleProfileAndPost = async () => {
     if (isPublishingPost) return;
+    if (!state.address) return;
 
     const postImages = await handlePostImages();
     if (!postImages) return;
 
-    dispatch(postSlice.actions.setIsPublishingPost(true));
+    // dispatch(postSlice.actions.setIsPublishingPost(true));
 
     let lensProfiles: any[] = [];
     if (needEncrypt) {
-      lensProfiles = await getLensProfiles(getAddressFromDid(pkh as string));
+      lensProfiles = await getProfiles(state.address);
 
       if (lensProfiles.length === 0) {
-        dispatch(postSlice.actions.setIsPublishingPost(false));
+        // dispatch(postSlice.actions.setIsPublishingPost(false));
         dispatch(lensProfileSlice.actions.setModalVisible(true));
         return;
       }
       await post({
         postImages,
-        profileId: lensProfiles.slice(-1)[0].id,
+        profileId: lensProfiles[0],
       });
     } else {
       await post({
@@ -156,19 +176,19 @@ const PublishPost: React.FC<PublishPostProps> = ({
   }) => {
     if (!isDataverseExtension) {
       dispatch(noExtensionSlice.actions.setModalVisible(true));
-      dispatch(postSlice.actions.setIsPublishingPost(false));
+      // dispatch(postSlice.actions.setIsPublishingPost(false));
       return;
     }
-    if (!pkh) {
+    if (!state.pkh) {
       try {
-        dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        const {pkh} = await connectApp({appId: modelParser.appId})
-        dispatch(identitySlice.actions.setPkh(pkh));
+        // dispatch(identitySlice.actions.setIsConnectingIdentity(true));
+        await connectApp({ appId: modelParser.appId });
+        // dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
         console.error(error);
         return;
       } finally {
-        dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+        // dispatch(identitySlice.actions.setIsConnectingIdentity(false));
       }
     }
     try {
@@ -247,7 +267,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       });
       setContent("");
       setImages([]);
-      await loadStream(postModel.streams[postModel.streams.length - 1].modelId);
+      await loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
     } finally {
@@ -255,20 +275,20 @@ const PublishPost: React.FC<PublishPostProps> = ({
     }
   };
 
-  useEffect(() => {
-    postAfterProfileCreated();
-  }, [profileId, postImages]);
+  // useEffect(() => {
+  //   postAfterProfileCreated();
+  // }, [profileId, postImages]);
 
-  useEffect(() => {
-    dispatch(postSlice.actions.setIsPublishingPost(false));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(postSlice.actions.setIsPublishingPost(false));
+  // }, []);
 
-  const postAfterProfileCreated = async () => {
-    if (!profileId || !postImages) return;
-    dispatch(postSlice.actions.setIsPublishingPost(true));
-    post({ profileId, postImages });
-    dispatch(lensProfileSlice.actions.setProfileId(""));
-  };
+  // const postAfterProfileCreated = async () => {
+  //   if (!profileId || !postImages) return;
+  //   dispatch(postSlice.actions.setIsPublishingPost(true));
+  //   post({ profileId, postImages });
+  //   dispatch(lensProfileSlice.actions.setProfileId(""));
+  // };
 
   const openPrivacySettings = () => {
     dispatch(privacySettingsSlice.actions.setModalVisible(true));
@@ -296,11 +316,11 @@ const PublishPost: React.FC<PublishPostProps> = ({
           }) => (
             <>
               <AccountStatus
-                name={addressAbbreviation(getAddressFromDid(pkh)) ?? ""}
+                name={addressAbbreviation(state.address) ?? ""}
                 cssStyles={css`
                   margin-bottom: 1rem;
                 `}
-                did={pkh}
+                did={state.pkh || ""}
               />
               <Textarea
                 value={encryptedContent || content}
@@ -362,8 +382,8 @@ const PublishPost: React.FC<PublishPostProps> = ({
           )}
         </ImageUploading>
       </Content>
-      <PrivacySettings></PrivacySettings>
-      <CreateLensProfile></CreateLensProfile>
+      <PrivacySettings />
+      <CreateLensProfile />
     </Wrapper>
   );
 };

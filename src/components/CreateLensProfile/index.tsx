@@ -12,7 +12,7 @@ import { noExtensionSlice } from "@/state/noExtension/slice";
 import { lensProfileSlice } from "@/state/lensProfile/slice";
 import { createLensProfile } from "@/sdk";
 
-const CreateLensProfile = function () {
+export const CreateLensProfile = () => {
   const [handle, setHandle] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +21,7 @@ const CreateLensProfile = function () {
 
   const closeModel = () => {
     dispatch(lensProfileSlice.actions.setModalVisible(false));
+    // setIsModalVisible(false);
     setHandle("");
   };
 
@@ -40,7 +41,7 @@ const CreateLensProfile = function () {
     try {
       const profileId = await createLensProfile(handle);
       console.log(profileId);
-      dispatch(lensProfileSlice.actions.setProfileId(profileId));
+      // dispatch(lensProfileSlice.actions.setProfileId(profileId));
       Message.success("Create Lens profile successfully!");
       closeModel();
     } catch (error: any) {
@@ -56,7 +57,6 @@ const CreateLensProfile = function () {
       width={512}
       cssStyle={modelWrapper}
       onCancel={closeModel}
-      
     >
       <div className="header">
         <img src={createSvg} className="icon" />
@@ -88,5 +88,3 @@ const CreateLensProfile = function () {
     </Modal>
   );
 };
-
-export default CreateLensProfile;

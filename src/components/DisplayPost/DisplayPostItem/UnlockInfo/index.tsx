@@ -3,10 +3,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { PostStream, StreamContent } from "@/types";
+import { DatatokenInfo, StreamContent } from "@/types";
 import {
   FileType,
   MirrorFile,
+  StreamRecord,
   // StreamContent,
 } from "@dataverse/dataverse-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
@@ -14,172 +15,31 @@ import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
 import { getCurrencyNameByCurrencyAddress } from "@/sdk";
 import { Message } from "@arco-design/web-react";
-import { identitySlice } from "@/state/identity/slice";
 import { noExtensionSlice } from "@/state/noExtension/slice";
-import { useApp, useUnlockStream } from "@dataverse/hooks";
+import { useApp, useStore, useUnlockStream } from "@dataverse/hooks";
 import { Context } from "@/context";
 
 interface DisplayPostItemProps {
-  postStream: PostStream;
+  streamRecord: StreamRecord;
+  isPending: boolean;
+  isSucceed: boolean;
+  datatokenInfo?: DatatokenInfo;
+  unlock: () => void;
 }
 
-const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
-  const {modelParser} = useContext(Context);
-  const dispatch = useAppDispatch();
-  const pkh = useSelector((state) => state.identity.pkh);
-  const postStreamList = useSelector((state) => state.post.postStreamList);
-  const isDataverseExtension = useSelector(
-    (state) => state.noExtension.isDataverseExtension
-  );
-  const [datatokenInfo, setDatatokenInfo] = useState({
-    sold_num: 0,
-    total: "",
-    price: {
-      amount: "",
-      currency: "",
-      currency_addr: "",
-    },
-  });
-
-  const {connectApp} = useApp();
-  const {unlockStream} = useUnlockStream();
-
-  useEffect(() => {
-    const postStreamCopy = JSON.parse(JSON.stringify(postStream));
-    if (!postStreamCopy.datatokenInfo) {
-      return;
-    }
-    const price = postStreamCopy.datatokenInfo?.collect_info?.price ?? {
-      amount: "",
-      currency: "",
-      currency_addr: "",
-    };
-    if (!price.currency && price.currency_addr) {
-      price.currency = getCurrencyNameByCurrencyAddress(price.currency_addr);
-    }
-    setDatatokenInfo({
-      sold_num: postStreamCopy.datatokenInfo?.collect_info?.sold_num ?? 0,
-      total: postStreamCopy.datatokenInfo?.collect_info?.total ?? "",
-      price,
-    });
-  }, [postStream.datatokenInfo]);
-
-  const unlock = async () => {
-    if (!isDataverseExtension) {
-      dispatch(noExtensionSlice.actions.setModalVisible(true));
-      return;
-    }
-    if (!pkh) {
-      try {
-        dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        const {pkh} = await connectApp({appId: modelParser.appId});
-        dispatch(identitySlice.actions.setPkh(pkh));
-      } catch (error) {
-        console.error(error);
-        return;
-      } finally {
-        dispatch(identitySlice.actions.setIsConnectingIdentity(false));
-      }
-    }
-
-    if (postStream.isUnlocking || postStream.hasUnlockedSuccessfully) {
-      console.log("cannot unlock");
-      return;
-    }
-    // let streamList: PostStream[] = postStreamList;
-    try {
-      _unlockPending();
-      const { streamContent } = await unlockStream(
-        postStream.streamId
-      );
-      console.log("unlocked streamContent:", streamContent)
-      _unlockSucceed(streamContent, postStream.streamId);
-    } catch (error: any) {
-      Message.error(error?.message ?? error);
-      _unlockFailed();
-    }
-  };
-
-  useEffect(() => {
-    if (postStream.isGettingDatatokenInfo || postStream.hasGotDatatokenInfo) {
-      return;
-    }
-
-    if (
-      postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken
-    ) {
-      dispatch(
-        getDatatokenInfo({
-          address: postStream.streamRecord.streamContent.file.datatokenId!,
-        })
-      );
-    }
-  }, [postStreamList.length]);
-
-  useEffect(() => {
-    if (postStream.hasUnlockedSuccessfully) {
-      setDatatokenInfo({
-        ...datatokenInfo,
-        sold_num:
-          postStream.streamRecord.pkh === pkh
-            ? datatokenInfo.sold_num
-            : ++datatokenInfo.sold_num,
-      });
-    }
-  }, [postStream.hasUnlockedSuccessfully]);
-
-  const _unlockPending = async () => {
-    const streamList = postStreamList.map((post) => {
-      if (post.streamId === postStream.streamId) {
-        post = {
-          ...postStream,
-          isUnlocking: true,
-        };
-      }
-      return post;
-    });
-    dispatch(postSlice.actions.setPostStreamList(streamList));
-  };
-  const _unlockSucceed = async (
-    decryptedStreamContent: StreamContent,
-    streamId: string
-  ) => {
-    const streamList = postStreamList.map((post) => {
-      if (post.streamId === streamId) {
-        post = {
-          ...post,
-          streamRecord: {
-            ...post.streamRecord,
-            streamContent: decryptedStreamContent,
-          },
-          isUnlocking: false,
-          hasUnlockedSuccessfully: true,
-        };
-      }
-      return post;
-    });
-    dispatch(postSlice.actions.setPostStreamList(streamList));
-  };
-  const _unlockFailed = async () => {
-    const streamList = postStreamList.map((post) => {
-      if (post.streamId === postStream.streamId) {
-        post = {
-          ...postStream,
-          isUnlocking: false,
-          hasUnlockedSuccessfully: false,
-        };
-      }
-      return post;
-    });
-
-    dispatch(postSlice.actions.setPostStreamList(streamList));
-  };
+const UnlockInfo: React.FC<DisplayPostItemProps> = ({
+  streamRecord,
+  isPending,
+  isSucceed,
+  datatokenInfo,
+  unlock,
+}) => {
 
   return (
     <Wrapper>
-      {postStream.isUnlocking ? (
+      {isPending ? (
         <Loading
-          visible={postStream.isUnlocking}
+          visible={isPending}
           color="black"
           cssStyles={css`
             margin-right: 5px;
@@ -190,22 +50,32 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
         />
       ) : (
         <img
-          src={postStream.hasUnlockedSuccessfully ? unlockSVG : lockSVG}
+          src={isSucceed ? unlockSVG : lockSVG}
           className="lock"
           onClick={unlock}
         ></img>
       )}
-      {postStream.streamRecord.streamContent.file.fileType ===
-        FileType.Datatoken && (
+      {streamRecord.streamContent.file.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
-          <span className="amount">{datatokenInfo.price.amount}</span>
-          <span className="currency">{datatokenInfo.price.currency}</span>
+          <span className="amount">
+            {datatokenInfo?.collect_info?.price.amount || 0}
+          </span>
+          <span className="currency">
+            {datatokenInfo?.collect_info?.price.currency
+              ? getCurrencyNameByCurrencyAddress(
+                  datatokenInfo?.collect_info?.price.currency
+                )
+              : ""}
+          </span>
           <br />
-          <span className="boughtNum">{datatokenInfo.sold_num}</span> /
+          <span className="boughtNum">
+            {datatokenInfo?.collect_info?.sold_num || 0}
+          </span>{" "}
+          /
           <span className="collectLimit">
-            {datatokenInfo.total === String(2 ** 52)
+            {datatokenInfo?.collect_info?.total === String(2 ** 52)
               ? " Unlimited"
-              : " " + datatokenInfo.total}
+              : " " + datatokenInfo?.collect_info?.total}
           </span>
           <span className="Sold">Sold</span>
         </DatatokenInfoWrapper>

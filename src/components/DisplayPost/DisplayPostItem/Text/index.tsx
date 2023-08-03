@@ -1,32 +1,33 @@
-import { FileType } from "@dataverse/dataverse-connector";
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import { TextWrapper } from "./styled";
 import React from "react";
-import { CustomMirrorFile, PostStream } from "@/types";
+import { CustomMirrorFile } from "@/types";
 
 export interface TextProps {
-  postStream: PostStream;
+  streamRecord: StreamRecord;
+  isUnlockSucceed: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Text: React.FC<TextProps> = ({ postStream, onClick }) => {
-  const showContent = (postStream: PostStream) => {
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Public) {
-      return postStream.streamRecord.streamContent.content.text;
+const Text: React.FC<TextProps> = ({ streamRecord, isUnlockSucceed, onClick }) => {
+  const getContent = () => {
+    if (streamRecord.streamContent.file.fileType === FileType.Public) {
+      return streamRecord.streamContent.content.text;
     }
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Private) {
-      if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamRecord.streamContent.content?.text;
+    if (streamRecord.streamContent.file.fileType === FileType.Private) {
+      if (isUnlockSucceed) {
+        return streamRecord.streamContent.content?.text;
       }
       return "";
     }
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken) {
-      if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamRecord.streamContent.content?.text;
+    if (streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+      if (isUnlockSucceed) {
+        return streamRecord.streamContent.content?.text;
       }
       return "" as string;
     }
   };
-  return <TextWrapper onClick={onClick}>{showContent(postStream)}</TextWrapper>;
+  return <TextWrapper onClick={onClick}>{getContent()}</TextWrapper>;
 };
 
 export default Text;

@@ -1,6 +1,7 @@
 import { getDatatokenInfo as _getDatatokenInfo } from "@/sdk";
-import { PostStream } from "@/types";
+// import { PostStream } from "@/types";
 import { web3Storage } from "@/utils";
+import { StreamRecord } from "@dataverse/dataverse-connector";
 import {
   createSlice,
   createAsyncThunk,
@@ -13,7 +14,7 @@ interface Props {
   encryptedContent?: string;
   isEncryptedSuccessfully?: boolean;
   isPublishingPost: boolean;
-  postStreamList: PostStream[];
+  sortedStreamsMap: Record<string, StreamRecord>;
 }
 
 const initialState: Props = {
@@ -21,7 +22,7 @@ const initialState: Props = {
   encryptedContent: "",
   isEncryptedSuccessfully: false,
   isPublishingPost: false,
-  postStreamList: [],
+  sortedStreamsMap: {},
 };
 
 export const uploadImg = createAsyncThunk(
@@ -52,8 +53,8 @@ export const postSlice = createSlice({
     setIsPublishingPost: (state, action: PayloadAction<boolean>) => {
       state.isPublishingPost = action.payload;
     },
-    setPostStreamList: (state, action: PayloadAction<PostStream[]>) => {
-      state.postStreamList = action.payload;
+    setSortedStreamsMap: (state, action: PayloadAction<Record<string, StreamRecord>>) => {
+      state.sortedStreamsMap = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -67,55 +68,55 @@ export const postSlice = createSlice({
       state.isPublishingPost = false;
     });
     //getDatatokenInfo
-    builder.addCase(getDatatokenInfo.pending, (state, action) => {
-      const postStreamList = JSON.parse(
-        JSON.stringify(current(state.postStreamList))
-      ) as PostStream[];
-      postStreamList.find((postStream) => {
-        if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
-          postStream = {
-            ...postStream,
-            isGettingDatatokenInfo: true,
-          };
-        }
-      });
-      state.postStreamList = postStreamList;
-    });
-    builder.addCase(getDatatokenInfo.fulfilled, (state, action) => {
-      const postStreamList = JSON.parse(
-        JSON.stringify(current(state.postStreamList))
-      ) as PostStream[];
-      postStreamList.find((postStream) => {
-        if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
-          postStream.datatokenInfo = {
-            ...postStream.datatokenInfo,
-            ...action.payload,
-          };
-          postStream = {
-            ...postStream,
-            isGettingDatatokenInfo: false,
-            hasGotDatatokenInfo: true,
-          };
-        }
-      });
-      state.postStreamList = postStreamList;
-    });
+    // builder.addCase(getDatatokenInfo.pending, (state, action) => {
+    //   const postStreamList = JSON.parse(
+    //     JSON.stringify(current(state.postStreamList))
+    //   ) as PostStream[];
+    //   postStreamList.find((postStream) => {
+    //     if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
+    //       postStream = {
+    //         ...postStream,
+    //         isGettingDatatokenInfo: true,
+    //       };
+    //     }
+    //   });
+    //   state.postStreamList = postStreamList;
+    // });
+    // builder.addCase(getDatatokenInfo.fulfilled, (state, action) => {
+    //   const postStreamList = JSON.parse(
+    //     JSON.stringify(current(state.postStreamList))
+    //   ) as PostStream[];
+    //   postStreamList.find((postStream) => {
+    //     if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
+    //       postStream.datatokenInfo = {
+    //         ...postStream.datatokenInfo,
+    //         ...action.payload,
+    //       };
+    //       postStream = {
+    //         ...postStream,
+    //         isGettingDatatokenInfo: false,
+    //         hasGotDatatokenInfo: true,
+    //       };
+    //     }
+    //   });
+    //   state.postStreamList = postStreamList;
+    // });
 
-    builder.addCase(getDatatokenInfo.rejected, (state, action) => {
-      const postStreamList = JSON.parse(
-        JSON.stringify(current(state.postStreamList))
-      ) as PostStream[];
-      postStreamList.find((postStream) => {
-        if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
-          postStream = {
-            ...postStream,
-            isGettingDatatokenInfo: false,
-            hasGotDatatokenInfo: true,
-          };
-        }
-      });
-      state.postStreamList = postStreamList;
-    });
+    // builder.addCase(getDatatokenInfo.rejected, (state, action) => {
+    //   const postStreamList = JSON.parse(
+    //     JSON.stringify(current(state.postStreamList))
+    //   ) as PostStream[];
+    //   postStreamList.find((postStream) => {
+    //     if (postStream.streamRecord.streamContent.file.datatokenId === action.meta.arg.address) {
+    //       postStream = {
+    //         ...postStream,
+    //         isGettingDatatokenInfo: false,
+    //         hasGotDatatokenInfo: true,
+    //       };
+    //     }
+    //   });
+    //   state.postStreamList = postStreamList;
+    // });
   },
 });
 

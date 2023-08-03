@@ -41,13 +41,13 @@ const Wrapper = styled.div`
 
 export default function PostDetail() {
   const { streamId } = useParams();
-  const postStreamList = useSelector((state) => state.post.postStreamList);
-  console.log({ postStreamList });
-  const postStream = postStreamList.find((postStream) => {
-    console.log({ streamId });
-    return postStream.streamId === streamId;
-  });
-  console.log({ postStream });
+  const sortedStreamsMap = useSelector((state) => state.post.sortedStreamsMap);
+  console.log("[PostDetail]", { sortedStreamsMap });
+  // const streamRecord = postStreamList.find((postStream) => {
+  //   console.log({ streamId });
+  //   return postStream.streamId === streamId;
+  // });
+  // console.log({ postStream });
   return (
     <Wrapper>
       <div className="header">
@@ -56,8 +56,8 @@ export default function PostDetail() {
       <div className="main">
         <div className="post">
           <DisplayPostItem
-            postStream={postStream!}
-            key={postStream!.streamId}
+            streamRecord={sortedStreamsMap[streamId!]}
+            streamId={streamId!}
           />
           <div className="comment-list">
             <CommentEditor onSubmit={(content) => console.log(content)} />

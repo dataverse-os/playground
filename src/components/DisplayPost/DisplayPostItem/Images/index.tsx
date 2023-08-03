@@ -1,23 +1,24 @@
-import { FileType } from "@dataverse/dataverse-connector";
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import { Secret, Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 import React, { useEffect, useState } from "react";
-import { PostStream } from "@/types";
 import question from "@/assets/icons/question.png";
 
 export interface TextProps {
-  postStream: PostStream;
+  streamRecord: StreamRecord;
+  isUnlockSucceed: boolean;
+  isGettingDatatokenInfo: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
+const Images: React.FC<TextProps> = ({ streamRecord, isUnlockSucceed, isGettingDatatokenInfo, onClick }) => {
   const [images, setImages] = useState<string[]>([]);
-  const showImage = (postStream: PostStream) => {
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Public) {
-      return postStream.streamRecord.streamContent.content?.images ?? [];
+  const showImage = (streamRecord: StreamRecord) => {
+    if (streamRecord.streamContent.file.fileType === FileType.Public) {
+      return streamRecord.streamContent.content?.images ?? [];
     }
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Private) {
-      if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamRecord.streamContent.content?.images ?? [];
+    if (streamRecord.streamContent.file.fileType === FileType.Private) {
+      if (isUnlockSucceed) {
+        return streamRecord.streamContent.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -25,9 +26,9 @@ const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
         }).fill("?") ?? []
       );
     }
-    if (postStream.streamRecord.streamContent.file.fileType === FileType.Datatoken) {
-      if (postStream.hasUnlockedSuccessfully) {
-        return postStream.streamRecord.streamContent.content?.images ?? [];
+    if (streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+      if (isUnlockSucceed) {
+        return streamRecord.streamContent.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -38,18 +39,18 @@ const Images: React.FC<TextProps> = ({ postStream, onClick }) => {
     return [];
   };
   useEffect(() => {
-    if (postStream.isGettingDatatokenInfo) return;
-    let nowImages = showImage(postStream);
+    if (isGettingDatatokenInfo) return;
+    let nowImages = showImage(streamRecord);
     if (
       nowImages.length === 0 &&
-      postStream.streamRecord.streamContent.file.fileType !== FileType.Public &&
-      !postStream.hasUnlockedSuccessfully
+      streamRecord.streamContent.file.fileType !== FileType.Public &&
+      !isUnlockSucceed
     ) {
       nowImages = ["?"];
     }
     nowImages = [...new Set(Array.from(nowImages))];
     setImages(nowImages);
-  }, [postStream]);
+  }, [streamRecord]);
 
   const CurrentImgWrapper = images.length < 4 ? ImgWrapper : ImageWrapperGrid;
   return (
