@@ -1,4 +1,4 @@
-import { FileType } from "@dataverse/runtime-connector";
+import { FileType } from "@dataverse/dataverse-connector";
 import { Secret, Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 import React, { useEffect, useState } from "react";
 import { PostStream } from "@/types";

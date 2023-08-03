@@ -6,10 +6,13 @@ import styled, { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";
 import { useNavigate } from "react-router-dom";
-import { useStream, useWallet } from "@/hooks";
 import { noExtensionSlice } from "@/state/noExtension/slice";
+import { useApp } from "@dataverse/hooks";
+import { useContext } from "react";
+import { Context } from "@/context";
 
 const Header = (): React.ReactElement => {
+  const { modelParser } = useContext(Context);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
@@ -17,9 +20,7 @@ const Header = (): React.ReactElement => {
     (state) => state.noExtension.isDataverseExtension
   );
 
-  const { connectWallet, getCurrentPkh } = useWallet();
-
-  const { createCapability } = useStream();
+  const { connectApp } = useApp();
 
   const handleClickSignin = async () => {
     if (!isDataverseExtension) {
@@ -28,10 +29,7 @@ const Header = (): React.ReactElement => {
     }
     try {
       dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-      if (!(await getCurrentPkh())) {
-        await connectWallet();
-      }
-      const pkh = await createCapability();
+      const {pkh} = await connectApp({ appId: modelParser.appId });
       dispatch(identitySlice.actions.setPkh(pkh));
     } catch (error) {
       console.error(error);

@@ -3,26 +3,28 @@ import React, { useContext, useEffect, useState } from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { PostStream } from "@/types";
+import { PostStream, StreamContent } from "@/types";
 import {
   FileType,
   MirrorFile,
-  StreamContent,
-} from "@dataverse/runtime-connector";
+  // StreamContent,
+} from "@dataverse/dataverse-connector";
 import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
 import { getCurrencyNameByCurrencyAddress } from "@/sdk";
-import { useStream, useWallet } from "@/hooks";
 import { Message } from "@arco-design/web-react";
 import { identitySlice } from "@/state/identity/slice";
 import { noExtensionSlice } from "@/state/noExtension/slice";
+import { useApp, useUnlockStream } from "@dataverse/hooks";
+import { Context } from "@/context";
 
 interface DisplayPostItemProps {
   postStream: PostStream;
 }
 
 const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
+  const {modelParser} = useContext(Context);
   const dispatch = useAppDispatch();
   const pkh = useSelector((state) => state.identity.pkh);
   const postStreamList = useSelector((state) => state.post.postStreamList);
@@ -39,9 +41,8 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     },
   });
 
-  const { connectWallet, getCurrentPkh, switchNetwork } = useWallet();
-
-  const { unlockStream, createCapability } = useStream();
+  const {connectApp} = useApp();
+  const {unlockStream} = useUnlockStream();
 
   useEffect(() => {
     const postStreamCopy = JSON.parse(JSON.stringify(postStream));
@@ -71,10 +72,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     if (!pkh) {
       try {
         dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        if (!(await getCurrentPkh())) {
-          await connectWallet();
-        }
-        const pkh = await createCapability();
+        const {pkh} = await connectApp({appId: modelParser.appId});
         dispatch(identitySlice.actions.setPkh(pkh));
       } catch (error) {
         console.error(error);
@@ -91,10 +89,11 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({ postStream }) => {
     // let streamList: PostStream[] = postStreamList;
     try {
       _unlockPending();
-      const { streamContent, streamId } = await unlockStream(
+      const { streamContent } = await unlockStream(
         postStream.streamId
       );
-      _unlockSucceed(streamContent, streamId);
+      console.log("unlocked streamContent:", streamContent)
+      _unlockSucceed(streamContent, postStream.streamId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
       _unlockFailed();

@@ -19,9 +19,6 @@ export default defineConfig({
   build: {
     target: "es2020",
     sourcemap: true,
-    rollupOptions: {
-      external: ["@lit-protocol/sdk-nodejs"],
-    },
   },
   server: {
     port: 5173,
@@ -37,7 +34,7 @@ export default defineConfig({
       MUMBAI_FAUCET: "https://mumbaifaucet.com",
       DATAVERSE_GOOGLE_STORE:
         "https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead",
-      CERAMIC_API: "https://dataverseceramicdaemon.com",
+      CERAMIC_API: "https://testnet.dataverseceramicdaemon.com",
     },
   },
 });
