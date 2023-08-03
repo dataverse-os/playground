@@ -1,7 +1,7 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 import { useAppDispatch, useSelector } from "@/state/hook";
-import { PropsWithoutRef, PropsWithRef, useContext, useEffect, useState } from "react";
+import { PropsWithoutRef, PropsWithRef, useContext, useEffect, useMemo, useState } from "react";
 import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
@@ -11,7 +11,7 @@ import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { FlexRow } from "@/components/App/styled";
 import { useNavigate } from "react-router-dom";
-import { useApp, useStore, useUnlockStream } from "@dataverse/hooks";
+import { StateType, useApp, useStore, useUnlockStream } from "@dataverse/hooks";
 import { DatatokenInfo } from "@/types";
 import { Context } from "@/context";
 import { noExtensionSlice } from "@/state/noExtension/slice";
@@ -19,32 +19,37 @@ import { Message } from "@arco-design/web-react";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
   streamId: string;
-  streamRecord: StreamRecord;
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   streamId,
-  streamRecord,
 }) => {
   // const navigate = useNavigate();
   const { modelParser } = useContext(Context);
+  const { state } = useStore();
+  const streamRecord = useMemo(() => {
+    return state.streamsMap[streamId];
+  }, [state.streamsMap])
   const dispatch = useAppDispatch();
+
   const isDataverseExtension = useSelector(
     (state) => state.noExtension.isDataverseExtension
   );
   const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
   const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] = useState<boolean>(false);
-
-  const { state } = useStore();
   const { connectApp } = useApp();
-  const { isPending, isSucceed, unlockStream } = useUnlockStream();
+  const { isPending, isSucceed, unlockStream } = useUnlockStream({
+    onError: (error: any) => {
+      console.error(error);
+      Message.error(error?.message ?? error);
+    }
+  });
 
   useEffect(() => {
     if (!isGettingDatatokenInfo && streamRecord.streamContent.file.fileType === FileType.Datatoken) {
-      console.log("init datatoken info")
       initDatatokenInfo();
     }
-  }, [])
+  }, [state.streamsMap])
 
   const initDatatokenInfo = async () => {
     setIsGettingDatatokenInfo(true);
@@ -77,12 +82,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       return;
     }
 
-    try {
-      await unlockStream(streamId);
-    } catch (error: any) {
-      console.error(error);
-      Message.error(error?.message ?? error);
-    }
+    unlockStream(streamId);
   };
 
   return (

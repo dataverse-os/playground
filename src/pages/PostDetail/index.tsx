@@ -7,6 +7,7 @@ import CommentEditor from "@/components/Comment/CommentEditor";
 import Header from "@/components/AppLayout/Header";
 import { useSelector } from "@/state/hook";
 import { useParams } from "react-router-dom";
+import { useStore } from "@dataverse/hooks";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -41,8 +42,9 @@ const Wrapper = styled.div`
 
 export default function PostDetail() {
   const { streamId } = useParams();
-  const sortedStreamsMap = useSelector((state) => state.post.sortedStreamsMap);
-  console.log("[PostDetail]", { sortedStreamsMap });
+  const {state} = useStore();
+  // const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
+  // console.log("[PostDetail]", { sortedStreamIds });
   // const streamRecord = postStreamList.find((postStream) => {
   //   console.log({ streamId });
   //   return postStream.streamId === streamId;
@@ -56,7 +58,7 @@ export default function PostDetail() {
       <div className="main">
         <div className="post">
           <DisplayPostItem
-            streamRecord={sortedStreamsMap[streamId!]}
+            streamRecord={state.streamsMap[streamId!]}
             streamId={streamId!}
           />
           <div className="comment-list">

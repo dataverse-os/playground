@@ -10,14 +10,9 @@ import {
   StreamRecord,
   // StreamContent,
 } from "@dataverse/dataverse-connector";
-import { getDatatokenInfo, postSlice } from "@/state/post/slice";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
 import { getCurrencyNameByCurrencyAddress } from "@/sdk";
-import { Message } from "@arco-design/web-react";
-import { noExtensionSlice } from "@/state/noExtension/slice";
-import { useApp, useStore, useUnlockStream } from "@dataverse/hooks";
-import { Context } from "@/context";
 
 interface DisplayPostItemProps {
   streamRecord: StreamRecord;

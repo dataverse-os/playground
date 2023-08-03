@@ -45,50 +45,34 @@ import {
   useStore,
 } from "@dataverse/hooks";
 
-export interface PublishPostProps {
-  // createPublicStream: (params: CreateStreamArgs[StreamType.Public]) => any;
-  // createPayableStream: (params: CreateStreamArgs[StreamType.Payable]) => any;
-  // loadStream: (modelId: string) => any;
+interface PublishPostProps {
+  isPending: boolean;
+  createPublicStream: Function;
+  createPayableStream: Function;
 }
 
-const PublishPost: React.FC<PublishPostProps> = () => {
+const PublishPost: React.FC<PublishPostProps> = ({
+  isPending,
+  createPublicStream,
+  createPayableStream
+}) => {
   const dispatch = useAppDispatch();
-  // const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const { modelParser } = useContext(Context);
   const { postModel, appVersion } = useContext(Context);
-  // const pkh = useSelector((state) => state.identity.pkh);
   const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
   const settings = useSelector((state) => state.privacySettings.settings);
   const encryptedContent = useSelector((state) => state.post.encryptedContent);
-  // const isEncrypting = useSelector((state) => state.post.isEncrypting);
-  // const isEncryptedSuccessfully = useSelector(
-  //   (state) => state.post.isEncryptedSuccessfully
-  // );
+
   const isDataverseExtension = useSelector(
     (state) => state.noExtension.isDataverseExtension
   );
-  // const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
-  // const profileId = useSelector((state) => state.lensProfile.profileId);
-  const { loadFeeds } = useFeeds();
-  const { isPending: isPublicPending, createStream: createPublicStream } =
-    useCreateStream({
-      streamType: StreamType.Public,
-    });
-  const { isPending: isPayablePending, createStream: createPayableStream } =
-    useCreateStream({
-      streamType: StreamType.Payable,
-    });
-
-  const isPublishingPost = useMemo(() => {
-    return isPublicPending || isPayablePending;
-  }, [isPublicPending, isPayablePending]);
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const [postImages, setPostImages] = useState<string[]>([]);
   const { state } = useStore();
   const { connectApp } = useApp();
-  const { profileIds, getProfiles } = useProfiles();
+  const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -105,7 +89,7 @@ const PublishPost: React.FC<PublishPostProps> = () => {
   };
 
   const handleProfileAndPost = async () => {
-    if (isPublishingPost) return;
+    if (isPending) return;
     if (!state.address) return;
 
     const postImages = await handlePostImages();
@@ -267,28 +251,10 @@ const PublishPost: React.FC<PublishPostProps> = () => {
       });
       setContent("");
       setImages([]);
-      await loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
-    } finally {
-      dispatch(postSlice.actions.setIsPublishingPost(false));
     }
   };
-
-  // useEffect(() => {
-  //   postAfterProfileCreated();
-  // }, [profileId, postImages]);
-
-  // useEffect(() => {
-  //   dispatch(postSlice.actions.setIsPublishingPost(false));
-  // }, []);
-
-  // const postAfterProfileCreated = async () => {
-  //   if (!profileId || !postImages) return;
-  //   dispatch(postSlice.actions.setIsPublishingPost(true));
-  //   post({ profileId, postImages });
-  //   dispatch(lensProfileSlice.actions.setProfileId(""));
-  // };
 
   const openPrivacySettings = () => {
     dispatch(privacySettingsSlice.actions.setModalVisible(true));
@@ -366,7 +332,7 @@ const PublishPost: React.FC<PublishPostProps> = () => {
                 <FlexRow>
                   <Button
                     type="primary"
-                    loading={isPublishingPost}
+                    loading={isPending}
                     onClick={handleProfileAndPost}
                     width={110}
                     css={css`

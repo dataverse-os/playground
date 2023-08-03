@@ -29,14 +29,14 @@ const Avatar: React.FC<AvatarProps> = ({
   const [avatarSrc, setAvatarSrc] = useState<string>(userIcon);
   const [avatar, setAvatar] = useState<string>(userIcon);
   const [open, setOpen] = useState(false);
-  const postStreamList = useSelector((state) => state.post.postStreamList);
+  const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
   const load = async () => {
     setAvatarSrc(contextAvatar(getAddressFromDid(did)));
   };
 
   useEffect(() => {
     load();
-  }, [did, postStreamList.length]);
+  }, [did, sortedStreamIds.length]);
 
   useEffect(() => {
     setAvatar(avatarSrc);
