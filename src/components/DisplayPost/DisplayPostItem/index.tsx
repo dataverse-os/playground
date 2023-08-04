@@ -1,6 +1,5 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
-import { useAppDispatch, useSelector } from "@/state/hook";
 import { PropsWithoutRef, PropsWithRef, useContext, useEffect, useMemo, useState } from "react";
 import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
@@ -9,12 +8,10 @@ import Text from "./Text";
 import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
-import { FlexRow } from "@/components/App/styled";
-import { useNavigate } from "react-router-dom";
-import { StateType, useApp, useStore, useUnlockStream } from "@dataverse/hooks";
+import { FlexRow } from "@/styled";
+import { useApp, useStore, useUnlockStream } from "@dataverse/hooks";
 import { DatatokenInfo } from "@/types";
-import { Context } from "@/context";
-import { noExtensionSlice } from "@/state/noExtension/slice";
+import { usePlaygroundStore } from "@/context";
 import { Message } from "@arco-design/web-react";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
@@ -25,16 +22,20 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   streamId,
 }) => {
   // const navigate = useNavigate();
-  const { modelParser } = useContext(Context);
+  // const { modelParser } = useContext(Context);
+  const {
+    playgroundState: {modelParser, isDataverseExtension},
+    setNoExtensionModalVisible,
+  } = usePlaygroundStore();
   const { state } = useStore();
   const streamRecord = useMemo(() => {
     return state.streamsMap[streamId];
   }, [state.streamsMap])
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
-  const isDataverseExtension = useSelector(
-    (state) => state.noExtension.isDataverseExtension
-  );
+  // const isDataverseExtension = useSelector(
+  //   (state) => state.noExtension.isDataverseExtension
+  // );
   const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
   const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] = useState<boolean>(false);
   const { connectApp } = useApp();
@@ -66,8 +67,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   };
 
   const unlock = async () => {
-    if (!isDataverseExtension) {
-      dispatch(noExtensionSlice.actions.setModalVisible(true));
+    if (isDataverseExtension === false) {
+      // dispatch(noExtensionSlice.actions.setModalVisible(true));
+      setNoExtensionModalVisible(true)
       return;
     }
     if (!state.pkh) {

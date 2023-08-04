@@ -1,43 +1,31 @@
-import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useMemo, useContext, useState } from "react";
-import { postSlice } from "@/state/post/slice";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
-import styled from "styled-components";
 import { StreamRecordMap } from "@/types";
-import { Context } from "@/context";
+import { usePlaygroundStore } from "@/context";
 import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
-import { noExtensionSlice } from "@/state/noExtension/slice";
 import {
   StreamType,
   useCreateStream,
   useFeeds,
   useStore,
 } from "@dataverse/hooks";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  /* width: 48%; */
-`;
+import { Wrapper } from "./styled";
 
 const DisplayPost = () => {
-  const { appVersion, modelParser } = useContext(Context);
+  const {
+    playgroundState,
+    setIsDataverseExtension,
+    setSortedStreamIds,
+  } = usePlaygroundStore();
   const postModel = useMemo(() => {
-    return modelParser.getModelByName("post");
+    return playgroundState.modelParser.getModelByName("post");
   }, []);
   const indexFilesModel = useMemo(() => {
-    return modelParser.getModelByName("indexFiles");
+    return playgroundState.modelParser.getModelByName("indexFiles");
   }, []);
-  const dispatch = useAppDispatch();
-  // const [hasExtension, setHasExtension] = useState<boolean>();
-  const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
-  console.log({ sortedStreamIds });
-  const isDataverseExtension = useSelector(
-    (state) => state.noExtension.isDataverseExtension
-  );
+
   const { state } = useStore();
 
   const { loadFeeds } = useFeeds();
@@ -46,37 +34,40 @@ const DisplayPost = () => {
   );
 
   useEffect(() => {
+    console.log("sortedStreamIds changed,", playgroundState.sortedStreamIds)
+  }, [playgroundState.sortedStreamIds])
+
+  useEffect(() => {
     detectDataverseExtension().then((res) => {
-      dispatch(noExtensionSlice.actions.setIsDataverseExtension(res));
+      console.log("hasDataverseExtension?", res);
+      setIsDataverseExtension(res);
+      if (res === true) {
+        console.log("load with hooks");
+        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
+      } else if (res === false) {
+        loadFeedsByCeramic();
+      }
     });
   }, []);
 
   useEffect(() => {
-    if (postModel) {
-      if (isDataverseExtension === true) {
-        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
-      } else if (isDataverseExtension === false) {
-        loadFeedsByCeramic();
-      }
-    }
-  }, [postModel, isDataverseExtension]);
-
-  useEffect(() => {
     console.log("state streamsMap changed...");
-    const streamsMap: StreamRecordMap = isDataverseExtension
+    const streamsMap: StreamRecordMap = playgroundState.isDataverseExtension
       ? state.streamsMap
       : ceramicStreamsMap;
-    const sortedStreamsIds = Object.keys(streamsMap)
+      console.log("state.streamsMap:", state.streamsMap)
+    console.log("streamsMap:", streamsMap);
+    const sortedStreamIds = Object.keys(streamsMap)
       .filter(
-        (el) => streamsMap[el].streamContent.content.appVersion === appVersion
+        (el) => streamsMap[el].streamContent.content.appVersion === playgroundState.appVersion
       )
       .sort(
         (a, b) =>
           Date.parse(streamsMap[b].streamContent.content.createdAt) -
           Date.parse(streamsMap[a].streamContent.content.createdAt)
       );
-    dispatch(postSlice.actions.setSortedStreamIds(sortedStreamsIds));
-  }, [Object.keys(state.streamsMap).length, ceramicStreamsMap]);
+    setSortedStreamIds(sortedStreamIds);
+  }, [state.streamsMap, ceramicStreamsMap]);
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -88,7 +79,7 @@ const DisplayPost = () => {
     const ceramicStreamsRecordMap: StreamRecordMap = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
       ceramicStreamsRecordMap[streamId] = {
-        appId: modelParser.appId,
+        appId: playgroundState.modelParser.appId,
         modelId: postModel.streams[postModel.streams.length - 1].modelId,
         pkh: content.controller,
         streamContent: {
@@ -125,7 +116,7 @@ const DisplayPost = () => {
           createPublicStream={createPublicStream}
           createPayableStream={createPayableStream}
         />
-        {sortedStreamIds.map((streamId, index) =>
+        {playgroundState.sortedStreamIds.map((streamId, index) =>
           index % 2 == 1 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
           ) : (
@@ -134,7 +125,7 @@ const DisplayPost = () => {
         )}
       </Wrapper>
       <Wrapper>
-        {sortedStreamIds.map((streamId, index) =>
+        {playgroundState.sortedStreamIds.map((streamId, index) =>
           index % 2 == 0 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
           ) : (

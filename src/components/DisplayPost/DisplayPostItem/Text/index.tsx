@@ -1,9 +1,8 @@
 import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import { TextWrapper } from "./styled";
 import React from "react";
-import { CustomMirrorFile } from "@/types";
 
-export interface TextProps {
+interface TextProps {
   streamRecord: StreamRecord;
   isUnlockSucceed: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;

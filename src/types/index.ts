@@ -1,9 +1,12 @@
+import { ModelParser } from "@dataverse/model-parser";
+
 import {
   StreamRecord,
   IndexFileContentType,
   Mirror,
   MirrorFile,
   StructuredFolder,
+  Currency,
 } from "@dataverse/dataverse-connector";
 
 export enum PostType {
@@ -130,3 +133,29 @@ export interface StreamRecordMap {
 }
 
 export type StreamContent = StreamRecord["streamContent"];
+
+export type PlaygroundStateType = {
+  appVersion: string;
+  modelParser: ModelParser;
+  sortedStreamIds: string[];
+  isDataverseExtension?: boolean;
+  isNoExtensionModalVisible: boolean;
+};
+
+export type PlaygroundContextType = {
+  state: PlaygroundStateType;
+  dispatch: React.Dispatch<any>;
+};
+
+export enum PlaygroundActionType {
+  SetIsDataverseExtension,
+  SetSortedStreamIds,
+  SetNoExtensionModalVisible
+}
+
+export type PrivacySettingsType = {
+  postType: PostType;
+  currency?: Currency;
+  amount?: number;
+  collectLimit?: number;
+}

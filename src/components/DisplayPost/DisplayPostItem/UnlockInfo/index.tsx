@@ -1,4 +1,3 @@
-import { useAppDispatch, useSelector } from "@/state/hook";
 import React from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";

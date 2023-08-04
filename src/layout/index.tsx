@@ -1,14 +1,10 @@
-import { useEffect } from "react";
-import DisplayPost from "../DisplayPost";
-import NoExtensionTip from "../NoExtensionTip";
-import PublishPost from "../PublishPost";
+import DisplayPost from "../components/DisplayPost";
 import Header from "./Header";
 import {
   Container,
   HeaderWrapper,
   BodyWrapper,
   PostWrapper,
-  DisplayPostWrapper,
 } from "./styled";
 
 const Layout: React.FC = (): React.ReactElement => {
@@ -21,7 +17,7 @@ const Layout: React.FC = (): React.ReactElement => {
         <PostWrapper>
           <DisplayPost />
         </PostWrapper>
-        <NoExtensionTip />
+        {/* <NoExtensionTip /> */}
         {/* <DisplayPostWrapper>
           <DisplayFolder />
         </DisplayPostWrapper> */}

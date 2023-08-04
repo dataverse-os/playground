@@ -1,10 +1,9 @@
-import { useSelector } from "@/state/hook";
 import React from "react";
 import { FlattenSimpleInterpolation } from "styled-components";
 import Avatar from "../Avatar";
 import { Name, Wrapper } from "./styled";
 
-export interface AccountStatusProps {
+interface AccountStatusProps {
   name: string;
   did: string;
   cssStyles?: FlattenSimpleInterpolation;

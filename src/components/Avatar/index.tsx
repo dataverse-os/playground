@@ -8,7 +8,7 @@ import {
   DefaultAvatarImg,
   Mask,
 } from "./styles";
-import { useSelector } from "@/state/hook";
+import { usePlaygroundStore } from "@/context";
 
 interface AvatarProps {
   did: string;
@@ -29,7 +29,12 @@ const Avatar: React.FC<AvatarProps> = ({
   const [avatarSrc, setAvatarSrc] = useState<string>(userIcon);
   const [avatar, setAvatar] = useState<string>(userIcon);
   const [open, setOpen] = useState(false);
-  const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
+  // const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
+  const {
+    playgroundState: {
+      sortedStreamIds
+    }
+  } = usePlaygroundStore();
   const load = async () => {
     setAvatarSrc(contextAvatar(getAddressFromDid(did)));
   };

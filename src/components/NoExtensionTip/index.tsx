@@ -2,21 +2,20 @@ import Modal from "@/components/BaseComponents/Modal";
 import Button from "@/components/BaseComponents/Button";
 import logoSvg from "@/assets/icons/logo.svg";
 import { buttonStyle, modelWrapper } from "./styled";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { noExtensionSlice } from "@/state/noExtension/slice";
-import { useEffect } from "react";
 
-const NoExtensionTip = function () {
-  const dispatch = useAppDispatch();
-  const { modalVisible } = useSelector((state) => state.noExtension);
-  
+interface NoExtensionTipProps {
+  isModalVisible: boolean;
+  setModalVisible: (value: boolean) => void;
+}
+
+const NoExtensionTip: React.FC<NoExtensionTipProps> = ({isModalVisible, setModalVisible}) => {
   const closeModel = () => {
-    dispatch(noExtensionSlice.actions.setModalVisible(false));
+    setModalVisible(false);
   };
 
   return (
     <Modal
-      controlVisible={modalVisible}
+      controlVisible={isModalVisible}
       width={542}
       cssStyle={modelWrapper}
       onCancel={closeModel}

@@ -1,5 +1,4 @@
 export * from "./address";
-export * from "./model";
 export * from "./date";
 export * from "./encode";
 export * from "./storage";

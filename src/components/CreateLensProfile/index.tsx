@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Input from "@/components/BaseComponents/Input";
 import Modal from "@/components/BaseComponents/Modal";
@@ -7,21 +7,19 @@ import Button from "@/components/BaseComponents/Button";
 import addSvg from "@/assets/icons/add.svg";
 import { Message } from "@arco-design/web-react";
 import { buttonStyle, inputStyle, modelWrapper } from "./styled";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { noExtensionSlice } from "@/state/noExtension/slice";
-import { lensProfileSlice } from "@/state/lensProfile/slice";
 import { createLensProfile } from "@/sdk";
 
-export const CreateLensProfile = () => {
+interface CreateLensProfileProps {
+  isModalVisible: boolean;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({isModalVisible, setModalVisible}) => {
   const [handle, setHandle] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const dispatch = useAppDispatch();
-  const modalVisible = useSelector((state) => state.lensProfile.modalVisible);
-
   const closeModel = () => {
-    dispatch(lensProfileSlice.actions.setModalVisible(false));
-    // setIsModalVisible(false);
+    setModalVisible(false);
     setHandle("");
   };
 
@@ -33,15 +31,9 @@ export const CreateLensProfile = () => {
       return;
     }
     setLoading(true);
-    // const obj = {
-    //   handle,
-    //   // profilePictureUri:
-    //   //   avatar || `https://avatar.tobi.sh/${window.address}_${handle}.png`,
-    // };
     try {
       const profileId = await createLensProfile(handle);
       console.log(profileId);
-      // dispatch(lensProfileSlice.actions.setProfileId(profileId));
       Message.success("Create Lens profile successfully!");
       closeModel();
     } catch (error: any) {
@@ -53,7 +45,7 @@ export const CreateLensProfile = () => {
 
   return (
     <Modal
-      controlVisible={modalVisible}
+      controlVisible={isModalVisible}
       width={512}
       cssStyle={modelWrapper}
       onCancel={closeModel}

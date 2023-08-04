@@ -1,6 +1,4 @@
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { MouseEvent, useEffect, useState } from "react";
-import { privacySettingsSlice } from "@/state/privacySettings/slice";
+import { useState } from "react";
 import { css } from "styled-components";
 import Modal from "../BaseComponents/Modal";
 import Switch from "../BaseComponents/Switch/Switch";
@@ -17,18 +15,25 @@ import {
   Wrapper,
 } from "./styled";
 import Select from "../BaseComponents/Select";
-import { PostType } from "@/types";
+import { PostType, PrivacySettingsType } from "@/types";
 
 const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
 
-const PrivacySettings: React.FC = () => {
-  const modalVisible = useSelector(
-    (state) => state.privacySettings.modalVisible
-  );
-  // const settings = useSelector((state) => state.privacySettings.settings);
+interface PrivacySettingsProps {
+  isModalVisible: boolean;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  needEncrypt: boolean;
+  setNeedEncrypt: React.Dispatch<React.SetStateAction<boolean>>;
+  setSettings: React.Dispatch<React.SetStateAction<PrivacySettingsType>>;
+}
 
-  const dispatch = useAppDispatch();
-  const [needEncrypt, setNeedEncrypt] = useState(false);
+const PrivacySettings: React.FC<PrivacySettingsProps> = ({
+  isModalVisible,
+  setModalVisible,
+  needEncrypt,
+  setNeedEncrypt,
+  setSettings,
+}) => {
   const [currency, setCurrency] = useState<any>({
     name: "WMATIC",
     value: "WMATIC",
@@ -36,7 +41,6 @@ const PrivacySettings: React.FC = () => {
   const [amount, setAmount] = useState("");
   const [limit, setLimit] = useState("");
   const [checked, setChecked] = useState(false);
-  const [clear, setClear] = useState(false);
   const [inputWarn, setInputWarn] = useState(false);
   const isInputValid = () => {
     const isValid =
@@ -49,38 +53,33 @@ const PrivacySettings: React.FC = () => {
   };
 
   const closeModel = () => {
-    dispatch(privacySettingsSlice.actions.setModalVisible(false));
+    setModalVisible(false);
   };
 
   const saveSettings = () => {
     if (needEncrypt) {
       if (isInputValid()) {
         setInputWarn(false);
-        dispatch(
-          privacySettingsSlice.actions.setSettings({
-            postType: PostType.Payable,
-            currency: currency.value,
-            amount: parseFloat(amount),
-            collectLimit: checked ? 2 ** 52 : parseFloat(limit),
-          })
-        );
-        dispatch(privacySettingsSlice.actions.setModalVisible(false));
+        setSettings({
+          postType: PostType.Payable,
+          currency: currency.value,
+          amount: parseFloat(amount),
+          collectLimit: checked ? 2 ** 52 : parseFloat(limit),
+        });
+        setModalVisible(false);
       } else {
         setInputWarn(true);
       }
     } else {
-      dispatch(
-        privacySettingsSlice.actions.setSettings({
-          postType: PostType.Public,
-        })
-      );
-      dispatch(privacySettingsSlice.actions.setModalVisible(false));
+      setSettings({
+        postType: PostType.Public,
+      });
+      setModalVisible(false);
     }
   };
 
   const switchEncrypt = (value: boolean) => {
     setNeedEncrypt(value);
-    dispatch(privacySettingsSlice.actions.setNeedEncrypt(value));
   };
 
   return (
@@ -89,7 +88,7 @@ const PrivacySettings: React.FC = () => {
         id="privacySettings"
         title="Privacy Settings"
         // width={280}
-        controlVisible={modalVisible}
+        controlVisible={isModalVisible}
         showCloseButton
         onOk={saveSettings}
         onCancel={closeModel}
