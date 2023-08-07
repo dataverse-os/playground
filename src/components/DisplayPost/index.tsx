@@ -12,13 +12,11 @@ import {
   useStore,
 } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
+import { FileType } from "@dataverse/dataverse-connector";
 
 const DisplayPost = () => {
-  const {
-    playgroundState,
-    setIsDataverseExtension,
-    setSortedStreamIds,
-  } = usePlaygroundStore();
+  const { playgroundState, setIsDataverseExtension, setSortedStreamIds } =
+    usePlaygroundStore();
   const postModel = useMemo(() => {
     return playgroundState.modelParser.getModelByName("post");
   }, []);
@@ -34,15 +32,9 @@ const DisplayPost = () => {
   );
 
   useEffect(() => {
-    console.log("sortedStreamIds changed,", playgroundState.sortedStreamIds)
-  }, [playgroundState.sortedStreamIds])
-
-  useEffect(() => {
     detectDataverseExtension().then((res) => {
-      console.log("hasDataverseExtension?", res);
       setIsDataverseExtension(res);
       if (res === true) {
-        console.log("load with hooks");
         loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
       } else if (res === false) {
         loadFeedsByCeramic();
@@ -51,21 +43,23 @@ const DisplayPost = () => {
   }, []);
 
   useEffect(() => {
-    console.log("state streamsMap changed...");
     const streamsMap: StreamRecordMap = playgroundState.isDataverseExtension
       ? state.streamsMap
       : ceramicStreamsMap;
-      console.log("state.streamsMap:", state.streamsMap)
-    console.log("streamsMap:", streamsMap);
+
     const sortedStreamIds = Object.keys(streamsMap)
       .filter(
-        (el) => streamsMap[el].streamContent.content.appVersion === playgroundState.appVersion
+        (el) =>
+          streamsMap[el].streamContent.content.appVersion ===
+            playgroundState.appVersion &&
+          streamsMap[el].streamContent.file.fileType !== FileType.Private
       )
       .sort(
         (a, b) =>
           Date.parse(streamsMap[b].streamContent.content.createdAt) -
           Date.parse(streamsMap[a].streamContent.content.createdAt)
       );
+
     setSortedStreamIds(sortedStreamIds);
   }, [state.streamsMap, ceramicStreamsMap]);
 

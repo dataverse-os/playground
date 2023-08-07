@@ -22,7 +22,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   streamId,
 }) => {
   // const navigate = useNavigate();
-  // const { modelParser } = useContext(Context);
+
   const {
     playgroundState: {modelParser, isDataverseExtension},
     setNoExtensionModalVisible,
@@ -31,11 +31,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const streamRecord = useMemo(() => {
     return state.streamsMap[streamId];
   }, [state.streamsMap])
-  // const dispatch = useAppDispatch();
 
-  // const isDataverseExtension = useSelector(
-  //   (state) => state.noExtension.isDataverseExtension
-  // );
   const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
   const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] = useState<boolean>(false);
   const { connectApp } = useApp();
@@ -68,7 +64,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const unlock = async () => {
     if (isDataverseExtension === false) {
-      // dispatch(noExtensionSlice.actions.setModalVisible(true));
       setNoExtensionModalVisible(true)
       return;
     }
@@ -77,6 +72,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         await connectApp({ appId: modelParser.appId });
       } catch (error) {
         console.error(error);
+        throw error;
       }
     }
     if (isPending || isSucceed) {

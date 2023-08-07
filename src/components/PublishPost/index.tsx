@@ -55,17 +55,14 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const [settings, setSettings] = useState<PrivacySettingsType>({
     postType: PostType.Public,
   });
-  const [encryptedContent, setEncryptedContent] = useState<string>();
 
   const [isSettingModalVisible, setSettingModalVisible] =
     useState<boolean>(false);
   const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
     useState<boolean>(false);
-  // const [isNoExtensionModalVisible, setIsNoExtensionModalVisible] = useState<boolean>(false);
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  // const [postImages, setPostImages] = useState<string[]>([]);
   const { state } = useStore();
   const { connectApp } = useApp();
   const { getProfiles } = useProfiles();
@@ -276,7 +273,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
                 did={state.pkh || ""}
               />
               <Textarea
-                value={encryptedContent || content}
+                value={content}
                 placeholder="what's happening?"
                 onChange={textareaOnChange}
                 width={"100%"}
