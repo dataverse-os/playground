@@ -6,7 +6,7 @@
     "build:scripts": "npx tsc -p tsconfig.node.json",
     "create-dataverse-app": "pnpm build:scripts && env-cmd -f .env node --experimental-specifier-resolution=node ./scripts/build/scripts/createDapp.js",
     "dev": "vite",
-    "build": "tsc && vite build && vite preview",
+    "build": "vite build && vite preview",
     "preview": "vite preview",
     "github-build": "tsc && vite build",
     "deploy": "node scripts/s3-deploy/s3-deploy.js"
@@ -56,6 +56,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "aws-sdk": "2.1023.0",
     "env-cmd": "^10.1.0",
+    "mime": "^3.0.0",
     "mime": "^3.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "typescript": "^4.6.4",
