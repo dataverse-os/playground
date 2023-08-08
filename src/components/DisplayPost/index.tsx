@@ -30,8 +30,7 @@ const DisplayPost = () => {
     return modelParser.getModelByName("indexFiles");
   }, []);
 
-  const { state } = useStore();
-
+  const { streamsMap } = useStore();
   const { loadFeeds } = useFeeds();
   const [ceramicStreamsMap, setCeramicStreamsMap] = useState<StreamRecordMap>(
     {}
@@ -41,32 +40,35 @@ const DisplayPost = () => {
     detectDataverseExtension().then((res) => {
       setIsDataverseExtension(res);
       if (res === true) {
+        console.log("load with extension");
         loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
       } else if (res === false) {
+        console.log("load with ceramic");
         loadFeedsByCeramic();
       }
     });
   }, []);
 
   useEffect(() => {
-    const streamsMap: StreamRecordMap = isDataverseExtension
-      ? state.streamsMap
+    const _streamsMap: StreamRecordMap = isDataverseExtension
+      ? streamsMap
       : ceramicStreamsMap;
+    console.log("detected:", {_streamsMap});
 
-    const sortedStreamIds = Object.keys(streamsMap)
+    const _sortedStreamIds = Object.keys(_streamsMap)
       .filter(
         (el) =>
-          streamsMap[el].streamContent.content.appVersion === appVersion &&
-          streamsMap[el].streamContent.file.fileType !== FileType.Private
+          _streamsMap[el].streamContent.content.appVersion === appVersion &&
+          _streamsMap[el].streamContent.file.fileType !== FileType.Private
       )
       .sort(
         (a, b) =>
-          Date.parse(streamsMap[b].streamContent.content.createdAt) -
-          Date.parse(streamsMap[a].streamContent.content.createdAt)
+          Date.parse(_streamsMap[b].streamContent.content.createdAt) -
+          Date.parse(_streamsMap[a].streamContent.content.createdAt)
       );
 
-    setSortedStreamIds(sortedStreamIds);
-  }, [state.streamsMap, ceramicStreamsMap]);
+    setSortedStreamIds(_sortedStreamIds);
+  }, [streamsMap, ceramicStreamsMap]);
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -119,7 +121,7 @@ const DisplayPost = () => {
           index % 2 == 1 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
           ) : (
-            <></>
+            undefined
           )
         )}
       </Wrapper>
@@ -128,7 +130,7 @@ const DisplayPost = () => {
           index % 2 == 0 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
           ) : (
-            <></>
+            undefined
           )
         )}
       </Wrapper>

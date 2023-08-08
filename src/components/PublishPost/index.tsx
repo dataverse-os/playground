@@ -62,7 +62,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  const { state } = useStore();
+  const { pkh, address } = useStore();
   const { isPending: isConnectingApp, connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
@@ -97,7 +97,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
     }
     if (isPending || isConnectingApp) return;
 
-    if (!state.pkh) {
+    if (!pkh) {
       try {
         await connectApp({ appId: modelParser.appId });
       } catch (error) {
@@ -110,7 +110,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
     if (!postImages) return;
 
     if (needEncrypt) {
-      const lensProfiles = await getProfiles(state.address);
+      const lensProfiles = await getProfiles(address);
 
       if (lensProfiles.length === 0) {
         setCreateProfileModalVisible(true);
@@ -275,11 +275,11 @@ const PublishPost: React.FC<PublishPostProps> = ({
           }) => (
             <>
               <AccountStatus
-                name={addressAbbreviation(state.address) ?? ""}
+                name={addressAbbreviation(address) ?? ""}
                 cssStyles={css`
                   margin-bottom: 1rem;
                 `}
-                did={state.pkh || ""}
+                did={pkh || ""}
               />
               <Textarea
                 value={content}

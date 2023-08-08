@@ -34,10 +34,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     setNoExtensionModalVisible,
     setIsConnecting,
   } = usePlaygroundStore();
-  const { state, dataverseConnector } = useStore();
+  const { pkh, streamsMap, dataverseConnector } = useStore();
   const streamRecord = useMemo(() => {
-    return state.streamsMap[streamId];
-  }, [state.streamsMap]);
+    return streamsMap[streamId];
+  }, [streamsMap]);
 
   const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
   const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] =
@@ -74,7 +74,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     ) {
       initDatatokenInfo();
     }
-  }, [state.streamsMap]);
+  }, [streamsMap]);
 
   const initDatatokenInfo = async () => {
     setIsGettingDatatokenInfo(true);
@@ -91,7 +91,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
   };
 
   const unlock = async () => {
-    if (!state.pkh) {
+    if (!pkh) {
       try {
         await connectApp({ appId: modelParser.appId });
       } catch (error) {

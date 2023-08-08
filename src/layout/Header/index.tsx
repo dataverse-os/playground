@@ -18,7 +18,7 @@ const Header = (): React.ReactElement => {
 
   const navigate = useNavigate();
 
-  const { state } = useStore();
+  const { pkh } = useStore();
 
   const { connectApp } = useApp({
     onPending: () => {
@@ -77,7 +77,7 @@ const Header = (): React.ReactElement => {
             min-width: 150px;
           `}
         >
-          {didAbbreviation(state.pkh, 2) || "Sign in"}
+          {didAbbreviation(pkh, 2) || "Sign in"}
         </Button>
       </HeaderRightRender>
     </Wrapper>

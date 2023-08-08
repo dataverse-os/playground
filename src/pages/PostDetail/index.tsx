@@ -5,12 +5,10 @@ import Hint from "@/components/Comment/Hint";
 import CommentEditor from "@/components/Comment/CommentEditor";
 import Header from "@/layout/Header";
 import { useParams } from "react-router-dom";
-import { useStore } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
 
 export default function PostDetail() {
   const { streamId } = useParams();
-  const { state } = useStore();
 
   return (
     <Wrapper>
@@ -20,7 +18,6 @@ export default function PostDetail() {
       <div className="main">
         <div className="post">
           <DisplayPostItem
-            streamRecord={state.streamsMap[streamId!]}
             streamId={streamId!}
           />
           <div className="comment-list">
