@@ -6,37 +6,36 @@ import githubLogo from "@/assets/github.png";
 import { useNavigate } from "react-router-dom";
 import { useApp, useStore } from "@dataverse/hooks";
 import { usePlaygroundStore } from "@/context";
-// import { Context } from "@/context";
 
 const Header = (): React.ReactElement => {
-  // const { modelParser } = useContext(Context);
   const {
-    playgroundState: { modelParser, isDataverseExtension },
+    playgroundState: { modelParser, isDataverseExtension, isConnecting },
     setNoExtensionModalVisible,
+    setIsConnecting,
   } = usePlaygroundStore();
-  // const dispatch = useAppDispatch();
+
   const navigate = useNavigate();
-  // const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
-  // const isDataverseExtension = useSelector(
-  //   (state) => state.noExtension.isDataverseExtension
-  // );
 
   const { state } = useStore();
 
-  const { isPending, connectApp } = useApp({
+  const { connectApp } = useApp({
+    onPending: () => {
+      setIsConnecting(true);
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
+        return;
+      }
+    },
     onError: (e) => {
       console.error(e);
+      setIsConnecting(false);
+    },
+    onSuccess: () => {
+      setIsConnecting(false);
     },
   });
 
-  const handleClickSignin = async () => {
-    if (isDataverseExtension === false) {
-      // dispatch(noExtensionSlice.actions.setModalVisible(true));
-      setNoExtensionModalVisible(true);
-      return;
-    }
-    connectApp({ appId: modelParser.appId });
-  };
+  const handleClickSignin = () => connectApp({ appId: modelParser.appId });
 
   return (
     <Wrapper>
@@ -69,7 +68,7 @@ const Header = (): React.ReactElement => {
           }}
         />
         <Button
-          loading={isPending}
+          loading={isConnecting}
           type="primary"
           onClick={handleClickSignin}
           css={css`

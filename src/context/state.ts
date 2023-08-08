@@ -9,6 +9,7 @@ export const initialState: PlaygroundStateType = {
   sortedStreamIds: [],
   isDataverseExtension: undefined,
   isNoExtensionModalVisible: false,
+  isConnecting: false,
 };
 
 export const reducer = (
@@ -29,6 +30,9 @@ export const reducer = (
       break;
     case PlaygroundActionType.SetNoExtensionModalVisible:
       state.isNoExtensionModalVisible = payload;
+      break;
+    case PlaygroundActionType.SetIsConnecting:
+      state.isConnecting = payload;
       break;
   }
   return _.cloneDeep(state);

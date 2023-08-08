@@ -140,6 +140,7 @@ export type PlaygroundStateType = {
   sortedStreamIds: string[];
   isDataverseExtension?: boolean;
   isNoExtensionModalVisible: boolean;
+  isConnecting: boolean;
 };
 
 export type PlaygroundContextType = {
@@ -150,7 +151,8 @@ export type PlaygroundContextType = {
 export enum PlaygroundActionType {
   SetIsDataverseExtension,
   SetSortedStreamIds,
-  SetNoExtensionModalVisible
+  SetNoExtensionModalVisible,
+  SetIsConnecting,
 }
 
 export type PrivacySettingsType = {
@@ -158,4 +160,4 @@ export type PrivacySettingsType = {
   currency?: Currency;
   amount?: number;
   collectLimit?: number;
-}
+};

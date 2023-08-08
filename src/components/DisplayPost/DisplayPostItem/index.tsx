@@ -1,6 +1,13 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
-import { PropsWithoutRef, PropsWithRef, useContext, useEffect, useMemo, useState } from "react";
+import {
+  PropsWithoutRef,
+  PropsWithRef,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
@@ -18,35 +25,55 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
   streamId: string;
 }
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
-  streamId,
-}) => {
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
   // const navigate = useNavigate();
 
   const {
-    playgroundState: {modelParser, isDataverseExtension},
+    playgroundState: { modelParser, isDataverseExtension },
     setNoExtensionModalVisible,
+    setIsConnecting,
   } = usePlaygroundStore();
   const { state, dataverseConnector } = useStore();
   const streamRecord = useMemo(() => {
     return state.streamsMap[streamId];
-  }, [state.streamsMap])
+  }, [state.streamsMap]);
 
   const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
-  const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] = useState<boolean>(false);
-  const { isPending: isConnectingApp, connectApp } = useApp();
+  const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] =
+    useState<boolean>(false);
+  const { isPending: isConnectingApp, connectApp } = useApp({
+    onPending: () => {
+      setIsConnecting(true);
+    },
+    onError: () => {
+      setIsConnecting(false);
+    },
+    onSuccess: () => {
+      setIsConnecting(false);
+    },
+  });
   const { isPending, isSucceed, unlockStream } = useUnlockStream({
+    onPending: () => {
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
+        return;
+      }
+    },
     onError: (error: any) => {
       console.error(error);
       Message.error(error?.message ?? error);
-    }
+    },
   });
 
   useEffect(() => {
-    if (!datatokenInfo && !isGettingDatatokenInfo && streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+    if (
+      !datatokenInfo &&
+      !isGettingDatatokenInfo &&
+      streamRecord.streamContent.file.fileType === FileType.Datatoken
+    ) {
       initDatatokenInfo();
     }
-  }, [state.streamsMap])
+  }, [state.streamsMap]);
 
   const initDatatokenInfo = async () => {
     setIsGettingDatatokenInfo(true);
@@ -63,10 +90,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   };
 
   const unlock = async () => {
-    if (isDataverseExtension === false) {
-      setNoExtensionModalVisible(true)
-      return;
-    }
+    // if (isDataverseExtension === false) {
+    //   setNoExtensionModalVisible(true);
+    //   return;
+    // }
 
     if (!state.pkh) {
       try {

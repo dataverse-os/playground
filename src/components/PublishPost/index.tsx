@@ -49,6 +49,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       isNoExtensionModalVisible,
     },
     setNoExtensionModalVisible,
+    setIsConnecting
   } = usePlaygroundStore();
 
   const [needEncrypt, setNeedEncrypt] = useState<boolean>(false);
@@ -64,7 +65,17 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const { state } = useStore();
-  const { isPending: isConnectingApp, connectApp } = useApp();
+  const { isPending: isConnectingApp, connectApp } = useApp({
+    onPending: () => {
+      setIsConnecting(true);
+    },
+    onError: () => {
+      setIsConnecting(false);
+    },
+    onSuccess: () => {
+      setIsConnecting(false);
+    },
+  });
   const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
@@ -97,7 +108,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       }
     }
 
-    const postImages = await handlePostImages();
+    const postImages = await _postImages();
     if (!postImages) return;
 
     if (needEncrypt) {
@@ -107,18 +118,18 @@ const PublishPost: React.FC<PublishPostProps> = ({
         setCreateProfileModalVisible(true);
         return;
       }
-      await post({
+      await _post({
         postImages,
         profileId: lensProfiles[0],
       });
     } else {
-      await post({
+      await _post({
         postImages,
       });
     }
   };
 
-  const handlePostImages = async () => {
+  const _postImages = async () => {
     if (needEncrypt && settings) {
       const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
       const { amount, collectLimit } = settings;
@@ -150,7 +161,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
     return postImages;
   };
 
-  const post = async ({
+  const _post = async ({
     profileId,
     postImages,
   }: {

@@ -1,11 +1,9 @@
 import { PlaygroundActionType, PlaygroundContextType } from "@/types";
 import { createContext, useContext } from "react";
-import { initialState } from "./state";
 
-export const PlaygroundContext = createContext<PlaygroundContextType>({
-  state: initialState,
-  dispatch: () => {},
-});
+export const PlaygroundContext = createContext<PlaygroundContextType>(
+  {} as PlaygroundContextType
+);
 
 export const usePlaygroundStore = () => {
   const context = useContext(PlaygroundContext);
@@ -14,7 +12,7 @@ export const usePlaygroundStore = () => {
   }
 
   const { state, dispatch } = context;
-  
+
   const setSortedStreamIds = (streamIds: string[]) => {
     dispatch({
       type: PlaygroundActionType.SetSortedStreamIds,
@@ -36,10 +34,18 @@ export const usePlaygroundStore = () => {
     });
   };
 
+  const setIsConnecting = (value: boolean) => {
+    dispatch({
+      type: PlaygroundActionType.SetIsConnecting,
+      payload: value,
+    });
+  };
+
   return {
     playgroundState: state,
     setIsDataverseExtension,
     setSortedStreamIds,
-    setNoExtensionModalVisible
+    setNoExtensionModalVisible,
+    setIsConnecting,
   };
 };
