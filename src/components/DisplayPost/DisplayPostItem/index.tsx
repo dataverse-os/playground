@@ -16,7 +16,7 @@ import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { FlexRow } from "@/styled";
-import { useApp, useStore, useUnlockStream } from "@dataverse/hooks";
+import { useApp, useDatatokenInfo, useStore, useUnlockStream } from "@dataverse/hooks";
 import { DatatokenInfo } from "@/types";
 import { usePlaygroundStore } from "@/context";
 import { Message } from "@arco-design/web-react";
@@ -39,9 +39,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     return streamsMap[streamId];
   }, [streamsMap]);
 
-  const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
-  const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] =
-    useState<boolean>(false);
+  const {isPending: isGettingDatatokenInfo, datatokenInfo, getDatatokenInfo} = useDatatokenInfo();
   const { isPending: isConnectingApp, connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
@@ -70,25 +68,12 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     if (
       !datatokenInfo &&
       !isGettingDatatokenInfo &&
-      streamRecord.streamContent.file.fileType === FileType.Datatoken
+      streamRecord.streamContent.file.fileType === FileType.Datatoken && 
+      !streamRecord.datatokenInfo
     ) {
-      initDatatokenInfo();
+      getDatatokenInfo(streamId);
     }
   }, [streamsMap]);
-
-  const initDatatokenInfo = async () => {
-    setIsGettingDatatokenInfo(true);
-    try {
-      const datatokenInfo = await dataverseConnector.getDatatokenBaseInfo(
-        streamRecord.streamContent.file.datatokenId
-      );
-      setDatatokenInfo(datatokenInfo);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsGettingDatatokenInfo(false);
-    }
-  };
 
   const unlock = async () => {
     if (!pkh) {
