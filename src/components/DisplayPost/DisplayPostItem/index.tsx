@@ -90,11 +90,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
   };
 
   const unlock = async () => {
-    // if (isDataverseExtension === false) {
-    //   setNoExtensionModalVisible(true);
-    //   return;
-    // }
-
     if (!state.pkh) {
       try {
         await connectApp({ appId: modelParser.appId });

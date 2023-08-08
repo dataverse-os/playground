@@ -18,32 +18,34 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
   isModalVisible,
   setModalVisible,
 }) => {
-  const { createProfile } = useCreateProfile();
   const [handle, setHandle] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const { isPending, createProfile } = useCreateProfile({
+    onPending: (handle) => {
+      if (!/^[\da-z]{5,26}$/.test(handle!) || handle!.length > 26) {
+        Message.info(
+          "Only supports lower case characters, numbers, must be minimum of 5 length and maximum of 26 length"
+        );
+        return;
+      }
+    },
+    onError: (error) => {
+      ((error as any).message ?? error) &&
+      Message.error(((error as any).message ?? error).slice(0, 100));
+    },
+    onSuccess: () => {
+      Message.success("Create Lens profile successfully!");
+      closeModel();
+    }
+  });
+
+  const submit = async () => {
+    await createProfile(handle);
+  };
 
   const closeModel = () => {
     setModalVisible(false);
     setHandle("");
-  };
-
-  const submit = async () => {
-    if (!/^[\da-z]{5,26}$/.test(handle) || handle.length > 26) {
-      Message.info(
-        "Only supports lower case characters, numbers, must be minimum of 5 length and maximum of 26 length"
-      );
-      return;
-    }
-    setLoading(true);
-    try {
-      await createProfile(handle);
-      Message.success("Create Lens profile successfully!");
-      closeModel();
-    } catch (error: any) {
-      (error.message ?? error) &&
-        Message.error((error.message ?? error).slice(0, 100));
-    }
-    setLoading(false);
   };
 
   return (
@@ -72,7 +74,7 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
         </div>
         <Button
           width={110}
-          loading={loading}
+          loading={isPending}
           css={buttonStyle}
           type="primary"
           onClick={submit}
