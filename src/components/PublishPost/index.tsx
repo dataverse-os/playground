@@ -64,7 +64,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const { state } = useStore();
-  const { connectApp } = useApp();
+  const { isPending: isConnectingApp, connectApp } = useApp();
   const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
@@ -86,7 +86,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
       setNoExtensionModalVisible(true);
       return;
     }
-    if (isPending) return;
+    if (isPending || isConnectingApp) return;
 
     if (!state.pkh) {
       try {
@@ -316,7 +316,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
                 <FlexRow>
                   <Button
                     type="primary"
-                    loading={isPending}
+                    loading={isPending || isConnectingApp}
                     onClick={handleProfileAndPost}
                     width={110}
                     css={css`

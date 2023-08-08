@@ -27,14 +27,14 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     playgroundState: {modelParser, isDataverseExtension},
     setNoExtensionModalVisible,
   } = usePlaygroundStore();
-  const { state } = useStore();
+  const { state, dataverseConnector } = useStore();
   const streamRecord = useMemo(() => {
     return state.streamsMap[streamId];
   }, [state.streamsMap])
 
   const [datatokenInfo, setDatatokenInfo] = useState<DatatokenInfo>();
   const [isGettingDatatokenInfo, setIsGettingDatatokenInfo] = useState<boolean>(false);
-  const { connectApp } = useApp();
+  const { isPending: isConnectingApp, connectApp } = useApp();
   const { isPending, isSucceed, unlockStream } = useUnlockStream({
     onError: (error: any) => {
       console.error(error);
@@ -43,7 +43,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   });
 
   useEffect(() => {
-    if (!isGettingDatatokenInfo && streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+    if (!datatokenInfo && !isGettingDatatokenInfo && streamRecord.streamContent.file.fileType === FileType.Datatoken) {
       initDatatokenInfo();
     }
   }, [state.streamsMap])
@@ -51,7 +51,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const initDatatokenInfo = async () => {
     setIsGettingDatatokenInfo(true);
     try {
-      const datatokenInfo = await state.dataverseConnector?.getDatatokenBaseInfo(
+      const datatokenInfo = await dataverseConnector.getDatatokenBaseInfo(
         streamRecord.streamContent.file.datatokenId
       );
       setDatatokenInfo(datatokenInfo);
@@ -67,20 +67,22 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       setNoExtensionModalVisible(true)
       return;
     }
+
     if (!state.pkh) {
       try {
         await connectApp({ appId: modelParser.appId });
       } catch (error) {
         console.error(error);
-        throw error;
+        return;
       }
     }
+
     if (isPending || isSucceed) {
       console.log("cannot unlock");
       return;
     }
 
-    unlockStream(streamId);
+    await unlockStream(streamId);
   };
 
   return (
@@ -104,7 +106,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           {streamRecord.streamContent.file.fileType !== FileType.Public && (
             <UnlockInfo
               streamRecord={streamRecord}
-              isPending={isPending}
+              isPending={isPending || isConnectingApp}
               isSucceed={isSucceed}
               datatokenInfo={datatokenInfo}
               unlock={unlock}

@@ -7,14 +7,18 @@ import Button from "@/components/BaseComponents/Button";
 import addSvg from "@/assets/icons/add.svg";
 import { Message } from "@arco-design/web-react";
 import { buttonStyle, inputStyle, modelWrapper } from "./styled";
-import { createLensProfile } from "@/sdk";
+import { useCreateProfile } from "@dataverse/hooks";
 
 interface CreateLensProfileProps {
   isModalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({isModalVisible, setModalVisible}) => {
+export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
+  isModalVisible,
+  setModalVisible,
+}) => {
+  const { createProfile } = useCreateProfile();
   const [handle, setHandle] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,8 +36,7 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({isModalVisi
     }
     setLoading(true);
     try {
-      const profileId = await createLensProfile(handle);
-      console.log(profileId);
+      await createProfile(handle);
       Message.success("Create Lens profile successfully!");
       closeModel();
     } catch (error: any) {

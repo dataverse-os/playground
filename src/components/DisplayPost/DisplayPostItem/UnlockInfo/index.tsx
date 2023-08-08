@@ -6,7 +6,7 @@ import { DatatokenInfo } from "@/types";
 import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
-import { getCurrencyNameByCurrencyAddress } from "@/sdk";
+import { getCurrencyNameByCurrencyAddress } from "@/utils";
 
 interface DisplayPostItemProps {
   streamRecord: StreamRecord;
