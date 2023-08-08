@@ -16,7 +16,12 @@ import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { FlexRow } from "@/styled";
-import { useApp, useDatatokenInfo, useStore, useUnlockStream } from "@dataverse/hooks";
+import {
+  useApp,
+  useDatatokenInfo,
+  useStore,
+  useUnlockStream,
+} from "@dataverse/hooks";
 import { DatatokenInfo } from "@/types";
 import { usePlaygroundStore } from "@/context";
 import { Message } from "@arco-design/web-react";
@@ -39,7 +44,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     return streamsMap[streamId];
   }, [streamsMap]);
 
-  const {isPending: isGettingDatatokenInfo, getDatatokenInfo} = useDatatokenInfo();
+  const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
+    useDatatokenInfo();
+
   const { isPending: isConnectingApp, connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
@@ -67,7 +74,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
   useEffect(() => {
     if (
       !isGettingDatatokenInfo &&
-      streamRecord.streamContent.file.fileType === FileType.Datatoken && 
+      streamRecord.streamContent.file.fileType === FileType.Datatoken &&
       !streamRecord.datatokenInfo
     ) {
       getDatatokenInfo(streamId);
@@ -115,7 +122,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
               streamRecord={streamRecord}
               isPending={isPending || isConnectingApp}
               isSucceed={isSucceed}
-              datatokenInfo={streamRecord.datatokenInfo}
               unlock={unlock}
             />
           )}

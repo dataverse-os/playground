@@ -23,23 +23,21 @@ import { IconArrowRight } from "@arco-design/web-react/icon";
 import { CreateLensProfile } from "../CreateLensProfile";
 import { PostType, PrivacySettingsType } from "@/types";
 import { usePlaygroundStore } from "@/context";
-import { useApp, useProfiles, useStore } from "@dataverse/hooks";
+import {
+  StreamType,
+  useApp,
+  useCreateStream,
+  useProfiles,
+  useStore,
+} from "@dataverse/hooks";
 import NoExtensionTip from "../NoExtensionTip";
 import { uploadImages } from "@/sdk";
 
 interface PublishPostProps {
   modelId: string;
-  isPending: boolean;
-  createPublicStream: Function;
-  createPayableStream: Function;
 }
 
-const PublishPost: React.FC<PublishPostProps> = ({
-  modelId,
-  isPending,
-  createPublicStream,
-  createPayableStream,
-}) => {
+const PublishPost: React.FC<PublishPostProps> = ({ modelId }) => {
   const {
     modelParser,
     appVersion,
@@ -48,6 +46,16 @@ const PublishPost: React.FC<PublishPostProps> = ({
     setNoExtensionModalVisible,
     setIsConnecting,
   } = usePlaygroundStore();
+
+  const [isPublishing, setIsPublishing] = useState<boolean>(false);
+
+  const { createStream: createPublicStream } = useCreateStream({
+    streamType: StreamType.Public,
+  });
+
+  const { createStream: createPayableStream } = useCreateStream({
+    streamType: StreamType.Payable,
+  });
 
   const [needEncrypt, setNeedEncrypt] = useState<boolean>(false);
   const [settings, setSettings] = useState<PrivacySettingsType>({
@@ -62,7 +70,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const { pkh, address, profileIds } = useStore();
-  const { isPending: isConnectingApp, connectApp } = useApp({
+  const { connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
     },
@@ -90,51 +98,56 @@ const PublishPost: React.FC<PublishPostProps> = ({
   };
 
   const handleProfileAndPost = async () => {
-    if (isDataverseExtension === false) {
-      setNoExtensionModalVisible(true);
-      return;
-    }
-    if (isPending || isConnectingApp) return;
-
-    let accountAddress: string;
-
-    if (!address || !pkh) {
-      try {
-        const res = await connectApp({ appId: modelParser.appId });
-        accountAddress = res.address;
-      } catch (error) {
-        console.error(error);
+    setIsPublishing(true);
+    try {
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
         return;
       }
-    } else {
-      accountAddress = address;
-    }
+      if (isPublishing) return;
 
-    const postImages = await _postImages();
-    if (!postImages) return;
+      let accountAddress: string;
 
-    if (needEncrypt) {
-      let targetProfileIds: string[];
-      console.log("state profileIds:", profileIds)
-      if (!profileIds) {
-        const lensProfiles = await getProfiles(accountAddress);
-        console.log("lensProfiles:", lensProfiles)
-        targetProfileIds = lensProfiles;
+      if (!address || !pkh) {
+        try {
+          const res = await connectApp({ appId: modelParser.appId });
+          accountAddress = res.address;
+        } catch (error) {
+          console.error(error);
+          return;
+        }
       } else {
-        targetProfileIds = profileIds;
+        accountAddress = address;
       }
-      if (targetProfileIds.length === 0) {
-        setCreateProfileModalVisible(true);
+
+      const postImages = await _postImages();
+      if (!postImages) return;
+
+      if (needEncrypt) {
+        let targetProfileIds: string[];
+        if (!profileIds) {
+          const lensProfiles = await getProfiles(accountAddress);
+          targetProfileIds = lensProfiles;
+        } else {
+          targetProfileIds = profileIds;
+        }
+        if (targetProfileIds.length === 0) {
+          setCreateProfileModalVisible(true);
+        } else {
+          await _post({
+            postImages,
+            profileId: targetProfileIds[0],
+          });
+        }
       } else {
         await _post({
           postImages,
-          profileId: targetProfileIds[0],
         });
       }
-    } else {
-      await _post({
-        postImages,
-      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -336,7 +349,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
                 <FlexRow>
                   <Button
                     type="primary"
-                    loading={isPending || isConnectingApp}
+                    loading={isPublishing}
                     onClick={handleProfileAndPost}
                     width={110}
                     css={css`

@@ -5,12 +5,7 @@ import { StreamRecordMap } from "@/types";
 import { usePlaygroundStore } from "@/context";
 import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
-import {
-  StreamType,
-  useCreateStream,
-  useFeeds,
-  useStore,
-} from "@dataverse/hooks";
+import { useFeeds, useStore } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
 import { FileType } from "@dataverse/dataverse-connector";
 
@@ -97,40 +92,23 @@ const DisplayPost = () => {
     setCeramicStreamsMap(ceramicStreamsRecordMap);
   };
 
-  const { isPending: isPublicPending, createStream: createPublicStream } =
-    useCreateStream({
-      streamType: StreamType.Public,
-    });
-
-  const { isPending: isPayablePending, createStream: createPayableStream } =
-    useCreateStream({
-      streamType: StreamType.Payable,
-    });
-
   return (
     <>
       <Wrapper>
         <PublishPost
           modelId={postModel.streams[postModel.streams.length - 1].modelId}
-          isPending={isPublicPending || isPayablePending}
-          createPublicStream={createPublicStream}
-          createPayableStream={createPayableStream}
         />
         {sortedStreamIds.map((streamId, index) =>
           index % 2 == 1 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
-          ) : (
-            undefined
-          )
+          ) : undefined
         )}
       </Wrapper>
       <Wrapper>
         {sortedStreamIds.map((streamId, index) =>
           index % 2 == 0 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
-          ) : (
-            undefined
-          )
+          ) : undefined
         )}
       </Wrapper>
     </>

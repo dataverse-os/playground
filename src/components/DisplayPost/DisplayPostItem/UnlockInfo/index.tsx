@@ -9,10 +9,9 @@ import { css } from "styled-components";
 import { getCurrencyNameByCurrencyAddress } from "@/utils";
 
 interface DisplayPostItemProps {
-  streamRecord: StreamRecord;
+  streamRecord: StreamRecord & {datatokenInfo?: DatatokenInfo};
   isPending: boolean;
   isSucceed: boolean;
-  datatokenInfo?: DatatokenInfo;
   unlock: () => void;
 }
 
@@ -20,9 +19,9 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
   streamRecord,
   isPending,
   isSucceed,
-  datatokenInfo,
   unlock,
 }) => {
+  
   return (
     <Wrapper>
       {isPending ? (
@@ -46,24 +45,24 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
       {streamRecord.streamContent.file.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
           <span className="amount">
-            {datatokenInfo?.collect_info?.price.amount || 0}
+            {streamRecord.datatokenInfo?.collect_info?.price.amount || 0}
           </span>
           <span className="currency">
-            {datatokenInfo?.collect_info?.price.currency
+            {streamRecord.datatokenInfo?.collect_info?.price.currency
               ? getCurrencyNameByCurrencyAddress(
-                  datatokenInfo?.collect_info?.price.currency
+                  streamRecord.datatokenInfo?.collect_info?.price.currency
                 )
               : ""}
           </span>
           <br />
           <span className="boughtNum">
-            {datatokenInfo?.collect_info?.sold_num || 0}
+            {streamRecord.datatokenInfo?.collect_info?.sold_num || 0}
           </span>{" "}
           /
           <span className="collectLimit">
-            {datatokenInfo?.collect_info?.total === String(2 ** 52)
+            {streamRecord.datatokenInfo?.collect_info?.total === String(2 ** 52)
               ? " Unlimited"
-              : " " + datatokenInfo?.collect_info?.total}
+              : " " + streamRecord.datatokenInfo?.collect_info?.total}
           </span>
           <span className="Sold">Sold</span>
         </DatatokenInfoWrapper>
