@@ -1,14 +1,7 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
-import {
-  PropsWithoutRef,
-  PropsWithRef,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+import { PropsWithRef, useEffect, useMemo } from "react";
+import { FileType } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
 import Text from "./Text";
