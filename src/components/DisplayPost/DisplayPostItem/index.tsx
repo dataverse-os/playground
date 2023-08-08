@@ -34,12 +34,12 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     setNoExtensionModalVisible,
     setIsConnecting,
   } = usePlaygroundStore();
-  const { pkh, streamsMap, dataverseConnector } = useStore();
+  const { pkh, streamsMap } = useStore();
   const streamRecord = useMemo(() => {
     return streamsMap[streamId];
   }, [streamsMap]);
 
-  const {isPending: isGettingDatatokenInfo, datatokenInfo, getDatatokenInfo} = useDatatokenInfo();
+  const {isPending: isGettingDatatokenInfo, getDatatokenInfo} = useDatatokenInfo();
   const { isPending: isConnectingApp, connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
@@ -66,7 +66,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
 
   useEffect(() => {
     if (
-      !datatokenInfo &&
       !isGettingDatatokenInfo &&
       streamRecord.streamContent.file.fileType === FileType.Datatoken && 
       !streamRecord.datatokenInfo
@@ -116,7 +115,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
               streamRecord={streamRecord}
               isPending={isPending || isConnectingApp}
               isSucceed={isSucceed}
-              datatokenInfo={datatokenInfo}
+              datatokenInfo={streamRecord.datatokenInfo}
               unlock={unlock}
             />
           )}

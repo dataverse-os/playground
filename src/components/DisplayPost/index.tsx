@@ -53,7 +53,6 @@ const DisplayPost = () => {
     const _streamsMap: StreamRecordMap = isDataverseExtension
       ? streamsMap
       : ceramicStreamsMap;
-    console.log("detected:", {_streamsMap});
 
     const _sortedStreamIds = Object.keys(_streamsMap)
       .filter(

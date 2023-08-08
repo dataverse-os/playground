@@ -21,7 +21,6 @@ import {
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
 import { CreateLensProfile } from "../CreateLensProfile";
-// import { getLensProfiles } from "@/sdk/monetize";
 import { PostType, PrivacySettingsType } from "@/types";
 import { usePlaygroundStore } from "@/context";
 import { useApp, useProfiles, useStore } from "@dataverse/hooks";
@@ -62,7 +61,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  const { pkh, address } = useStore();
+  const { pkh, address, profileIds } = useStore();
   const { isPending: isConnectingApp, connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
@@ -97,29 +96,41 @@ const PublishPost: React.FC<PublishPostProps> = ({
     }
     if (isPending || isConnectingApp) return;
 
-    if (!pkh) {
+    let accountAddress: string;
+
+    if (!address || !pkh) {
       try {
-        await connectApp({ appId: modelParser.appId });
+        const res = await connectApp({ appId: modelParser.appId });
+        accountAddress = res.address;
       } catch (error) {
         console.error(error);
         return;
       }
+    } else {
+      accountAddress = address;
     }
 
     const postImages = await _postImages();
     if (!postImages) return;
 
     if (needEncrypt) {
-      const lensProfiles = await getProfiles(address);
-
-      if (lensProfiles.length === 0) {
-        setCreateProfileModalVisible(true);
-        return;
+      let targetProfileIds: string[];
+      console.log("state profileIds:", profileIds)
+      if (!profileIds) {
+        const lensProfiles = await getProfiles(accountAddress);
+        console.log("lensProfiles:", lensProfiles)
+        targetProfileIds = lensProfiles;
+      } else {
+        targetProfileIds = profileIds;
       }
-      await _post({
-        postImages,
-        profileId: lensProfiles[0],
-      });
+      if (targetProfileIds.length === 0) {
+        setCreateProfileModalVisible(true);
+      } else {
+        await _post({
+          postImages,
+          profileId: targetProfileIds[0],
+        });
+      }
     } else {
       await _post({
         postImages,
