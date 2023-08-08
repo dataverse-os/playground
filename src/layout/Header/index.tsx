@@ -9,7 +9,9 @@ import { usePlaygroundStore } from "@/context";
 
 const Header = (): React.ReactElement => {
   const {
-    playgroundState: { modelParser, isDataverseExtension, isConnecting },
+    modelParser,
+    isDataverseExtension,
+    isConnecting,
     setNoExtensionModalVisible,
     setIsConnecting,
   } = usePlaygroundStore();

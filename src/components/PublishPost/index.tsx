@@ -42,14 +42,12 @@ const PublishPost: React.FC<PublishPostProps> = ({
   createPayableStream,
 }) => {
   const {
-    playgroundState: {
-      modelParser,
-      appVersion,
-      isDataverseExtension,
-      isNoExtensionModalVisible,
-    },
+    modelParser,
+    appVersion,
+    isDataverseExtension,
+    isNoExtensionModalVisible,
     setNoExtensionModalVisible,
-    setIsConnecting
+    setIsConnecting,
   } = usePlaygroundStore();
 
   const [needEncrypt, setNeedEncrypt] = useState<boolean>(false);

@@ -15,13 +15,19 @@ import { Wrapper } from "./styled";
 import { FileType } from "@dataverse/dataverse-connector";
 
 const DisplayPost = () => {
-  const { playgroundState, setIsDataverseExtension, setSortedStreamIds } =
-    usePlaygroundStore();
+  const {
+    modelParser,
+    appVersion,
+    isDataverseExtension,
+    sortedStreamIds,
+    setIsDataverseExtension,
+    setSortedStreamIds,
+  } = usePlaygroundStore();
   const postModel = useMemo(() => {
-    return playgroundState.modelParser.getModelByName("post");
+    return modelParser.getModelByName("post");
   }, []);
   const indexFilesModel = useMemo(() => {
-    return playgroundState.modelParser.getModelByName("indexFiles");
+    return modelParser.getModelByName("indexFiles");
   }, []);
 
   const { state } = useStore();
@@ -43,15 +49,14 @@ const DisplayPost = () => {
   }, []);
 
   useEffect(() => {
-    const streamsMap: StreamRecordMap = playgroundState.isDataverseExtension
+    const streamsMap: StreamRecordMap = isDataverseExtension
       ? state.streamsMap
       : ceramicStreamsMap;
 
     const sortedStreamIds = Object.keys(streamsMap)
       .filter(
         (el) =>
-          streamsMap[el].streamContent.content.appVersion ===
-            playgroundState.appVersion &&
+          streamsMap[el].streamContent.content.appVersion === appVersion &&
           streamsMap[el].streamContent.file.fileType !== FileType.Private
       )
       .sort(
@@ -73,7 +78,7 @@ const DisplayPost = () => {
     const ceramicStreamsRecordMap: StreamRecordMap = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
       ceramicStreamsRecordMap[streamId] = {
-        appId: playgroundState.modelParser.appId,
+        appId: modelParser.appId,
         modelId: postModel.streams[postModel.streams.length - 1].modelId,
         pkh: content.controller,
         streamContent: {
@@ -110,7 +115,7 @@ const DisplayPost = () => {
           createPublicStream={createPublicStream}
           createPayableStream={createPayableStream}
         />
-        {playgroundState.sortedStreamIds.map((streamId, index) =>
+        {sortedStreamIds.map((streamId, index) =>
           index % 2 == 1 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
           ) : (
@@ -119,7 +124,7 @@ const DisplayPost = () => {
         )}
       </Wrapper>
       <Wrapper>
-        {playgroundState.sortedStreamIds.map((streamId, index) =>
+        {sortedStreamIds.map((streamId, index) =>
           index % 2 == 0 ? (
             <DisplayPostItem streamId={streamId} key={streamId} />
           ) : (

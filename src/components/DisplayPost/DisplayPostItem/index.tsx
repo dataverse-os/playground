@@ -29,7 +29,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
   // const navigate = useNavigate();
 
   const {
-    playgroundState: { modelParser, isDataverseExtension },
+    modelParser,
+    isDataverseExtension,
     setNoExtensionModalVisible,
     setIsConnecting,
   } = usePlaygroundStore();

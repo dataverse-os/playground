@@ -31,9 +31,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const [open, setOpen] = useState(false);
   // const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
   const {
-    playgroundState: {
       sortedStreamIds
-    }
   } = usePlaygroundStore();
   const load = async () => {
     setAvatarSrc(contextAvatar(getAddressFromDid(did)));

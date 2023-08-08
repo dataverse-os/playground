@@ -42,7 +42,7 @@ export const usePlaygroundStore = () => {
   };
 
   return {
-    playgroundState: state,
+    ...state,
     setIsDataverseExtension,
     setSortedStreamIds,
     setNoExtensionModalVisible,
