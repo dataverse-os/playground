@@ -22,7 +22,6 @@ import {
   useStore,
   useUnlockStream,
 } from "@dataverse/hooks";
-import { DatatokenInfo } from "@/types";
 import { usePlaygroundStore } from "@/context";
 import { Message } from "@arco-design/web-react";
 
