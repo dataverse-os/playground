@@ -2,7 +2,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Wrapper, Content, Header } from "../DisplayPostItem/styled";
 
-export const LoadingPostItem = () => {
+const LoadingPostItem = () => {
   return (
     <Wrapper>
       <Content>
@@ -14,3 +14,5 @@ export const LoadingPostItem = () => {
     </Wrapper>
   );
 };
+
+export default LoadingPostItem;

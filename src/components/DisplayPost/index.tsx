@@ -8,7 +8,7 @@ import { ceramic } from "@/sdk";
 import { useAction, useFeeds, useStore } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
 import { FileType } from "@dataverse/dataverse-connector";
-import { LoadingPostItem } from "./LoadingPostItem";
+import LoadingPostItem from "./LoadingPostItem";
 import { useApp } from "@dataverse/hooks";
 
 const DisplayPost = () => {
@@ -119,7 +119,11 @@ const DisplayPost = () => {
         ) : (
           sortedStreamIds.map((streamId, index) =>
             index % 2 == 1 ? (
-              <DisplayPostItem streamId={streamId} key={streamId} connectApp={connectApp} />
+              <DisplayPostItem
+                streamId={streamId}
+                key={streamId}
+                connectApp={connectApp}
+              />
             ) : undefined
           )
         )}
@@ -134,7 +138,11 @@ const DisplayPost = () => {
         ) : (
           sortedStreamIds.map((streamId, index) =>
             index % 2 == 0 ? (
-              <DisplayPostItem streamId={streamId} key={streamId} connectApp={connectApp} />
+              <DisplayPostItem
+                streamId={streamId}
+                key={streamId}
+                connectApp={connectApp}
+              />
             ) : undefined
           )
         )}
