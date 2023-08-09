@@ -85,8 +85,8 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   return (
     <Wrapper>
       <Modal
-        id="privacySettings"
-        title="Privacy Settings"
+        id='privacySettings'
+        title='Privacy Settings'
         // width={280}
         controlVisible={isModalVisible}
         showCloseButton
@@ -121,7 +121,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             <ItemWrapper>
               <Input
                 value={amount}
-                type="number"
+                type='number'
                 cssStyles={css`
                   width: auto !important;
                 `}
@@ -154,7 +154,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                     value: "DAI",
                   },
                 ]}
-                onChange={(data) => {
+                onChange={data => {
                   setCurrency(data);
                 }}
                 cssStyles={css`
@@ -167,21 +167,21 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
             <ItemWrapper>
               <Input
                 value={limit}
-                type="number"
+                type='number'
                 cssStyles={css`
                   width: auto !important;
                 `}
                 canBeEmpty={checked || !inputWarn ? true : false}
                 positive={inputWarn && !checked}
                 placeholder={`eg 20`}
-                onChange={(value) => {
+                onChange={value => {
                   setLimit(value);
                   value && setChecked(false);
                 }}
                 decimalPlaces={0}
               />
               <UnlimitedWrapper
-                onClick={(e) => {
+                onClick={() => {
                   if (!checked) {
                     setLimit("");
                   }
@@ -195,12 +195,12 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
               </UnlimitedWrapper>
             </ItemWrapper>
             <ItemWrapper>
-              <div className="tip">
+              <div className='tip'>
                 Data Monetization is on Mumbai. Testnet Matic faucet
                 <a
                   href={process.env.MUMBAI_FAUCET}
-                  target="_blank"
-                  className="link"
+                  target='_blank'
+                  className='link'
                 >
                   here
                 </a>

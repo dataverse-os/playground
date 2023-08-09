@@ -10,7 +10,7 @@ export const Wrapper = styled.div`
 
 export const Brand = styled.div`
   font-weight: bold;
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 900;
   font-size: 24px;
@@ -23,7 +23,7 @@ export const HeaderRightRender = styled.div`
   display: flex;
   justify-items: center;
   align-items: center;
-`
+`;
 
 export const GitHubLink = styled.img`
   height: 36px;

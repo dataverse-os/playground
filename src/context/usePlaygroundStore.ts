@@ -2,7 +2,7 @@ import { PlaygroundActionType, PlaygroundContextType } from "@/types";
 import { createContext, useContext } from "react";
 
 export const PlaygroundContext = createContext<PlaygroundContextType>(
-  {} as PlaygroundContextType
+  {} as PlaygroundContextType,
 );
 
 export const usePlaygroundStore = () => {

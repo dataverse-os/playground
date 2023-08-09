@@ -2,7 +2,10 @@ import { CeramicClient } from "@ceramicnetwork/http-client";
 import { ModelInstanceDocument } from "@ceramicnetwork/stream-model-instance";
 import { IndexApi, Page, StreamState } from "@ceramicnetwork/common";
 import { decode } from "../utils";
-import { IndexFileContentType,  StructuredFiles } from "@dataverse/dataverse-connector";
+import {
+  IndexFileContentType,
+  StructuredFiles,
+} from "@dataverse/dataverse-connector";
 
 class Ceramic {
   public ceramicClient: CeramicClient;
@@ -66,47 +69,45 @@ class Ceramic {
     model: string;
     streams: Record<string, any>;
   }) {
-      const indexFiles = await this.loadStreamsByModel(
-        model
-      );
-  
-      const structuredFiles = {} as StructuredFiles;
-  
-      Object.entries(indexFiles).forEach(([indexFileId, indexFile]) => {
-        structuredFiles[indexFileId] = {
-          indexFileId,
-          ...indexFile,
-          comment: decode(indexFile.comment),
-          ...(indexFile.relation && {
-            relation: decode(indexFile.relation),
-          }),
-          ...(indexFile.additional && {
-            additional: decode(indexFile.additional),
-          }),
-          ...(indexFile.decryptionConditions && {
-            decryptionConditions: decode(indexFile.decryptionConditions),
-          }),
-        };
-      });
-  
-      structuredFiles &&
-        Object.values(structuredFiles).forEach((structuredFile) => {
-          const { contentId, contentType, controller } = structuredFile;
-          if (
-            streams[contentId] &&
-            streams[contentId].controller === controller
-          ) {
-            streams[contentId] = {
-              ...(!(contentType in IndexFileContentType) &&
-                streams[contentId] && {
+    const indexFiles = await this.loadStreamsByModel(model);
+
+    const structuredFiles = {} as StructuredFiles;
+
+    Object.entries(indexFiles).forEach(([indexFileId, indexFile]) => {
+      structuredFiles[indexFileId] = {
+        indexFileId,
+        ...indexFile,
+        comment: decode(indexFile.comment),
+        ...(indexFile.relation && {
+          relation: decode(indexFile.relation),
+        }),
+        ...(indexFile.additional && {
+          additional: decode(indexFile.additional),
+        }),
+        ...(indexFile.decryptionConditions && {
+          decryptionConditions: decode(indexFile.decryptionConditions),
+        }),
+      };
+    });
+
+    structuredFiles &&
+      Object.values(structuredFiles).forEach(structuredFile => {
+        const { contentId, contentType, controller } = structuredFile;
+        if (
+          streams[contentId] &&
+          streams[contentId].controller === controller
+        ) {
+          streams[contentId] = {
+            ...(!(contentType in IndexFileContentType) &&
+              streams[contentId] && {
                 content: streams[contentId],
               }),
-              ...structuredFile,
-            };
-          }
-        });
+            ...structuredFile,
+          };
+        }
+      });
     return streams;
-  };
+  }
 }
 
 export const ceramic = new Ceramic();

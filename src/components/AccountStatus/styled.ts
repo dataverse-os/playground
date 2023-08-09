@@ -5,7 +5,7 @@ export const Wrapper = styled.div<{ cssStyles?: FlattenSimpleInterpolation }>`
   justify-items: center;
   width: 100%;
   height: 2rem;
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;
 
 export const Avatar = styled.img`

@@ -40,18 +40,18 @@ export function timeAgo(dateTimeStamp: number) {
         : datetime.getMonth() + 1;
     const Ndate =
       datetime.getDate() < 10 ? `0${datetime.getDate()}` : datetime.getDate();
-    const Nhour =
-      datetime.getHours() < 10
-        ? `0${datetime.getHours()}`
-        : datetime.getHours();
-    const Nminute =
-      datetime.getMinutes() < 10
-        ? `0${datetime.getMinutes()}`
-        : datetime.getMinutes();
-    const Nsecond =
-      datetime.getSeconds() < 10
-        ? `0${datetime.getSeconds()}`
-        : datetime.getSeconds();
+    // const Nhour =
+    //   datetime.getHours() < 10
+    //     ? `0${datetime.getHours()}`
+    //     : datetime.getHours();
+    // const Nminute =
+    //   datetime.getMinutes() < 10
+    //     ? `0${datetime.getMinutes()}`
+    //     : datetime.getMinutes();
+    // const Nsecond =
+    //   datetime.getSeconds() < 10
+    //     ? `0${datetime.getSeconds()}`
+    //     : datetime.getSeconds();
     result = `${Nyear}-${Nmonth}-${Ndate}`;
   }
   return result;

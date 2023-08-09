@@ -90,10 +90,10 @@ const Modal: React.FC<ModalProps> = ({
   const target = usePortal(parentId);
   const elements = (
     <ModalWrap visible={visible} width={width} cssStyle={cssStyle}>
-      <div id={id} className="maskContainer">
-        <div className="modalContainer" ref={modalRef}>
-          <div className="headerContainer">
-            <div className="placeholder" />
+      <div id={id} className='maskContainer'>
+        <div className='modalContainer' ref={modalRef}>
+          <div className='headerContainer'>
+            <div className='placeholder' />
             <div>{title}</div>
             {showCloseButton && (
               <Button
@@ -111,20 +111,20 @@ const Modal: React.FC<ModalProps> = ({
             )}
           </div>
           <div
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
             }}
-            className="childrenContainer"
+            className='childrenContainer'
           >
             {children}
           </div>
 
-          <div className="footerContainer">
+          <div className='footerContainer'>
             <Button
               onClick={() => {
                 onOk?.();
               }}
-              type="gray"
+              type='gray'
             >
               ok
             </Button>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useContext, useState } from "react";
+import { useEffect, useMemo } from "react";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
 import { StreamRecordMap } from "@/types";
@@ -44,7 +44,7 @@ const DisplayPost = () => {
   });
 
   useEffect(() => {
-    detectDataverseExtension().then((res) => {
+    detectDataverseExtension().then(res => {
       setIsDataverseExtension(res);
       if (res === true) {
         console.log("load with extension");
@@ -60,16 +60,16 @@ const DisplayPost = () => {
     if (streamsMap) {
       const _sortedStreamIds = Object.keys(streamsMap)
         .filter(
-          (el) =>
+          el =>
             streamsMap[el].pkh &&
             streamsMap[el].streamContent.content.appVersion === appVersion &&
             streamsMap[el].streamContent.file &&
-            streamsMap[el].streamContent.file.fileType !== FileType.Private
+            streamsMap[el].streamContent.file.fileType !== FileType.Private,
         )
         .sort(
           (a, b) =>
             Date.parse(streamsMap[b].streamContent.content.createdAt) -
-            Date.parse(streamsMap[a].streamContent.content.createdAt)
+            Date.parse(streamsMap[a].streamContent.content.createdAt),
         );
 
       setSortedStreamIds(_sortedStreamIds);
@@ -78,10 +78,10 @@ const DisplayPost = () => {
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
-      postModel.streams[postModel.streams.length - 1].modelId
+      postModel.streams[postModel.streams.length - 1].modelId,
     );
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
-      indexFilesModel.streams[postModel.streams.length - 1].modelId
+      indexFilesModel.streams[postModel.streams.length - 1].modelId,
     );
     const ceramicStreamsRecordMap: StreamRecordMap = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
@@ -95,7 +95,7 @@ const DisplayPost = () => {
       };
     });
 
-    Object.values(indexedFilesStreams).forEach((file) => {
+    Object.values(indexedFilesStreams).forEach(file => {
       if (ceramicStreamsRecordMap[file.contentId]) {
         ceramicStreamsRecordMap[file.contentId].streamContent.file = file;
       }
@@ -126,7 +126,7 @@ const DisplayPost = () => {
                 key={streamId}
                 connectApp={connectApp}
               />
-            ) : undefined
+            ) : undefined,
           )
         )}
       </Wrapper>
@@ -147,7 +147,7 @@ const DisplayPost = () => {
                 key={streamId}
                 connectApp={connectApp}
               />
-            ) : undefined
+            ) : undefined,
           )
         )}
       </Wrapper>

@@ -22,7 +22,7 @@ export interface StructuredPost {
   images?: string[];
   videos?: string[];
   postType: PostType;
-  options?: {};
+  options?: object;
   createdAt: string;
   updatedAt?: string;
   encrypted?: {

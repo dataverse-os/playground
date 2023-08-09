@@ -1,14 +1,14 @@
 import styled, { createGlobalStyle } from "styled-components";
-import Poppins from '@/assets/fonts/Poppins/Poppins.ttf';
-import PoppinsMedium from '@/assets/fonts/Poppins/Poppins-Medium.ttf';
-import PoppinsSemiBold from '@/assets/fonts/Poppins/Poppins-SemiBold.woff2';
-import PoppinsBold from '@/assets/fonts/Poppins/Poppins-Bold.ttf';
-import PoppinsExtraBold from '@/assets/fonts/Poppins/Poppins-ExtraBold.woff2';
-import LatoRegular from '@/assets/fonts/Lato/Lato-Regular.ttf';
-import LatoMedium from '@/assets/fonts/Lato/Lato-Medium.ttf';
-import LatoSemiBold from '@/assets/fonts/Lato/Lato-SemiBold.ttf';
-import LatoBold from '@/assets/fonts/Lato/Lato-Bold.ttf';
-import LatoExtraBold from '@/assets/fonts/Lato/Lato-ExtraBold.ttf';
+import Poppins from "@/assets/fonts/Poppins/Poppins.ttf";
+import PoppinsMedium from "@/assets/fonts/Poppins/Poppins-Medium.ttf";
+import PoppinsSemiBold from "@/assets/fonts/Poppins/Poppins-SemiBold.woff2";
+import PoppinsBold from "@/assets/fonts/Poppins/Poppins-Bold.ttf";
+import PoppinsExtraBold from "@/assets/fonts/Poppins/Poppins-ExtraBold.woff2";
+import LatoRegular from "@/assets/fonts/Lato/Lato-Regular.ttf";
+import LatoMedium from "@/assets/fonts/Lato/Lato-Medium.ttf";
+import LatoSemiBold from "@/assets/fonts/Lato/Lato-SemiBold.ttf";
+import LatoBold from "@/assets/fonts/Lato/Lato-Bold.ttf";
+import LatoExtraBold from "@/assets/fonts/Lato/Lato-ExtraBold.ttf";
 
 export const GlobalStyle = createGlobalStyle`
   body {
@@ -83,4 +83,4 @@ export const FlexRow = styled.div`
   display: flex;
   align-items: center;
   align-content: center;
-`
+`;

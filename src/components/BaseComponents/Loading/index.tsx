@@ -87,14 +87,14 @@ const Loading: React.FC<LoadingProps> = ({
             }}
             src={color === "white" ? iconSpinner : iconSpinnerBlack}
             style={{ opacity: visible ? 1 : 0 }}
-            className="iconSpinner"
+            className='iconSpinner'
           />
         )}
 
         {type === "dots" && (
           <>
             <motion.div
-              className="dot"
+              className='dot'
               animate={{
                 scaleY: [0.85, 0.8, 0.9, 0.8, 0.85],
                 y: [1, 3.5, 1, -1.5, 1],
@@ -106,7 +106,7 @@ const Loading: React.FC<LoadingProps> = ({
               style={{ opacity: visible ? 1 : 0 }}
             />
             <motion.div
-              className="dot"
+              className='dot'
               animate={{
                 scaleY: [0.85, 0.8, 0.9, 0.8, 0.85],
                 y: [1, 3.5, 1, -1.5, 1],
@@ -119,7 +119,7 @@ const Loading: React.FC<LoadingProps> = ({
               style={{ x: -15, opacity: visible ? 1 : 0 }}
             />
             <motion.div
-              className="dot"
+              className='dot'
               animate={{
                 scaleY: [0.85, 0.8, 0.9, 0.8, 0.85],
                 y: [1, 3.5, 1, -1.5, 1],

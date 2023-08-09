@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { css } from "styled-components";
 import { SwitchButton, SwitchDot } from "./styled";
 
 interface SwitchProps {
@@ -26,10 +25,10 @@ const Switch = function ({
     <SwitchButton
       size={size}
       checked={checked}
-      type="button"
-      role="switch"
-      aria-checked="true"
-      ant-click-animating="false"
+      type='button'
+      role='switch'
+      aria-checked='true'
+      ant-click-animating='false'
       onClick={() => {
         setChecked(!checked);
         onChange(!checked);

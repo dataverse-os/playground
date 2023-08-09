@@ -1,11 +1,10 @@
-import { pixelProofing } from "@/utils";
 import styled, { FlattenSimpleInterpolation } from "styled-components";
 
 export const Wrapper = styled.div<{ cssStyles?: FlattenSimpleInterpolation }>`
   display: flex;
   align-items: center;
   width: 100%;
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;
 
 export const InputBox = styled.input<{
@@ -27,11 +26,11 @@ export const InputBox = styled.input<{
   &::placeholder {
     color: #c5c5c5;
   }
-  ${(props) =>
+  ${props =>
     (!props.canBeEmpty && props.value === "") ||
     (props.reg && !props.regCheck) ||
     (props.positive && parseFloat(props.value) <= 0)
       ? "border: 1px solid #ff4d4f"
       : "border: 1px solid #fff"};
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;

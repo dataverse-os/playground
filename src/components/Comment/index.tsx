@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { FaThumbsUp, FaShare, FaComment } from 'react-icons/fa';
+import React from "react";
+import styled from "styled-components";
+import { FaThumbsUp, FaShare, FaComment } from "react-icons/fa";
 
 interface CommentProps {
   author: string;
@@ -64,7 +64,12 @@ const Icon = styled.div`
   margin-right: 10px;
 `;
 
-const Comment: React.FC<CommentProps> = ({ author, content, avatar, userId }) => {
+const Comment: React.FC<CommentProps> = ({
+  author,
+  content,
+  avatar,
+  userId,
+}) => {
   return (
     <CommentWrapper>
       {avatar && <Avatar src={avatar} />}
@@ -75,9 +80,15 @@ const Comment: React.FC<CommentProps> = ({ author, content, avatar, userId }) =>
         </AuthorWrapper>
         <Content>{content}</Content>
         <IconWrapper>
-          <Icon><FaThumbsUp /></Icon>
-          <Icon><FaShare /></Icon>
-          <Icon><FaComment /></Icon>
+          <Icon>
+            <FaThumbsUp />
+          </Icon>
+          <Icon>
+            <FaShare />
+          </Icon>
+          <Icon>
+            <FaComment />
+          </Icon>
         </IconWrapper>
       </CommentContentWrapper>
     </CommentWrapper>

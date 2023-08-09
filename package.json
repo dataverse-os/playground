@@ -3,13 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build:scripts": "npx tsc -p tsconfig.node.json",
-    "create-dataverse-app": "pnpm build:scripts && env-cmd -f .env node --experimental-specifier-resolution=node ./scripts/build/scripts/createDapp.js",
     "dev": "vite",
     "build": "vite build && vite preview",
     "preview": "vite preview",
     "github-build": "tsc && vite build",
-    "deploy": "node scripts/s3-deploy/s3-deploy.js"
+    "deploy": "node scripts/s3-deploy/s3-deploy.js",
+    "format": "prettier --config .prettierrc . --write",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@arco-design/web-react": "^2.45.2",
@@ -60,6 +62,13 @@
     "mime": "^3.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "typescript": "^4.6.4",
-    "vite": "^4.1.1"
+    "vite": "^4.1.1",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "prettier": "^3.0.0"
   }
 }

@@ -8,7 +8,7 @@ export function installDataverseMessage() {
         Please install Dataverse Extension.
         <a
           href={`${process.env.DATAVERSE_GOOGLE_STORE}`}
-          target="_blank"
+          target='_blank'
           style={{ marginLeft: "5px", color: "black" }}
         >
           <span style={{ textDecoration: "underline" }}>

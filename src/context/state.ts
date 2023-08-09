@@ -1,5 +1,5 @@
 import { ModelParser, Output } from "@dataverse/model-parser";
-import {PlaygroundActionType, PlaygroundStateType} from "@/types";
+import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import _ from "lodash";
 import app from "../../output/app.json";
 
@@ -17,7 +17,7 @@ export const reducer = (
   action: {
     type: PlaygroundActionType;
     payload: any;
-  }
+  },
 ) => {
   const { type, payload } = action;
 

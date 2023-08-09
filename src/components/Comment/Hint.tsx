@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { FiMessageSquare } from 'react-icons/fi';
+import React from "react";
+import styled from "styled-components";
+import { FiMessageSquare } from "react-icons/fi";
 
 interface HintProps {
   text: string;
@@ -27,7 +27,9 @@ const HintText = styled.div`
 const Hint: React.FC<HintProps> = ({ text }) => {
   return (
     <HintWrapper>
-      <HintIcon><FiMessageSquare /></HintIcon>
+      <HintIcon>
+        <FiMessageSquare />
+      </HintIcon>
       <HintText>{text}</HintText>
     </HintWrapper>
   );

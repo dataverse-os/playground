@@ -1,5 +1,4 @@
-type indexFiles
-  @createModel(accountRelation: LIST, description: "indexFiles") {
+type indexFiles @createModel(accountRelation: LIST, description: "indexFiles") {
   author: DID! @documentAccount
   version: CommitID! @documentVersion
   appVersion: String! @string(maxLength: 1000)

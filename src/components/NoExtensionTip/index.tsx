@@ -8,7 +8,10 @@ interface NoExtensionTipProps {
   setModalVisible: (value: boolean) => void;
 }
 
-const NoExtensionTip: React.FC<NoExtensionTipProps> = ({isModalVisible, setModalVisible}) => {
+const NoExtensionTip: React.FC<NoExtensionTipProps> = ({
+  isModalVisible,
+  setModalVisible,
+}) => {
   const closeModel = () => {
     setModalVisible(false);
   };
@@ -20,20 +23,20 @@ const NoExtensionTip: React.FC<NoExtensionTipProps> = ({isModalVisible, setModal
       cssStyle={modelWrapper}
       onCancel={closeModel}
     >
-      <div className="header">
-        <img src={logoSvg} className="icon" />
-        <div className="title">Data Wallet</div>
+      <div className='header'>
+        <img src={logoSvg} className='icon' />
+        <div className='title'>Data Wallet</div>
       </div>
-      <div className="body">
-        <div className="title">Your home for Data Assets</div>
-        <div className="desc">
+      <div className='body'>
+        <div className='title'>Your home for Data Assets</div>
+        <div className='desc'>
           Aggregate all your data contents in one <br />
           place, with built-in file system.
         </div>
-        <div className="title" style={{ marginTop: "50px" }}>
+        <div className='title' style={{ marginTop: "50px" }}>
           Secure identity manager
         </div>
-        <div className="desc">
+        <div className='desc'>
           Support sign-in-with-ethereum and protect
           <br />
           your resources from malicious apps.
@@ -41,7 +44,7 @@ const NoExtensionTip: React.FC<NoExtensionTipProps> = ({isModalVisible, setModal
       </div>
       <Button
         css={buttonStyle}
-        type="primary"
+        type='primary'
         onClick={async () => window.open(process.env.DATAVERSE_GOOGLE_STORE)}
       >
         Download

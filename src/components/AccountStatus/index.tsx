@@ -9,7 +9,11 @@ interface AccountStatusProps {
   cssStyles?: FlattenSimpleInterpolation;
 }
 
-const AccountStatus: React.FC<AccountStatusProps> = ({ name, cssStyles, did }) => {
+const AccountStatus: React.FC<AccountStatusProps> = ({
+  name,
+  cssStyles,
+  did,
+}) => {
   return (
     <Wrapper cssStyles={cssStyles}>
       <Avatar did={did} />

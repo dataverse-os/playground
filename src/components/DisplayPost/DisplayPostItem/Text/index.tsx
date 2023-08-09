@@ -8,7 +8,11 @@ interface TextProps {
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Text: React.FC<TextProps> = ({ streamRecord, isUnlockSucceed, onClick }) => {
+const Text: React.FC<TextProps> = ({
+  streamRecord,
+  isUnlockSucceed,
+  onClick,
+}) => {
   const getContent = () => {
     if (streamRecord.streamContent.file.fileType === FileType.Public) {
       return streamRecord.streamContent.content.text;

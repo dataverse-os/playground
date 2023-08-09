@@ -1,26 +1,34 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 import { PropsWithRef, useEffect, useMemo, useState } from "react";
-import { FileType } from "@dataverse/dataverse-connector";
-import { Wrapper, Content, CreatedAt, Footer } from "./styled";
+import { Chain, FileType, WALLET } from "@dataverse/dataverse-connector";
+import { Wrapper, Content, CreatedAt } from "./styled";
 import React from "react";
 import Text from "./Text";
 import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { FlexRow } from "@/styled";
-import {
-  useApp,
-  useDatatokenInfo,
-  useStore,
-  useUnlockStream,
-} from "@dataverse/hooks";
+import { useDatatokenInfo, useStore, useUnlockStream } from "@dataverse/hooks";
 import { usePlaygroundStore } from "@/context";
 import { Message } from "@arco-design/web-react";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
   streamId: string;
-  connectApp: Function;
+  connectApp?: ({
+    appId,
+    wallet,
+    provider,
+  }: {
+    appId: string;
+    wallet?: WALLET | undefined;
+    provider?: any;
+  }) => Promise<{
+    pkh: string;
+    address: string;
+    chain: Chain;
+    wallet: WALLET;
+  }>;
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
@@ -67,7 +75,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       }
 
       if (!pkh) {
-        await connectApp({ appId: modelParser.appId });
+        await connectApp!({ appId: modelParser.appId });
       }
 
       if (isUnlocking || isSucceed) {
@@ -96,7 +104,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             <CreatedAt>
               {"• " +
                 timeAgo(
-                  Date.parse(streamRecord.streamContent.content.createdAt)
+                  Date.parse(streamRecord.streamContent.content.createdAt),
                 )}
             </CreatedAt>
           </FlexRow>

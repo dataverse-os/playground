@@ -9,7 +9,7 @@ import { getCurrencyNameByCurrencyAddress } from "@/utils";
 import { DatatokenInfo } from "@dataverse/hooks";
 
 interface DisplayPostItemProps {
-  streamRecord: StreamRecord & {datatokenInfo?: DatatokenInfo};
+  streamRecord: StreamRecord & { datatokenInfo?: DatatokenInfo };
   isPending: boolean;
   isSucceed: boolean;
   unlock: () => void;
@@ -21,13 +21,12 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
   isSucceed,
   unlock,
 }) => {
-  
   return (
     <Wrapper>
       {isPending ? (
         <Loading
           visible={isPending}
-          color="black"
+          color='black'
           cssStyles={css`
             margin-right: 5px;
             .iconSpinner {
@@ -38,33 +37,33 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
       ) : (
         <img
           src={isSucceed ? unlockSVG : lockSVG}
-          className="lock"
+          className='lock'
           onClick={unlock}
         ></img>
       )}
       {streamRecord.streamContent.file.fileType === FileType.Datatoken && (
         <DatatokenInfoWrapper>
-          <span className="amount">
+          <span className='amount'>
             {streamRecord.datatokenInfo?.collect_info?.price.amount || 0}
           </span>
-          <span className="currency">
+          <span className='currency'>
             {streamRecord.datatokenInfo?.collect_info?.price.currency
               ? getCurrencyNameByCurrencyAddress(
-                  streamRecord.datatokenInfo?.collect_info?.price.currency
+                  streamRecord.datatokenInfo?.collect_info?.price.currency,
                 )
               : ""}
           </span>
           <br />
-          <span className="boughtNum">
+          <span className='boughtNum'>
             {streamRecord.datatokenInfo?.collect_info?.sold_num || 0}
           </span>{" "}
           /
-          <span className="collectLimit">
+          <span className='collectLimit'>
             {streamRecord.datatokenInfo?.collect_info?.total === String(2 ** 52)
               ? " Unlimited"
               : " " + streamRecord.datatokenInfo?.collect_info?.total}
           </span>
-          <span className="Sold">Sold</span>
+          <span className='Sold'>Sold</span>
         </DatatokenInfoWrapper>
       )}
     </Wrapper>

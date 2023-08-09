@@ -11,7 +11,7 @@ import { fromString as uint8ArrayfromString } from "uint8arrays/from-string";
 export function encode(obj: Record<string, any>) {
   return uint8ArrayToString(
     uint8ArrayfromString(JSON.stringify(obj)),
-    "base64url"
+    "base64url",
   );
 }
 
@@ -24,6 +24,6 @@ export function encode(obj: Record<string, any>) {
  */
 export function decode(s: string): Record<string, any> {
   return JSON.parse(
-    uint8ArrayToString(uint8ArrayfromString(s, "base64url"))
+    uint8ArrayToString(uint8ArrayfromString(s, "base64url")),
   ) as Record<string, any>;
 }

@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { CSSProperties, FlattenSimpleInterpolation } from "styled-components";
+import { FlattenSimpleInterpolation } from "styled-components";
 import Loading from "../Loading";
 import { ButtonContainerWrap } from "./style";
 

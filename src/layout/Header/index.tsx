@@ -24,7 +24,7 @@ const Header = (): React.ReactElement => {
     onPending: () => {
       setIsConnecting(true);
     },
-    onError: (e) => {
+    onError: e => {
       console.error(e);
       setIsConnecting(false);
     },
@@ -76,7 +76,7 @@ const Header = (): React.ReactElement => {
         />
         <Button
           loading={isConnecting}
-          type="primary"
+          type='primary'
           onClick={handleClickSignin}
           css={css`
             min-width: 150px;

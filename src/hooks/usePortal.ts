@@ -1,12 +1,12 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 
 /**
  * Creates DOM element to be used as React root.
  * @returns {HTMLElement}
  */
 function createRootElement(id: string): HTMLElement {
-  const rootContainer = document.createElement('div');
-  rootContainer.setAttribute('id', id);
+  const rootContainer = document.createElement("div");
+  rootContainer.setAttribute("id", id);
   return rootContainer;
 }
 
@@ -72,7 +72,7 @@ function usePortal(id: string): HTMLElement {
    */
   function getRootElem() {
     if (!rootElemRef.current) {
-      rootElemRef.current = document.createElement('div');
+      rootElemRef.current = document.createElement("div");
     }
     return rootElemRef.current;
   }
