@@ -7,9 +7,9 @@ const LoadingPostItem = () => {
     <Wrapper>
       <Content>
         <Header>
-          <Skeleton width={100} count={1} />
+          <Skeleton width={150} count={1} />
         </Header>
-        <Skeleton count={5} />
+        <Skeleton count={7} />
       </Content>
     </Wrapper>
   );

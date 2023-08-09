@@ -115,6 +115,8 @@ const DisplayPost = () => {
           <>
             <LoadingPostItem />
             <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
           </>
         ) : (
           sortedStreamIds.map((streamId, index) =>
@@ -131,6 +133,8 @@ const DisplayPost = () => {
       <Wrapper>
         {!streamsMap ? (
           <>
+            <LoadingPostItem />
+            <LoadingPostItem />
             <LoadingPostItem />
             <LoadingPostItem />
             <LoadingPostItem />
