@@ -51,12 +51,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
     },
   });
   const { isPending, isSucceed, unlockStream } = useUnlockStream({
-    onPending: () => {
-      if (isDataverseExtension === false) {
-        setNoExtensionModalVisible(true);
-        return;
-      }
-    },
     onError: (error: any) => {
       console.error(error);
       Message.error(error?.message ?? error);
@@ -78,7 +72,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
       setNoExtensionModalVisible(true);
       return;
     }
-    
+
     if (!pkh) {
       try {
         await connectApp({ appId: modelParser.appId });

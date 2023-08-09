@@ -6,8 +6,6 @@ import githubLogo from "@/assets/github.png";
 import { useNavigate } from "react-router-dom";
 import { useApp, useStore } from "@dataverse/hooks";
 import { usePlaygroundStore } from "@/context";
-import { useEffect } from "react";
-import { SYSTEM_CALL } from "@dataverse/dataverse-connector";
 
 const Header = (): React.ReactElement => {
   const {
@@ -20,15 +18,11 @@ const Header = (): React.ReactElement => {
 
   const navigate = useNavigate();
 
-  const { dataverseConnector, pkh } = useStore();
+  const { pkh } = useStore();
 
   const { connectApp } = useApp({
     onPending: () => {
       setIsConnecting(true);
-      if (isDataverseExtension === false) {
-        setNoExtensionModalVisible(true);
-        return;
-      }
     },
     onError: (e) => {
       console.error(e);
@@ -39,19 +33,12 @@ const Header = (): React.ReactElement => {
     },
   });
 
-  useEffect(() => {
-    const checkCapa = async () => {
-      const val = await dataverseConnector.runOS({
-        method: SYSTEM_CALL.checkCapability,
-      });
-      console.log("val:", val);
-    };
-    checkCapa();
-  }, []);
-
   const handleClickSignin = () => {
     if (isDataverseExtension === false) {
       setNoExtensionModalVisible(true);
+      return;
+    }
+    if (pkh) {
       return;
     }
     connectApp({ appId: modelParser.appId });
