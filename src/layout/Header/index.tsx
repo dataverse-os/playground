@@ -49,7 +49,13 @@ const Header = (): React.ReactElement => {
     checkCapa();
   }, []);
 
-  const handleClickSignin = () => connectApp({ appId: modelParser.appId });
+  const handleClickSignin = () => {
+    if (isDataverseExtension === false) {
+      setNoExtensionModalVisible(true);
+      return;
+    }
+    connectApp({ appId: modelParser.appId });
+  };
 
   return (
     <Wrapper>
