@@ -9,6 +9,7 @@ import { useAction, useFeeds, useStore } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
 import { FileType } from "@dataverse/dataverse-connector";
 import { LoadingPostItem } from "./LoadingPostItem";
+import { useApp } from "@dataverse/hooks";
 
 const DisplayPost = () => {
   const {
@@ -17,6 +18,7 @@ const DisplayPost = () => {
     sortedStreamIds,
     setIsDataverseExtension,
     setSortedStreamIds,
+    setIsConnecting,
   } = usePlaygroundStore();
   const postModel = useMemo(() => {
     return modelParser.getModelByName("post");
@@ -28,6 +30,18 @@ const DisplayPost = () => {
   const { streamsMap } = useStore();
   const { actionLoadStreams } = useAction();
   const { loadFeeds } = useFeeds();
+
+  const { connectApp } = useApp({
+    onPending: () => {
+      setIsConnecting(true);
+    },
+    onError: () => {
+      setIsConnecting(false);
+    },
+    onSuccess: () => {
+      setIsConnecting(false);
+    },
+  });
 
   useEffect(() => {
     detectDataverseExtension().then((res) => {
@@ -95,6 +109,7 @@ const DisplayPost = () => {
       <Wrapper>
         <PublishPost
           modelId={postModel.streams[postModel.streams.length - 1].modelId}
+          connectApp={connectApp}
         />
         {!streamsMap ? (
           <>
@@ -104,7 +119,7 @@ const DisplayPost = () => {
         ) : (
           sortedStreamIds.map((streamId, index) =>
             index % 2 == 1 ? (
-              <DisplayPostItem streamId={streamId} key={streamId} />
+              <DisplayPostItem streamId={streamId} key={streamId} connectApp={connectApp} />
             ) : undefined
           )
         )}
@@ -119,7 +134,7 @@ const DisplayPost = () => {
         ) : (
           sortedStreamIds.map((streamId, index) =>
             index % 2 == 0 ? (
-              <DisplayPostItem streamId={streamId} key={streamId} />
+              <DisplayPostItem streamId={streamId} key={streamId} connectApp={connectApp} />
             ) : undefined
           )
         )}

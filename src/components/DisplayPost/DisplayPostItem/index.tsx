@@ -1,6 +1,6 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
-import { PropsWithRef, useEffect, useMemo } from "react";
+import { PropsWithRef, useEffect, useMemo, useState } from "react";
 import { FileType } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
@@ -20,36 +20,27 @@ import { Message } from "@arco-design/web-react";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
   streamId: string;
+  connectApp: Function;
 }
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
+  streamId,
+  connectApp,
+}) => {
   // const navigate = useNavigate();
 
-  const {
-    modelParser,
-    isDataverseExtension,
-    setNoExtensionModalVisible,
-    setIsConnecting,
-  } = usePlaygroundStore();
+  const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
+
+  const { modelParser, isDataverseExtension, setNoExtensionModalVisible } =
+    usePlaygroundStore();
   const { pkh, streamsMap } = useStore();
   const streamRecord = useMemo(() => {
-    return streamsMap[streamId];
+    return streamsMap![streamId];
   }, [streamsMap]);
 
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
     useDatatokenInfo();
 
-  const { isPending: isConnectingApp, connectApp } = useApp({
-    onPending: () => {
-      setIsConnecting(true);
-    },
-    onError: () => {
-      setIsConnecting(false);
-    },
-    onSuccess: () => {
-      setIsConnecting(false);
-    },
-  });
   const { isPending, isSucceed, unlockStream } = useUnlockStream({
     onError: (error: any) => {
       console.error(error);
@@ -68,26 +59,27 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
   }, [streamsMap]);
 
   const unlock = async () => {
-    if (isDataverseExtension === false) {
-      setNoExtensionModalVisible(true);
-      return;
-    }
-
-    if (!pkh) {
-      try {
-        await connectApp({ appId: modelParser.appId });
-      } catch (error) {
-        console.error(error);
+    setIsUnlocking(true);
+    try {
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
         return;
       }
-    }
 
-    if (isPending || isSucceed) {
-      console.log("cannot unlock");
-      return;
-    }
+      if (!pkh) {
+        await connectApp({ appId: modelParser.appId });
+      }
 
-    await unlockStream(streamId);
+      if (isUnlocking || isSucceed) {
+        throw new Error("cannot unlock");
+      }
+
+      await unlockStream(streamId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUnlocking(false);
+    }
   };
 
   return (
@@ -111,7 +103,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ streamId }) => {
           {streamRecord.streamContent.file.fileType !== FileType.Public && (
             <UnlockInfo
               streamRecord={streamRecord}
-              isPending={isPending || isConnectingApp}
+              isPending={isPending}
               isSucceed={isSucceed}
               unlock={unlock}
             />

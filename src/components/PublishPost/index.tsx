@@ -35,9 +35,10 @@ import { uploadImages } from "@/sdk";
 
 interface PublishPostProps {
   modelId: string;
+  connectApp: Function;
 }
 
-const PublishPost: React.FC<PublishPostProps> = ({ modelId }) => {
+const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const {
     modelParser,
     appVersion,
@@ -70,17 +71,6 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId }) => {
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
   const { pkh, address, profileIds } = useStore();
-  const { connectApp } = useApp({
-    onPending: () => {
-      setIsConnecting(true);
-    },
-    onError: () => {
-      setIsConnecting(false);
-    },
-    onSuccess: () => {
-      setIsConnecting(false);
-    },
-  });
   const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
