@@ -8,12 +8,12 @@ import { ceramic } from "@/sdk";
 import { useAction, useFeeds, useStore } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
 import { FileType } from "@dataverse/dataverse-connector";
+import { LoadingPostItem } from "./LoadingPostItem";
 
 const DisplayPost = () => {
   const {
     modelParser,
     appVersion,
-    isDataverseExtension,
     sortedStreamIds,
     setIsDataverseExtension,
     setSortedStreamIds,
@@ -43,22 +43,24 @@ const DisplayPost = () => {
   }, []);
 
   useEffect(() => {
-    const _sortedStreamIds = Object.keys(streamsMap)
-      .filter(
-        (el) =>
-          streamsMap[el].pkh &&
-          streamsMap[el].streamContent.content.appVersion === appVersion &&
-          streamsMap[el].streamContent.file &&
-          streamsMap[el].streamContent.file.fileType !== FileType.Private
-      )
-      .sort(
-        (a, b) =>
-          Date.parse(streamsMap[b].streamContent.content.createdAt) -
-          Date.parse(streamsMap[a].streamContent.content.createdAt)
-      );
+    if (streamsMap) {
+      const _sortedStreamIds = Object.keys(streamsMap)
+        .filter(
+          (el) =>
+            streamsMap[el].pkh &&
+            streamsMap[el].streamContent.content.appVersion === appVersion &&
+            streamsMap[el].streamContent.file &&
+            streamsMap[el].streamContent.file.fileType !== FileType.Private
+        )
+        .sort(
+          (a, b) =>
+            Date.parse(streamsMap[b].streamContent.content.createdAt) -
+            Date.parse(streamsMap[a].streamContent.content.createdAt)
+        );
 
-    setSortedStreamIds(_sortedStreamIds);
-  }, [isDataverseExtension, streamsMap]);
+      setSortedStreamIds(_sortedStreamIds);
+    }
+  }, [streamsMap]);
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -94,17 +96,32 @@ const DisplayPost = () => {
         <PublishPost
           modelId={postModel.streams[postModel.streams.length - 1].modelId}
         />
-        {sortedStreamIds.map((streamId, index) =>
-          index % 2 == 1 ? (
-            <DisplayPostItem streamId={streamId} key={streamId} />
-          ) : undefined
+        {!streamsMap ? (
+          <>
+            <LoadingPostItem />
+            <LoadingPostItem />
+          </>
+        ) : (
+          sortedStreamIds.map((streamId, index) =>
+            index % 2 == 1 ? (
+              <DisplayPostItem streamId={streamId} key={streamId} />
+            ) : undefined
+          )
         )}
       </Wrapper>
       <Wrapper>
-        {sortedStreamIds.map((streamId, index) =>
-          index % 2 == 0 ? (
-            <DisplayPostItem streamId={streamId} key={streamId} />
-          ) : undefined
+        {!streamsMap ? (
+          <>
+            <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
+          </>
+        ) : (
+          sortedStreamIds.map((streamId, index) =>
+            index % 2 == 0 ? (
+              <DisplayPostItem streamId={streamId} key={streamId} />
+            ) : undefined
+          )
         )}
       </Wrapper>
     </>

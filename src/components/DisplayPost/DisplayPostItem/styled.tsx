@@ -2,16 +2,7 @@ import { pixelProofing } from "@/utils";
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  /* max-width: 100%; */
-
-  /* width: calc(50% - 0.6875rem); */
   margin: 0.35rem;
-  /* &:nth-child(2n + 1) {
-    order: 1;
-  }
-  &:nth-child(2n) {
-    order: 2;
-  } */
 `;
 
 export const Content = styled.div`
