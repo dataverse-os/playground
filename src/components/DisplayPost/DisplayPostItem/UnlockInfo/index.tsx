@@ -2,11 +2,11 @@ import React from "react";
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
-import { DatatokenInfo } from "@/types";
 import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
 import Loading from "@/components/BaseComponents/Loading";
 import { css } from "styled-components";
 import { getCurrencyNameByCurrencyAddress } from "@/utils";
+import { DatatokenInfo } from "@dataverse/hooks";
 
 interface DisplayPostItemProps {
   streamRecord: StreamRecord & {datatokenInfo?: DatatokenInfo};

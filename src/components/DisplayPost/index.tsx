@@ -5,7 +5,7 @@ import { StreamRecordMap } from "@/types";
 import { usePlaygroundStore } from "@/context";
 import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
-import { useFeeds, useStore } from "@dataverse/hooks";
+import { useAction, useFeeds, useStore } from "@dataverse/hooks";
 import { Wrapper } from "./styled";
 import { FileType } from "@dataverse/dataverse-connector";
 
@@ -26,10 +26,8 @@ const DisplayPost = () => {
   }, []);
 
   const { streamsMap } = useStore();
+  const { actionLoadStreams } = useAction();
   const { loadFeeds } = useFeeds();
-  const [ceramicStreamsMap, setCeramicStreamsMap] = useState<StreamRecordMap>(
-    {}
-  );
 
   useEffect(() => {
     detectDataverseExtension().then((res) => {
@@ -45,24 +43,22 @@ const DisplayPost = () => {
   }, []);
 
   useEffect(() => {
-    const _streamsMap: StreamRecordMap = isDataverseExtension
-      ? streamsMap
-      : ceramicStreamsMap;
-
-    const _sortedStreamIds = Object.keys(_streamsMap)
+    const _sortedStreamIds = Object.keys(streamsMap)
       .filter(
         (el) =>
-          _streamsMap[el].streamContent.content.appVersion === appVersion &&
-          _streamsMap[el].streamContent.file.fileType !== FileType.Private
+          streamsMap[el].pkh &&
+          streamsMap[el].streamContent.content.appVersion === appVersion &&
+          streamsMap[el].streamContent.file &&
+          streamsMap[el].streamContent.file.fileType !== FileType.Private
       )
       .sort(
         (a, b) =>
-          Date.parse(_streamsMap[b].streamContent.content.createdAt) -
-          Date.parse(_streamsMap[a].streamContent.content.createdAt)
+          Date.parse(streamsMap[b].streamContent.content.createdAt) -
+          Date.parse(streamsMap[a].streamContent.content.createdAt)
       );
 
     setSortedStreamIds(_sortedStreamIds);
-  }, [streamsMap, ceramicStreamsMap]);
+  }, [isDataverseExtension, streamsMap]);
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -89,7 +85,7 @@ const DisplayPost = () => {
       }
     });
 
-    setCeramicStreamsMap(ceramicStreamsRecordMap);
+    actionLoadStreams(ceramicStreamsRecordMap);
   };
 
   return (
