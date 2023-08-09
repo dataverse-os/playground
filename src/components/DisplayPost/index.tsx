@@ -1,134 +1,80 @@
-import { useAppDispatch, useSelector } from "@/state/hook";
 import { useEffect, useMemo, useContext, useState } from "react";
-import { postSlice } from "@/state/post/slice";
 import DisplayPostItem from "./DisplayPostItem";
 import PublishPost from "@/components/PublishPost";
-import styled from "styled-components";
-import { PostStream, StreamRecordMap } from "@/types";
-import { Context } from "@/context";
+import { StreamRecordMap } from "@/types";
+import { usePlaygroundStore } from "@/context";
 import { detectDataverseExtension } from "@dataverse/utils";
 import { ceramic } from "@/sdk";
-import { noExtensionSlice } from "@/state/noExtension/slice";
-import {
-  StreamType,
-  useApp,
-  useCreateStream,
-  useFeeds,
-  useStore,
-  useWallet,
-} from "@dataverse/hooks";
+import { useAction, useFeeds, useStore } from "@dataverse/hooks";
+import { Wrapper } from "./styled";
+import { FileType } from "@dataverse/dataverse-connector";
+import LoadingPostItem from "./LoadingPostItem";
+import { useApp } from "@dataverse/hooks";
 
-export interface PublishPostProps {}
+const DisplayPost = () => {
+  const {
+    modelParser,
+    appVersion,
+    sortedStreamIds,
+    setIsDataverseExtension,
+    setSortedStreamIds,
+    setIsConnecting,
+  } = usePlaygroundStore();
+  const postModel = useMemo(() => {
+    return modelParser.getModelByName("post");
+  }, []);
+  const indexFilesModel = useMemo(() => {
+    return modelParser.getModelByName("indexFiles");
+  }, []);
 
-const Wrapper = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  /* width: 48%; */
-`;
-
-const DisplayPost: React.FC<PublishPostProps> = ({}) => {
-  const { postModel, indexFilesModel, appVersion, modelParser } =
-    useContext(Context);
-  // const [hasExtension, setHasExtension] = useState<boolean>();
-  const postStreamList = useSelector((state) => state.post.postStreamList);
-  const isDataverseExtension = useSelector(
-    (state) => state.noExtension.isDataverseExtension
-  );
-  const postListLeft = useMemo(() => {
-    return postStreamList
-      .map((post, index) => {
-        if (index % 2 === 1) return post;
-      })
-      .filter((element) => {
-        return element !== undefined;
-      });
-  }, [postStreamList]);
-  const postListRight = useMemo(() => {
-    return postStreamList
-      .map((post, index) => {
-        if (index % 2 === 0) return post;
-      })
-      .filter((element) => {
-        return element !== undefined;
-      });
-  }, [postStreamList]);
-  const dispatch = useAppDispatch();
-
-  // const {
-  //   streamsRecord,
-  //   setStreamsRecord,
-  //   loadStreams,
-  //   createPublicStream,
-  //   createPayableStream
-  // } = useStream();
-  const { createStream: createPublicStream } = useCreateStream({
-    streamType: StreamType.Public,
-  });
-  const { createStream: createPayableStream } = useCreateStream({
-    streamType: StreamType.Payable,
-  });
-  const { state } = useStore();
-
+  const { streamsMap } = useStore();
+  const { actionLoadStreams } = useAction();
   const { loadFeeds } = useFeeds();
-  const [ceramicStreamsMap, setCeramicStreamsMap] = useState<StreamRecordMap>({});
+
+  const { connectApp } = useApp({
+    onPending: () => {
+      setIsConnecting(true);
+    },
+    onError: () => {
+      setIsConnecting(false);
+    },
+    onSuccess: () => {
+      setIsConnecting(false);
+    },
+  });
 
   useEffect(() => {
     detectDataverseExtension().then((res) => {
-      dispatch(noExtensionSlice.actions.setIsDataverseExtension(res));
+      setIsDataverseExtension(res);
+      if (res === true) {
+        console.log("load with extension");
+        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
+      } else if (res === false) {
+        console.log("load with ceramic");
+        loadFeedsByCeramic();
+      }
     });
   }, []);
 
   useEffect(() => {
-    if (postModel && state.dataverseConnector) {
-      console.log("state.dataverseConnector:", state.dataverseConnector);
-      if (isDataverseExtension === true) {
-        console.log("load stream with dataverse-connector...");
-        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
-      } else if (isDataverseExtension === false) {
-        console.log("load stream with ceramic...");
-        loadFeedsByCeramic();
-      }
-    }
-  }, [state.dataverseConnector, postModel, isDataverseExtension]);
+    if (streamsMap) {
+      const _sortedStreamIds = Object.keys(streamsMap)
+        .filter(
+          (el) =>
+            streamsMap[el].pkh &&
+            streamsMap[el].streamContent.content.appVersion === appVersion &&
+            streamsMap[el].streamContent.file &&
+            streamsMap[el].streamContent.file.fileType !== FileType.Private
+        )
+        .sort(
+          (a, b) =>
+            Date.parse(streamsMap[b].streamContent.content.createdAt) -
+            Date.parse(streamsMap[a].streamContent.content.createdAt)
+        );
 
-  useEffect(() => {
-    const streamList: PostStream[] = [];
-    let streamsMap: StreamRecordMap = {};
-    if(!isDataverseExtension) {
-      streamsMap = ceramicStreamsMap;
-    } else {
-      streamsMap = state.streamsMap;
+      setSortedStreamIds(_sortedStreamIds);
     }
-    Object.entries(streamsMap).forEach(([streamId, streamRecord]) => {
-      if (
-        streamRecord.streamContent.file &&
-        streamRecord.streamContent.content
-      ) {
-        streamList.push({
-          streamId,
-          streamRecord,
-        });
-      }
-    });
-    const sortedList = streamList
-      .filter(
-        (el) =>
-          el.streamRecord.streamContent.content?.appVersion === appVersion &&
-          (el.streamRecord.streamContent.content.text ||
-            (el.streamRecord.streamContent.content.images &&
-              el.streamRecord.streamContent.content.images?.length > 0) ||
-            (el.streamRecord.streamContent.content.videos &&
-              el.streamRecord.streamContent.content.videos?.length > 0))
-      )
-      .sort(
-        (a, b) =>
-          Date.parse(b.streamRecord.streamContent.content.createdAt) -
-          Date.parse(a.streamRecord.streamContent.content.createdAt)
-      );
-    console.log("sorted, sortedList:", sortedList);
-    dispatch(postSlice.actions.setPostStreamList(sortedList));
-  }, [state.streamsMap, ceramicStreamsMap]);
+  }, [streamsMap]);
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -149,39 +95,61 @@ const DisplayPost: React.FC<PublishPostProps> = ({}) => {
       };
     });
 
-    console.log("ceramicStreamsRecordMap:", ceramicStreamsRecordMap);
-
     Object.values(indexedFilesStreams).forEach((file) => {
       if (ceramicStreamsRecordMap[file.contentId]) {
         ceramicStreamsRecordMap[file.contentId].streamContent.file = file;
       }
     });
 
-    setCeramicStreamsMap(ceramicStreamsRecordMap);
+    actionLoadStreams(ceramicStreamsRecordMap);
   };
 
   return (
     <>
       <Wrapper>
         <PublishPost
-          createPublicStream={createPublicStream}
-          createPayableStream={createPayableStream}
-          loadStream={loadFeeds}
+          modelId={postModel.streams[postModel.streams.length - 1].modelId}
+          connectApp={connectApp}
         />
-        {postListLeft.map((postStream, index) => (
-          <DisplayPostItem
-            postStream={postStream!}
-            key={postStream!.streamId}
-          />
-        ))}
+        {!streamsMap ? (
+          <>
+            <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
+          </>
+        ) : (
+          sortedStreamIds.map((streamId, index) =>
+            index % 2 == 1 ? (
+              <DisplayPostItem
+                streamId={streamId}
+                key={streamId}
+                connectApp={connectApp}
+              />
+            ) : undefined
+          )
+        )}
       </Wrapper>
       <Wrapper>
-        {postListRight.map((postStream, index) => (
-          <DisplayPostItem
-            postStream={postStream!}
-            key={postStream!.streamId}
-          />
-        ))}
+        {!streamsMap ? (
+          <>
+            <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
+            <LoadingPostItem />
+          </>
+        ) : (
+          sortedStreamIds.map((streamId, index) =>
+            index % 2 == 0 ? (
+              <DisplayPostItem
+                streamId={streamId}
+                key={streamId}
+                connectApp={connectApp}
+              />
+            ) : undefined
+          )
+        )}
       </Wrapper>
     </>
   );

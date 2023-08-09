@@ -34,7 +34,7 @@ export default defineConfig({
       MUMBAI_FAUCET: "https://mumbaifaucet.com",
       DATAVERSE_GOOGLE_STORE:
         "https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead",
-      CERAMIC_API: "https://testnet.dataverseceramicdaemon.com",
+      CERAMIC_API: "https://dataverseceramicdaemon.com",
     },
   },
 });

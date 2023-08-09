@@ -1,24 +1,86 @@
 import AccountStatus from "@/components/AccountStatus";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { PropsWithoutRef, PropsWithRef, useEffect } from "react";
+import { PropsWithRef, useEffect, useMemo, useState } from "react";
 import { FileType } from "@dataverse/dataverse-connector";
 import { Wrapper, Content, CreatedAt, Footer } from "./styled";
 import React from "react";
-import { PostStream } from "@/types";
 import Text from "./Text";
 import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
-import { FlexRow } from "@/components/App/styled";
-import { useNavigate } from "react-router-dom";
+import { FlexRow } from "@/styled";
+import {
+  useApp,
+  useDatatokenInfo,
+  useStore,
+  useUnlockStream,
+} from "@dataverse/hooks";
+import { usePlaygroundStore } from "@/context";
+import { Message } from "@arco-design/web-react";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
-  postStream: PostStream;
+  streamId: string;
+  connectApp: Function;
 }
 
-const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
-  const navigate = useNavigate();
+const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
+  streamId,
+  connectApp,
+}) => {
+  // const navigate = useNavigate();
+
+  const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
+
+  const { modelParser, isDataverseExtension, setNoExtensionModalVisible } =
+    usePlaygroundStore();
+  const { pkh, streamsMap } = useStore();
+  const streamRecord = useMemo(() => {
+    return streamsMap![streamId];
+  }, [streamsMap]);
+
+  const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
+    useDatatokenInfo();
+
+  const { isPending, isSucceed, unlockStream } = useUnlockStream({
+    onError: (error: any) => {
+      console.error(error);
+      Message.error(error?.message ?? error);
+    },
+  });
+
+  useEffect(() => {
+    if (
+      !isGettingDatatokenInfo &&
+      streamRecord.streamContent.file.fileType === FileType.Datatoken &&
+      !streamRecord.datatokenInfo
+    ) {
+      getDatatokenInfo(streamId);
+    }
+  }, [streamsMap]);
+
+  const unlock = async () => {
+    setIsUnlocking(true);
+    try {
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
+        return;
+      }
+
+      if (!pkh) {
+        await connectApp({ appId: modelParser.appId });
+      }
+
+      if (isUnlocking || isSucceed) {
+        throw new Error("cannot unlock");
+      }
+
+      await unlockStream(streamId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
 
   return (
     <Wrapper>
@@ -27,31 +89,40 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({ postStream }) => {
           <FlexRow>
             <AccountStatus
               name={
-                addressAbbreviation(
-                  getAddressFromDid(postStream.streamRecord.pkh)
-                ) ?? ""
+                addressAbbreviation(getAddressFromDid(streamRecord.pkh)) ?? ""
               }
-              did={postStream.streamRecord.pkh}
+              did={streamRecord.pkh}
             />
             <CreatedAt>
-              {"• " + timeAgo(Date.parse(postStream.streamRecord.streamContent.content.createdAt))}
+              {"• " +
+                timeAgo(
+                  Date.parse(streamRecord.streamContent.content.createdAt)
+                )}
             </CreatedAt>
           </FlexRow>
-          {postStream.streamRecord.streamContent.file.fileType !== FileType.Public && (
-            <UnlockInfo postStream={postStream} />
+          {streamRecord.streamContent.file.fileType !== FileType.Public && (
+            <UnlockInfo
+              streamRecord={streamRecord}
+              isPending={isPending}
+              isSucceed={isSucceed}
+              unlock={unlock}
+            />
           )}
         </Header>
 
         <Text
-          postStream={postStream}
+          streamRecord={streamRecord}
+          isUnlockSucceed={isSucceed}
           onClick={() => {
-            // navigate("/post/" + postStream.streamId);
+            // navigate("/post/" + streamRecord.streamId);
           }}
         />
         <Images
-          postStream={postStream}
+          streamRecord={streamRecord}
+          isUnlockSucceed={isSucceed}
+          isGettingDatatokenInfo={isGettingDatatokenInfo}
           onClick={() => {
-            // navigate("/post/" + postStream.streamId);
+            // navigate("/post/" + streamRecord.streamId);
           }}
         />
         {/* <Footer>

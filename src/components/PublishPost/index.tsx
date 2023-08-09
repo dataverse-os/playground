@@ -3,20 +3,12 @@ import lockIcon from "@/assets/icons/lock.svg";
 import crossIcon from "@/assets/icons/cross.svg";
 import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import {
-  // displayPostList,
-  postSlice,
-  // publishPost,
-  uploadImg,
-} from "@/state/post/slice";
-import { privacySettingsSlice } from "@/state/privacySettings/slice";
-import { addressAbbreviation, getAddressFromDid, uuid } from "@/utils";
-import { useContext, useEffect, useState } from "react";
+import { addressAbbreviation, uuid } from "@/utils";
+import { useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
-import { FlexRow } from "../App/styled";
+import { FlexRow } from "@/styled";
 import PrivacySettings from "../PrivacySettings";
 import {
   ButtonWrapper,
@@ -28,48 +20,58 @@ import {
 } from "./styled";
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
-import CreateLensProfile from "../CreateLensProfile";
-import { getLensProfiles } from "@/sdk/monetize";
-import { lensProfileSlice } from "@/state/lensProfile/slice";
-import { PostStream, PostType } from "@/types";
-import { identitySlice } from "@/state/identity/slice";
-import { Context } from "@/context";
-import { noExtensionSlice } from "@/state/noExtension/slice";
-import { CreateStreamArgs, StreamType, useApp } from "@dataverse/hooks";
+import { CreateLensProfile } from "../CreateLensProfile";
+import { PostType, PrivacySettingsType } from "@/types";
+import { usePlaygroundStore } from "@/context";
+import {
+  StreamType,
+  useApp,
+  useCreateStream,
+  useProfiles,
+  useStore,
+} from "@dataverse/hooks";
+import NoExtensionTip from "../NoExtensionTip";
+import { uploadImages } from "@/sdk";
 
-export interface PublishPostProps {
-  createPublicStream: (params: CreateStreamArgs[StreamType.Public]) => any;
-  createPayableStream: (params: CreateStreamArgs[StreamType.Payable]) => any;
-  loadStream: (modelId: string) => any;
+interface PublishPostProps {
+  modelId: string;
+  connectApp: Function;
 }
 
-const PublishPost: React.FC<PublishPostProps> = ({
-  createPublicStream,
-  createPayableStream,
-  loadStream,
-}) => {
-  const dispatch = useAppDispatch();
-  const {modelParser} = useContext(Context);
-  const { postModel, appVersion } = useContext(Context);
-  const pkh = useSelector((state) => state.identity.pkh);
-  const needEncrypt = useSelector((state) => state.privacySettings.needEncrypt);
-  const settings = useSelector((state) => state.privacySettings.settings);
-  const encryptedContent = useSelector((state) => state.post.encryptedContent);
-  // const isEncrypting = useSelector((state) => state.post.isEncrypting);
-  // const isEncryptedSuccessfully = useSelector(
-  //   (state) => state.post.isEncryptedSuccessfully
-  // );
-  const isDataverseExtension = useSelector(
-    (state) => state.noExtension.isDataverseExtension
-  );
-  const isPublishingPost = useSelector((state) => state.post.isPublishingPost);
-  const profileId = useSelector((state) => state.lensProfile.profileId);
+const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
+  const {
+    modelParser,
+    appVersion,
+    isDataverseExtension,
+    isNoExtensionModalVisible,
+    setNoExtensionModalVisible,
+    setIsConnecting,
+  } = usePlaygroundStore();
+
+  const [isPublishing, setIsPublishing] = useState<boolean>(false);
+
+  const { createStream: createPublicStream } = useCreateStream({
+    streamType: StreamType.Public,
+  });
+
+  const { createStream: createPayableStream } = useCreateStream({
+    streamType: StreamType.Payable,
+  });
+
+  const [needEncrypt, setNeedEncrypt] = useState<boolean>(false);
+  const [settings, setSettings] = useState<PrivacySettingsType>({
+    postType: PostType.Public,
+  });
+
+  const [isSettingModalVisible, setSettingModalVisible] =
+    useState<boolean>(false);
+  const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
+    useState<boolean>(false);
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  const [postImages, setPostImages] = useState<string[]>([]);
-
-  const {connectApp} = useApp();
+  const { pkh, address, profileIds } = useStore();
+  const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
     setImages(imageList);
@@ -86,35 +88,61 @@ const PublishPost: React.FC<PublishPostProps> = ({
   };
 
   const handleProfileAndPost = async () => {
-    if (isPublishingPost) return;
-
-    const postImages = await handlePostImages();
-    if (!postImages) return;
-
-    dispatch(postSlice.actions.setIsPublishingPost(true));
-
-    let lensProfiles: any[] = [];
-    if (needEncrypt) {
-      lensProfiles = await getLensProfiles(getAddressFromDid(pkh as string));
-
-      if (lensProfiles.length === 0) {
-        dispatch(postSlice.actions.setIsPublishingPost(false));
-        dispatch(lensProfileSlice.actions.setModalVisible(true));
+    setIsPublishing(true);
+    try {
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
         return;
       }
-      await post({
-        postImages,
-        profileId: lensProfiles.slice(-1)[0].id,
-      });
-    } else {
-      await post({
-        postImages,
-      });
+      if (isPublishing) return;
+
+      let accountAddress: string;
+
+      if (!address || !pkh) {
+        try {
+          const res = await connectApp({ appId: modelParser.appId });
+          accountAddress = res.address;
+        } catch (error) {
+          console.error(error);
+          return;
+        }
+      } else {
+        accountAddress = address;
+      }
+
+      const postImages = await _postImages();
+      if (!postImages) return;
+
+      if (needEncrypt) {
+        let targetProfileIds: string[];
+        if (!profileIds) {
+          const lensProfiles = await getProfiles(accountAddress);
+          targetProfileIds = lensProfiles;
+        } else {
+          targetProfileIds = profileIds;
+        }
+        if (targetProfileIds.length === 0) {
+          setCreateProfileModalVisible(true);
+        } else {
+          await _post({
+            postImages,
+            profileId: targetProfileIds[0],
+          });
+        }
+      } else {
+        await _post({
+          postImages,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsPublishing(false);
     }
   };
 
-  const handlePostImages = async () => {
-    if (needEncrypt) {
+  const _postImages = async () => {
+    if (needEncrypt && settings) {
       const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
       const { amount, collectLimit } = settings;
       const isValid =
@@ -134,51 +162,34 @@ const PublishPost: React.FC<PublishPostProps> = ({
         files.push(image.file);
       }
     });
-    const postImages = (await (
-      await dispatch(uploadImg({ files }))
-    ).payload) as string[];
+
+    const postImages = await uploadImages(files);
 
     if (!content && postImages.length === 0) {
       Message.info("Text and pictures cannot both be empty.");
       return;
     }
 
-    setPostImages(postImages);
     return postImages;
   };
 
-  const post = async ({
+  const _post = async ({
     profileId,
     postImages,
   }: {
     profileId?: string;
     postImages: string[];
   }) => {
-    if (!isDataverseExtension) {
-      dispatch(noExtensionSlice.actions.setModalVisible(true));
-      dispatch(postSlice.actions.setIsPublishingPost(false));
-      return;
-    }
-    if (!pkh) {
-      try {
-        dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-        const {pkh} = await connectApp({appId: modelParser.appId})
-        dispatch(identitySlice.actions.setPkh(pkh));
-      } catch (error) {
-        console.error(error);
-        return;
-      } finally {
-        dispatch(identitySlice.actions.setIsConnectingIdentity(false));
-      }
+    if (!settings) {
+      throw new Error("settings undefined");
     }
     try {
       let res;
       const date = new Date().toISOString();
-      console.log("Before create stream, settings:", settings);
       switch (settings.postType) {
         case PostType.Public:
           res = await createPublicStream({
-            modelId: postModel.streams[postModel.streams.length - 1].modelId,
+            modelId,
             stream: {
               appVersion,
               profileId,
@@ -198,7 +209,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
           break;
         case PostType.Payable:
           res = await createPayableStream({
-            modelId: postModel.streams[postModel.streams.length - 1].modelId,
+            modelId,
             profileId,
             stream: {
               appVersion,
@@ -247,31 +258,13 @@ const PublishPost: React.FC<PublishPostProps> = ({
       });
       setContent("");
       setImages([]);
-      await loadStream(postModel.streams[postModel.streams.length - 1].modelId);
     } catch (error: any) {
       Message.error(error?.message ?? error);
-    } finally {
-      dispatch(postSlice.actions.setIsPublishingPost(false));
     }
   };
 
-  useEffect(() => {
-    postAfterProfileCreated();
-  }, [profileId, postImages]);
-
-  useEffect(() => {
-    dispatch(postSlice.actions.setIsPublishingPost(false));
-  }, []);
-
-  const postAfterProfileCreated = async () => {
-    if (!profileId || !postImages) return;
-    dispatch(postSlice.actions.setIsPublishingPost(true));
-    post({ profileId, postImages });
-    dispatch(lensProfileSlice.actions.setProfileId(""));
-  };
-
   const openPrivacySettings = () => {
-    dispatch(privacySettingsSlice.actions.setModalVisible(true));
+    setSettingModalVisible(true);
   };
 
   return (
@@ -296,14 +289,14 @@ const PublishPost: React.FC<PublishPostProps> = ({
           }) => (
             <>
               <AccountStatus
-                name={addressAbbreviation(getAddressFromDid(pkh)) ?? ""}
+                name={addressAbbreviation(address) ?? ""}
                 cssStyles={css`
                   margin-bottom: 1rem;
                 `}
-                did={pkh}
+                did={pkh || ""}
               />
               <Textarea
-                value={encryptedContent || content}
+                value={content}
                 placeholder="what's happening?"
                 onChange={textareaOnChange}
                 width={"100%"}
@@ -346,7 +339,7 @@ const PublishPost: React.FC<PublishPostProps> = ({
                 <FlexRow>
                   <Button
                     type="primary"
-                    loading={isPublishingPost}
+                    loading={isPublishing}
                     onClick={handleProfileAndPost}
                     width={110}
                     css={css`
@@ -362,8 +355,21 @@ const PublishPost: React.FC<PublishPostProps> = ({
           )}
         </ImageUploading>
       </Content>
-      <PrivacySettings></PrivacySettings>
-      <CreateLensProfile></CreateLensProfile>
+      <PrivacySettings
+        isModalVisible={isSettingModalVisible}
+        setModalVisible={setSettingModalVisible}
+        needEncrypt={needEncrypt}
+        setNeedEncrypt={setNeedEncrypt}
+        setSettings={setSettings}
+      />
+      <CreateLensProfile
+        isModalVisible={isCreateProfileModalVisible}
+        setModalVisible={setCreateProfileModalVisible}
+      />
+      <NoExtensionTip
+        isModalVisible={isNoExtensionModalVisible}
+        setModalVisible={setNoExtensionModalVisible}
+      />
     </Wrapper>
   );
 };

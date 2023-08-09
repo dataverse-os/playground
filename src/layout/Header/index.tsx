@@ -1,41 +1,47 @@
 import Button from "@/components/BaseComponents/Button";
-import { useAppDispatch, useSelector } from "@/state/hook";
-import { identitySlice } from "@/state/identity/slice";
 import { didAbbreviation } from "@/utils";
-import styled, { css } from "styled-components";
+import { css } from "styled-components";
 import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
 import githubLogo from "@/assets/github.png";
 import { useNavigate } from "react-router-dom";
-import { noExtensionSlice } from "@/state/noExtension/slice";
-import { useApp } from "@dataverse/hooks";
-import { useContext } from "react";
-import { Context } from "@/context";
+import { useApp, useStore } from "@dataverse/hooks";
+import { usePlaygroundStore } from "@/context";
 
 const Header = (): React.ReactElement => {
-  const { modelParser } = useContext(Context);
-  const dispatch = useAppDispatch();
+  const {
+    modelParser,
+    isDataverseExtension,
+    isConnecting,
+    setNoExtensionModalVisible,
+    setIsConnecting,
+  } = usePlaygroundStore();
+
   const navigate = useNavigate();
-  const { pkh, isConnectingIdentity } = useSelector((state) => state.identity);
-  const isDataverseExtension = useSelector(
-    (state) => state.noExtension.isDataverseExtension
-  );
 
-  const { connectApp } = useApp();
+  const { pkh } = useStore();
 
-  const handleClickSignin = async () => {
-    if (!isDataverseExtension) {
-      dispatch(noExtensionSlice.actions.setModalVisible(true));
+  const { connectApp } = useApp({
+    onPending: () => {
+      setIsConnecting(true);
+    },
+    onError: (e) => {
+      console.error(e);
+      setIsConnecting(false);
+    },
+    onSuccess: () => {
+      setIsConnecting(false);
+    },
+  });
+
+  const handleClickSignin = () => {
+    if (isDataverseExtension === false) {
+      setNoExtensionModalVisible(true);
       return;
     }
-    try {
-      dispatch(identitySlice.actions.setIsConnectingIdentity(true));
-      const {pkh} = await connectApp({ appId: modelParser.appId });
-      dispatch(identitySlice.actions.setPkh(pkh));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      dispatch(identitySlice.actions.setIsConnectingIdentity(false));
+    if (pkh) {
+      return;
     }
+    connectApp({ appId: modelParser.appId });
   };
 
   return (
@@ -69,7 +75,7 @@ const Header = (): React.ReactElement => {
           }}
         />
         <Button
-          loading={isConnectingIdentity}
+          loading={isConnecting}
           type="primary"
           onClick={handleClickSignin}
           css={css`
