@@ -9,18 +9,19 @@ import Images from "./Images";
 import UnlockInfo from "./UnlockInfo";
 import { Header } from "./styled";
 import { FlexRow } from "@/styled";
-import { useDatatokenInfo, useStore, useUnlockStream } from "@dataverse/hooks";
+import {
+  MutationStatus,
+  useAction,
+  useDatatokenInfo,
+  useStore,
+  useUnlockStream,
+} from "@dataverse/hooks";
 import { usePlaygroundStore } from "@/context";
 import { Message } from "@arco-design/web-react";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
   streamId: string;
-  connectApp?: ({
-    appId,
-    wallet,
-    provider,
-  }: {
-    appId: string;
+  connectApp?: (args?: {
     wallet?: WALLET | undefined;
     provider?: any;
   }) => Promise<{
@@ -39,7 +40,11 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
 
-  const { modelParser, isDataverseExtension, setNoExtensionModalVisible } =
+  const { browserStorage } = usePlaygroundStore();
+
+  const { actionUpdateDatatokenInfo, actionUpdateStream } = useAction();
+
+  const { isDataverseExtension, setNoExtensionModalVisible } =
     usePlaygroundStore();
   const { pkh, streamsMap } = useStore();
   const streamRecord = useMemo(() => {
@@ -47,12 +52,30 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   }, [streamsMap]);
 
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
-    useDatatokenInfo();
+    useDatatokenInfo({
+      onSuccess: result => {
+        if (!browserStorage?.getDatatokenInfo(streamId)) {
+          browserStorage?.setDatatokenInfo({ streamId, datatokenInfo: result });
+        }
+      },
+    });
 
-  const { isPending, isSucceed, unlockStream } = useUnlockStream({
+  const {
+    isSucceed: isUnlockSucceed,
+    setStatus: setUnlockStatus,
+    unlockStream,
+  } = useUnlockStream({
     onError: (error: any) => {
       console.error(error);
       Message.error(error?.message ?? error);
+    },
+    onSuccess: result => {
+      if (!browserStorage?.getDecryptedStreamContent(streamId)) {
+        browserStorage?.setDecryptedStreamContent({
+          streamId,
+          ...result,
+        });
+      }
     },
   });
 
@@ -62,9 +85,32 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       streamRecord.streamContent.file.fileType === FileType.Datatoken &&
       !streamRecord.datatokenInfo
     ) {
-      getDatatokenInfo(streamId);
+      const datatokenInfo = browserStorage?.getDatatokenInfo(streamId);
+      if (datatokenInfo) {
+        actionUpdateDatatokenInfo({
+          streamId,
+          datatokenInfo,
+        });
+      } else {
+        getDatatokenInfo(streamId);
+      }
     }
-  }, [streamsMap]);
+
+    if (
+      browserStorage &&
+      isDataverseExtension &&
+      !isUnlocking &&
+      !isUnlockSucceed &&
+      streamRecord.streamContent.file.fileType !== FileType.Public
+    ) {
+      const streamContent = browserStorage.getDecryptedStreamContent(streamId);
+
+      if (streamContent) {
+        actionUpdateStream({ streamId, streamContent });
+        setUnlockStatus(MutationStatus.Succeed);
+      }
+    }
+  }, [browserStorage, streamsMap]);
 
   const unlock = async () => {
     setIsUnlocking(true);
@@ -75,10 +121,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       }
 
       if (!pkh) {
-        await connectApp!({ appId: modelParser.appId });
+        await connectApp!();
       }
 
-      if (isUnlocking || isSucceed) {
+      if (isUnlocking) {
         throw new Error("cannot unlock");
       }
 
@@ -111,8 +157,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           {streamRecord.streamContent.file.fileType !== FileType.Public && (
             <UnlockInfo
               streamRecord={streamRecord}
-              isPending={isPending}
-              isSucceed={isSucceed}
+              isPending={isUnlocking}
+              isSucceed={isUnlockSucceed}
               unlock={unlock}
             />
           )}
@@ -120,14 +166,14 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
         <Text
           streamRecord={streamRecord}
-          isUnlockSucceed={isSucceed}
+          isUnlockSucceed={isUnlockSucceed}
           onClick={() => {
             // navigate("/post/" + streamRecord.streamId);
           }}
         />
         <Images
           streamRecord={streamRecord}
-          isUnlockSucceed={isSucceed}
+          isUnlockSucceed={isUnlockSucceed}
           isGettingDatatokenInfo={isGettingDatatokenInfo}
           onClick={() => {
             // navigate("/post/" + streamRecord.streamId);

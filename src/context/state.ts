@@ -2,10 +2,12 @@ import { ModelParser, Output } from "@dataverse/model-parser";
 import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import _ from "lodash";
 import app from "../../output/app.json";
+import { BrowserStorage } from "@/utils";
 
 export const initialState: PlaygroundStateType = {
   appVersion: "0.0.1",
   modelParser: new ModelParser(app as Output),
+  browserStorage: undefined,
   sortedStreamIds: [],
   isDataverseExtension: undefined,
   isNoExtensionModalVisible: false,
@@ -22,6 +24,9 @@ export const reducer = (
   const { type, payload } = action;
 
   switch (type) {
+    case PlaygroundActionType.NewBrowserStorage:
+      state.browserStorage = new BrowserStorage(payload);
+      break;
     case PlaygroundActionType.SetSortedStreamIds:
       state.sortedStreamIds = payload;
       break;

@@ -35,12 +35,7 @@ import { Chain, WALLET } from "@dataverse/dataverse-connector";
 
 interface PublishPostProps {
   modelId: string;
-  connectApp: ({
-    appId,
-    wallet,
-    provider,
-  }: {
-    appId: string;
+  connectApp: (args?: {
     wallet?: WALLET | undefined;
     provider?: any;
   }) => Promise<{
@@ -53,7 +48,6 @@ interface PublishPostProps {
 
 const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const {
-    modelParser,
     appVersion,
     isDataverseExtension,
     isNoExtensionModalVisible,
@@ -112,7 +106,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
 
       if (!address || !pkh) {
         try {
-          const res = await connectApp({ appId: modelParser.appId });
+          const res = await connectApp();
           accountAddress = res.address;
         } catch (error) {
           console.error(error);

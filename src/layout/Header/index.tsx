@@ -21,6 +21,7 @@ const Header = (): React.ReactElement => {
   const { pkh } = useStore();
 
   const { connectApp } = useApp({
+    appId: modelParser.appId,
     onPending: () => {
       setIsConnecting(true);
     },
@@ -41,7 +42,7 @@ const Header = (): React.ReactElement => {
     if (pkh) {
       return;
     }
-    connectApp({ appId: modelParser.appId });
+    connectApp();
   };
 
   return (

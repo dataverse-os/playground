@@ -13,6 +13,13 @@ export const usePlaygroundStore = () => {
 
   const { state, dispatch } = context;
 
+  const newBrowserStorage = (pkh: string) => {
+    dispatch({
+      type: PlaygroundActionType.NewBrowserStorage,
+      payload: pkh,
+    });
+  };
+
   const setSortedStreamIds = (streamIds: string[]) => {
     dispatch({
       type: PlaygroundActionType.SetSortedStreamIds,
@@ -43,6 +50,7 @@ export const usePlaygroundStore = () => {
 
   return {
     ...state,
+    newBrowserStorage,
     setIsDataverseExtension,
     setSortedStreamIds,
     setNoExtensionModalVisible,
