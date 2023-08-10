@@ -1,8 +1,10 @@
 import React from "react";
-import Modal from "@/components/BaseComponents/Modal";
-import Button from "@/components/BaseComponents/Button";
-import logoSvg from "@/assets/icons/logo.svg";
+
 import { buttonStyle, modelWrapper } from "./styled";
+
+import logoSvg from "@/assets/icons/logo.svg";
+import Button from "@/components/BaseComponents/Button";
+import Modal from "@/components/BaseComponents/Modal";
 
 interface NoExtensionTipProps {
   isModalVisible: boolean;

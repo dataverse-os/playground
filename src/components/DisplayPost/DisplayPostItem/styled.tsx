@@ -1,5 +1,6 @@
-import { pixelProofing } from "@/utils";
 import styled from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const Wrapper = styled.div`
   margin: 0.35rem;

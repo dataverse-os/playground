@@ -1,5 +1,7 @@
 import React, { useRef } from "react";
+
 import { FlattenSimpleInterpolation } from "styled-components";
+
 import { InputBox } from "./styled";
 
 export interface InputProps {

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { NotFoundWrapper } from "./styled";
 
 export default function NotFound() {

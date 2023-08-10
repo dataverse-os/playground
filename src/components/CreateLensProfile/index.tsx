@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 
-import Input from "@/components/BaseComponents/Input";
-import Modal from "@/components/BaseComponents/Modal";
+import { Message } from "@arco-design/web-react";
+import { useCreateProfile } from "@dataverse/hooks";
+
+import { buttonStyle, inputStyle, modelWrapper } from "./styled";
+
 import createSvg from "@/assets/icons/create.svg";
 import Button from "@/components/BaseComponents/Button";
-import { Message } from "@arco-design/web-react";
-import { buttonStyle, inputStyle, modelWrapper } from "./styled";
-import { useCreateProfile } from "@dataverse/hooks";
+import Input from "@/components/BaseComponents/Input";
+import Modal from "@/components/BaseComponents/Modal";
 
 interface CreateLensProfileProps {
   isModalVisible: boolean;

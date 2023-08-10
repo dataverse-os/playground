@@ -1,5 +1,6 @@
-import { PlaygroundActionType, PlaygroundContextType } from "@/types";
 import { createContext, useContext } from "react";
+
+import { PlaygroundActionType, PlaygroundContextType } from "@/types";
 
 export const PlaygroundContext = createContext<PlaygroundContextType>(
   {} as PlaygroundContextType,

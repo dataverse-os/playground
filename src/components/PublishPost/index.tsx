@@ -1,15 +1,17 @@
-import imgIcon from "@/assets/icons/img.svg";
-import lockIcon from "@/assets/icons/lock.svg";
-import crossIcon from "@/assets/icons/cross.svg";
-import Button from "@/components/BaseComponents/Button";
-import Textarea from "@/components/BaseComponents/Textarea";
-import { addressAbbreviation, uuid } from "@/utils";
 import React, { useState } from "react";
+
+import { Message } from "@arco-design/web-react";
+import { IconArrowRight } from "@arco-design/web-react/icon";
+import { Chain, WALLET } from "@dataverse/dataverse-connector";
+import {
+  StreamType,
+  useCreateStream,
+  useProfiles,
+  useStore,
+} from "@dataverse/hooks";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
-import AccountStatus from "../AccountStatus";
-import { FlexRow } from "@/styled";
-import PrivacySettings from "../PrivacySettings";
+
 import {
   ButtonWrapper,
   Content,
@@ -18,20 +20,21 @@ import {
   UploadImgWrapper,
   Wrapper,
 } from "./styled";
-import { Message } from "@arco-design/web-react";
-import { IconArrowRight } from "@arco-design/web-react/icon";
+import AccountStatus from "../AccountStatus";
 import { CreateLensProfile } from "../CreateLensProfile";
-import { PostType, PrivacySettingsType } from "@/types";
-import { usePlaygroundStore } from "@/context";
-import {
-  StreamType,
-  useCreateStream,
-  useProfiles,
-  useStore,
-} from "@dataverse/hooks";
 import NoExtensionTip from "../NoExtensionTip";
+import PrivacySettings from "../PrivacySettings";
+
+import crossIcon from "@/assets/icons/cross.svg";
+import imgIcon from "@/assets/icons/img.svg";
+import lockIcon from "@/assets/icons/lock.svg";
+import Button from "@/components/BaseComponents/Button";
+import Textarea from "@/components/BaseComponents/Textarea";
+import { usePlaygroundStore } from "@/context";
 import { uploadImages } from "@/sdk";
-import { Chain, WALLET } from "@dataverse/dataverse-connector";
+import { FlexRow } from "@/styled";
+import { PostType, PrivacySettingsType } from "@/types";
+import { addressAbbreviation, uuid } from "@/utils";
 
 interface PublishPostProps {
   modelId: string;

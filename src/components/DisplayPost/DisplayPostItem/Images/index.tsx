@@ -1,6 +1,9 @@
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
-import { Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 import React, { useEffect, useState } from "react";
+
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+
+import { Image, ImgWrapper, ImageWrapperGrid } from "./styled";
+
 import question from "@/assets/icons/question.png";
 
 interface ImagesProps {

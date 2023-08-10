@@ -1,6 +1,8 @@
 import React from "react";
 import { useEffect, useRef, useState } from "react";
+
 import { FlattenSimpleInterpolation } from "styled-components";
+
 import { checkUniqueChar, decimalPlacesLimit } from "./string";
 import { InputBox, Wrapper } from "./styled";
 

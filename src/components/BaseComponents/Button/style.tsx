@@ -1,5 +1,6 @@
-import { pixelProofing } from "@/utils";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const ButtonContainerWrap = styled.div<{
   width: number | string;

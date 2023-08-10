@@ -1,5 +1,6 @@
-import { pixelProofing } from "@/utils";
 import styled, { FlattenSimpleInterpolation } from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const InputBox = styled.textarea<{
   height: number | string;

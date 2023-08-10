@@ -1,5 +1,5 @@
-import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 import { fromString as uint8ArrayfromString } from "uint8arrays/from-string";
+import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 
 /**
  * Encode an object to base64 string

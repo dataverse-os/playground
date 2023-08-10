@@ -1,6 +1,7 @@
 import React from "react";
-import styled from "styled-components";
+
 import { FaThumbsUp, FaShare, FaComment } from "react-icons/fa";
+import styled from "styled-components";
 
 interface CommentProps {
   author: string;

@@ -1,6 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { getAddressFromDid } from "./utils";
-import userIcon from "@/assets/icons/userIcon.svg";
+
 import {
   AvatarContainer,
   AvatarContextMenuContainer,
@@ -8,6 +7,9 @@ import {
   DefaultAvatarImg,
   Mask,
 } from "./styles";
+import { getAddressFromDid } from "./utils";
+
+import userIcon from "@/assets/icons/userIcon.svg";
 import { usePlaygroundStore } from "@/context";
 
 interface AvatarProps {

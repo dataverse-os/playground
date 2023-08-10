@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+
 import {
   CheckBoxContainerWrap,
   CheckBoxLabelSpanWrap,
   CheckBoxWrap,
 } from "./CheckBoxWrap";
+
 import iconTick from "@/assets/icons/tick_black_thin.svg";
 
 export interface CheckBoxProps {

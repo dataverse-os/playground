@@ -1,10 +1,13 @@
 import React from "react";
-import DisplayPostItem from "@/components/DisplayPost/DisplayPostItem";
-import Hint from "@/components/Comment/Hint";
-import CommentEditor from "@/components/Comment/CommentEditor";
-import Header from "@/layout/Header";
+
 import { useParams } from "react-router-dom";
+
 import { Wrapper } from "./styled";
+
+import CommentEditor from "@/components/Comment/CommentEditor";
+import Hint from "@/components/Comment/Hint";
+import DisplayPostItem from "@/components/DisplayPost/DisplayPostItem";
+import Header from "@/layout/Header";
 
 const PostDetail: React.FC = () => {
   const { streamId } = useParams();

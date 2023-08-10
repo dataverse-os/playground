@@ -1,7 +1,9 @@
 import { ModelParser, Output } from "@dataverse/model-parser";
-import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import _ from "lodash";
+
 import app from "../../output/app.json";
+
+import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import { BrowserStorage } from "@/utils";
 
 export const initialState: PlaygroundStateType = {

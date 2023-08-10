@@ -1,12 +1,15 @@
 import React from "react";
-import Button from "@/components/BaseComponents/Button";
-import { didAbbreviation } from "@/utils";
-import { css } from "styled-components";
-import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
-import githubLogo from "@/assets/github.png";
-import { useNavigate } from "react-router-dom";
+
 import { useApp, useStore } from "@dataverse/hooks";
+import { useNavigate } from "react-router-dom";
+import { css } from "styled-components";
+
+import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
+
+import githubLogo from "@/assets/github.png";
+import Button from "@/components/BaseComponents/Button";
 import { usePlaygroundStore } from "@/context";
+import { didAbbreviation } from "@/utils";
 
 const Header = (): React.ReactElement => {
   const {

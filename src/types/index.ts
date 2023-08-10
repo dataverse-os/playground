@@ -1,5 +1,3 @@
-import { ModelParser } from "@dataverse/model-parser";
-
 import {
   StreamRecord,
   IndexFileContentType,
@@ -8,6 +6,8 @@ import {
   StructuredFolder,
   Currency,
 } from "@dataverse/dataverse-connector";
+import { ModelParser } from "@dataverse/model-parser";
+
 import { BrowserStorage } from "@/utils";
 
 export enum PostType {

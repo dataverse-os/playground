@@ -1,15 +1,17 @@
 import React, { useEffect, useMemo } from "react";
-import DisplayPostItem from "./DisplayPostItem";
-import PublishPost from "@/components/PublishPost";
-import { StreamRecordMap } from "@/types";
-import { usePlaygroundStore } from "@/context";
-import { detectDataverseExtension } from "@dataverse/utils";
-import { ceramic } from "@/sdk";
-import { useAction, useFeeds, useStore } from "@dataverse/hooks";
-import { Wrapper } from "./styled";
+
 import { FileType } from "@dataverse/dataverse-connector";
+import { useApp, useAction, useFeeds, useStore } from "@dataverse/hooks";
+import { detectDataverseExtension } from "@dataverse/utils";
+
+import DisplayPostItem from "./DisplayPostItem";
 import LoadingPostItem from "./LoadingPostItem";
-import { useApp } from "@dataverse/hooks";
+import { Wrapper } from "./styled";
+
+import PublishPost from "@/components/PublishPost";
+import { usePlaygroundStore } from "@/context";
+import { ceramic } from "@/sdk";
+import { StreamRecordMap } from "@/types";
 
 const DisplayPost = () => {
   const {

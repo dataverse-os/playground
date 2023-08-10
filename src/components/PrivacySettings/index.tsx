@@ -1,9 +1,7 @@
 import React, { useState } from "react";
+
 import { css } from "styled-components";
-import Modal from "../BaseComponents/Modal";
-import Switch from "../BaseComponents/Switch/Switch";
-import Input from "../BaseComponents/Input";
-import iconTick from "@/assets/icons/tick_black_thin.svg";
+
 import {
   EncryptWrapper,
   ItemWrapper,
@@ -14,7 +12,12 @@ import {
   UnlimitedWrapper,
   Wrapper,
 } from "./styled";
+import Input from "../BaseComponents/Input";
+import Modal from "../BaseComponents/Modal";
 import Select from "../BaseComponents/Select";
+import Switch from "../BaseComponents/Switch/Switch";
+
+import iconTick from "@/assets/icons/tick_black_thin.svg";
 import { PostType, PrivacySettingsType } from "@/types";
 
 const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");

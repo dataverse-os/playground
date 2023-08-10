@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { SwitchButton, SwitchDot } from "./styled";
 
 interface SwitchProps {

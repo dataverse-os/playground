@@ -1,6 +1,8 @@
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
-import { TextWrapper } from "./styled";
 import React from "react";
+
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+
+import { TextWrapper } from "./styled";
 
 interface TextProps {
   streamRecord: StreamRecord;
