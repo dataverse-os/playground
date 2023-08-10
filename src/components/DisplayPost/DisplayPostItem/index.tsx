@@ -105,8 +105,11 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       streamsMap![streamId].streamContent.file.fileType !== FileType.Public
     ) {
       const streamContent = browserStorage.getDecryptedStreamContent(streamId);
-
-      if (streamContent) {
+      if (
+        streamContent &&
+        (streamContent.content as any).updatedAt ===
+          streamsMap![streamId].streamContent.content.updatedAt
+      ) {
         actionUpdateStream({ streamId, streamContent });
         setUnlockStatus(MutationStatus.Succeed);
       }
