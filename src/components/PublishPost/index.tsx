@@ -4,7 +4,7 @@ import crossIcon from "@/assets/icons/cross.svg";
 import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
 import { addressAbbreviation, uuid } from "@/utils";
-import { useState } from "react";
+import React, { useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
 import AccountStatus from "../AccountStatus";
@@ -248,6 +248,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
               href={`${process.env.DATAVERSE_OS}/finder`}
               target='_blank'
               style={{ marginLeft: "5px", color: "black" }}
+              rel='noreferrer'
             >
               <span style={{ textDecoration: "underline" }}>
                 View on DataverseOS File System

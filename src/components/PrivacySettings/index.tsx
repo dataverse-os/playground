@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { css } from "styled-components";
 import Modal from "../BaseComponents/Modal";
 import Switch from "../BaseComponents/Switch/Switch";
@@ -201,6 +201,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                   href={process.env.MUMBAI_FAUCET}
                   target='_blank'
                   className='link'
+                  rel='noreferrer'
                 >
                   here
                 </a>

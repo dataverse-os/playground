@@ -1,3 +1,4 @@
+import React from "react";
 import DisplayPost from "../components/DisplayPost";
 import Header from "./Header";
 import { Container, HeaderWrapper, BodyWrapper, PostWrapper } from "./styled";

@@ -1,3 +1,4 @@
+import React from "react";
 import { Frame, GlobalStyle } from "./styled";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";

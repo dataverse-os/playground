@@ -1,3 +1,4 @@
+import React from "react";
 import DisplayPostItem from "@/components/DisplayPost/DisplayPostItem";
 import Hint from "@/components/Comment/Hint";
 import CommentEditor from "@/components/Comment/CommentEditor";
@@ -5,7 +6,7 @@ import Header from "@/layout/Header";
 import { useParams } from "react-router-dom";
 import { Wrapper } from "./styled";
 
-export default function PostDetail() {
+const PostDetail: React.FC = () => {
   const { streamId } = useParams();
 
   return (
@@ -36,4 +37,6 @@ export default function PostDetail() {
       </div>
     </Wrapper>
   );
-}
+};
+
+export default PostDetail;
