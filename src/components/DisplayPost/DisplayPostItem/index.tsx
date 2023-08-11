@@ -80,6 +80,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           ...result,
         });
       }
+      getDatatokenInfo(streamId);
     },
   });
 
