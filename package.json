@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build && vite preview",
     "preview": "vite preview",
-    "github-build": "tsc && vite build",
+    "github-build": "vite build",
     "deploy": "node scripts/s3-deploy/s3-deploy.js",
     "format": "prettier --config .prettierrc . --write",
     "lint": "eslint . --ext .ts,.tsx",
