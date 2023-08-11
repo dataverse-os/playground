@@ -1,6 +1,6 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
-const padding = '0 7.25rem'
+const padding = "0 7.25rem";
 export const Container = styled.div`
   height: 100vh;
   width: 100%;
@@ -16,7 +16,7 @@ export const HeaderWrapper = styled.nav`
 `;
 
 export const BodyWrapper = styled.div`
-  padding: ${padding};  
+  padding: ${padding};
   display: flex;
   flex-flow: column wrap;
   margin-top: 3.35rem;

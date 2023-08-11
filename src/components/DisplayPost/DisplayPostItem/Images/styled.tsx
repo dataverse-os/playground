@@ -22,7 +22,7 @@ export const Secret = styled.div`
 `;
 
 export const Image = styled.img<{ imgCount: number }>`
-  width: ${(props) => 100 / props.imgCount}%;
+  width: ${props => 100 / props.imgCount}%;
   max-height: 20rem;
   height: 100%;
   object-fit: cover;
@@ -36,7 +36,7 @@ export const ImageWrapperGrid = styled.div`
   justify-content: space-evenly;
   align-content: space-evenly;
   gap: 0.75rem;
-  grid-template-columns: repeat(2,50%);
-  grid-template-rows: repeat(2,50%);
+  grid-template-columns: repeat(2, 50%);
+  grid-template-rows: repeat(2, 50%);
   cursor: pointer;
-`
+`;

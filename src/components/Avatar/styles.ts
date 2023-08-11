@@ -1,14 +1,14 @@
-import styled from "styled-components";
 import { motion } from "framer-motion";
+import styled from "styled-components";
 
 export const AvatarContainer = styled.div<{ haveContextMenu: boolean }>`
   position: relative;
   width: 32px;
   height: 32px;
-  cursor: ${(props) => (props.haveContextMenu ? "pointer" : null)};
+  cursor: ${props => (props.haveContextMenu ? "pointer" : null)};
   &:hover {
     > div {
-      visibility: ${(props) => (props.haveContextMenu ? "visible" : null)};
+      visibility: ${props => (props.haveContextMenu ? "visible" : null)};
     }
   }
 `;
@@ -40,7 +40,7 @@ export const AvatarContextMenuContainer = styled(motion.div)<{
   position: fixed;
   background: #ffffff;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
-  display: ${(props) => (props.visible ? "" : "none")};
+  display: ${props => (props.visible ? "" : "none")};
   border-radius: 16px;
   z-index: 1000;
 `;
@@ -116,7 +116,8 @@ export const DefaultAvatarImg = styled.div`
   );
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: -6px -6px 12px rgba(255, 255, 255, 0.04),
+  box-shadow:
+    -6px -6px 12px rgba(255, 255, 255, 0.04),
     6px 6px 12px rgba(0, 0, 0, 0.16);
 `;
 

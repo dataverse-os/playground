@@ -1,5 +1,3 @@
-import { ModelParser } from "@dataverse/model-parser";
-
 import {
   StreamRecord,
   IndexFileContentType,
@@ -8,6 +6,9 @@ import {
   StructuredFolder,
   Currency,
 } from "@dataverse/dataverse-connector";
+import { ModelParser } from "@dataverse/model-parser";
+
+import { BrowserStorage } from "@/utils";
 
 export enum PostType {
   Public,
@@ -22,7 +23,7 @@ export interface StructuredPost {
   images?: string[];
   videos?: string[];
   postType: PostType;
-  options?: {};
+  options?: object;
   createdAt: string;
   updatedAt?: string;
   encrypted?: {
@@ -82,6 +83,7 @@ export type StreamContent = StreamRecord["streamContent"];
 export type PlaygroundStateType = {
   appVersion: string;
   modelParser: ModelParser;
+  browserStorage?: BrowserStorage;
   sortedStreamIds: string[];
   isDataverseExtension?: boolean;
   isNoExtensionModalVisible: boolean;
@@ -94,6 +96,7 @@ export type PlaygroundContextType = {
 };
 
 export enum PlaygroundActionType {
+  NewBrowserStorage,
   SetIsDataverseExtension,
   SetSortedStreamIds,
   SetNoExtensionModalVisible,

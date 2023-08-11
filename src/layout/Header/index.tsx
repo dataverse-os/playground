@@ -1,11 +1,15 @@
-import Button from "@/components/BaseComponents/Button";
-import { didAbbreviation } from "@/utils";
-import { css } from "styled-components";
-import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
-import githubLogo from "@/assets/github.png";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+
 import { useApp, useStore } from "@dataverse/hooks";
+import { useNavigate } from "react-router-dom";
+import { css } from "styled-components";
+
+import { Brand, HeaderRightRender, Wrapper, GitHubLink } from "./styled";
+
+import githubLogo from "@/assets/github.png";
+import Button from "@/components/BaseComponents/Button";
 import { usePlaygroundStore } from "@/context";
+import { didAbbreviation } from "@/utils";
 
 const Header = (): React.ReactElement => {
   const {
@@ -21,10 +25,11 @@ const Header = (): React.ReactElement => {
   const { pkh } = useStore();
 
   const { connectApp } = useApp({
+    appId: modelParser.appId,
     onPending: () => {
       setIsConnecting(true);
     },
-    onError: (e) => {
+    onError: e => {
       console.error(e);
       setIsConnecting(false);
     },
@@ -41,7 +46,7 @@ const Header = (): React.ReactElement => {
     if (pkh) {
       return;
     }
-    connectApp({ appId: modelParser.appId });
+    connectApp();
   };
 
   return (
@@ -76,7 +81,7 @@ const Header = (): React.ReactElement => {
         />
         <Button
           loading={isConnecting}
-          type="primary"
+          type='primary'
           onClick={handleClickSignin}
           css={css`
             min-width: 150px;

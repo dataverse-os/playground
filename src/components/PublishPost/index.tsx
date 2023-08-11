@@ -1,15 +1,17 @@
-import imgIcon from "@/assets/icons/img.svg";
-import lockIcon from "@/assets/icons/lock.svg";
-import crossIcon from "@/assets/icons/cross.svg";
-import Button from "@/components/BaseComponents/Button";
-import Textarea from "@/components/BaseComponents/Textarea";
-import { addressAbbreviation, uuid } from "@/utils";
-import { useState } from "react";
+import React, { useState } from "react";
+
+import { Message } from "@arco-design/web-react";
+import { IconArrowRight } from "@arco-design/web-react/icon";
+import { Chain, WALLET } from "@dataverse/dataverse-connector";
+import {
+  StreamType,
+  useCreateStream,
+  useProfiles,
+  useStore,
+} from "@dataverse/hooks";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { css } from "styled-components";
-import AccountStatus from "../AccountStatus";
-import { FlexRow } from "@/styled";
-import PrivacySettings from "../PrivacySettings";
+
 import {
   ButtonWrapper,
   Content,
@@ -18,34 +20,41 @@ import {
   UploadImgWrapper,
   Wrapper,
 } from "./styled";
-import { Message } from "@arco-design/web-react";
-import { IconArrowRight } from "@arco-design/web-react/icon";
+import AccountStatus from "../AccountStatus";
 import { CreateLensProfile } from "../CreateLensProfile";
-import { PostType, PrivacySettingsType } from "@/types";
-import { usePlaygroundStore } from "@/context";
-import {
-  StreamType,
-  useApp,
-  useCreateStream,
-  useProfiles,
-  useStore,
-} from "@dataverse/hooks";
 import NoExtensionTip from "../NoExtensionTip";
+import PrivacySettings from "../PrivacySettings";
+
+import crossIcon from "@/assets/icons/cross.svg";
+import imgIcon from "@/assets/icons/img.svg";
+import lockIcon from "@/assets/icons/lock.svg";
+import Button from "@/components/BaseComponents/Button";
+import Textarea from "@/components/BaseComponents/Textarea";
+import { usePlaygroundStore } from "@/context";
 import { uploadImages } from "@/sdk";
+import { FlexRow } from "@/styled";
+import { PostType, PrivacySettingsType } from "@/types";
+import { addressAbbreviation, uuid } from "@/utils";
 
 interface PublishPostProps {
   modelId: string;
-  connectApp: Function;
+  connectApp: (args?: {
+    wallet?: WALLET | undefined;
+    provider?: any;
+  }) => Promise<{
+    pkh: string;
+    address: string;
+    chain: Chain;
+    wallet: WALLET;
+  }>;
 }
 
 const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const {
-    modelParser,
     appVersion,
     isDataverseExtension,
     isNoExtensionModalVisible,
     setNoExtensionModalVisible,
-    setIsConnecting,
   } = usePlaygroundStore();
 
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
@@ -73,7 +82,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const { pkh, address, profileIds } = useStore();
   const { getProfiles } = useProfiles();
 
-  const onChange = (imageList: ImageListType, addUpdateIndex?: number[]) => {
+  const onChange = (imageList: ImageListType) => {
     setImages(imageList);
   };
 
@@ -100,7 +109,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
 
       if (!address || !pkh) {
         try {
-          const res = await connectApp({ appId: modelParser.appId });
+          const res = await connectApp();
           accountAddress = res.address;
         } catch (error) {
           console.error(error);
@@ -157,7 +166,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       }
     }
     const files: File[] = [];
-    images.map((image) => {
+    images.map(image => {
       if (image.file) {
         files.push(image.file);
       }
@@ -202,7 +211,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           });
           console.log(
             "[Branch PostType.Public]: After createPublicStream, res:",
-            res
+            res,
           );
           break;
         case PostType.Encrypted:
@@ -230,7 +239,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           });
           console.log(
             "[Branch PostType.Payable]: After createPayableStream, res:",
-            res
+            res,
           );
           break;
       }
@@ -240,8 +249,9 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
             Post successfully!
             <a
               href={`${process.env.DATAVERSE_OS}/finder`}
-              target="_blank"
+              target='_blank'
               style={{ marginLeft: "5px", color: "black" }}
+              rel='noreferrer'
             >
               <span style={{ textDecoration: "underline" }}>
                 View on DataverseOS File System
@@ -276,17 +286,9 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           value={images}
           onChange={onChange}
           onError={onError}
-          dataURLKey="upload"
+          dataURLKey='upload'
         >
-          {({
-            imageList,
-            onImageUpload,
-            onImageRemoveAll,
-            onImageUpdate,
-            onImageRemove,
-            isDragging,
-            dragProps,
-          }) => (
+          {({ imageList, onImageUpload, onImageUpdate, onImageRemove }) => (
             <>
               <AccountStatus
                 name={addressAbbreviation(address) ?? ""}
@@ -322,11 +324,11 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
               </FlexRow>
               <ButtonWrapper>
                 <FlexRow>
-                  <Button type="icon" width={"1.75rem"} onClick={onImageUpload}>
+                  <Button type='icon' width={"1.75rem"} onClick={onImageUpload}>
                     <img src={imgIcon} />
                   </Button>
                   <Button
-                    type="icon"
+                    type='icon'
                     width={"1.75rem"}
                     css={css`
                       margin-left: 26px;
@@ -338,7 +340,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
                 </FlexRow>
                 <FlexRow>
                   <Button
-                    type="primary"
+                    type='primary'
                     loading={isPublishing}
                     onClick={handleProfileAndPost}
                     width={110}

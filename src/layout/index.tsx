@@ -1,11 +1,8 @@
-import DisplayPost from "../components/DisplayPost";
+import React from "react";
+
 import Header from "./Header";
-import {
-  Container,
-  HeaderWrapper,
-  BodyWrapper,
-  PostWrapper,
-} from "./styled";
+import { Container, HeaderWrapper, BodyWrapper, PostWrapper } from "./styled";
+import DisplayPost from "../components/DisplayPost";
 
 const Layout: React.FC = (): React.ReactElement => {
   return (

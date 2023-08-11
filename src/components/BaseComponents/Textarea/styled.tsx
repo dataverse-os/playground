@@ -1,5 +1,6 @@
-import { pixelProofing } from "@/utils";
 import styled, { FlattenSimpleInterpolation } from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const InputBox = styled.textarea<{
   height: number | string;
@@ -8,25 +9,25 @@ export const InputBox = styled.textarea<{
   fontSize: number | string;
   css?: FlattenSimpleInterpolation;
 }>`
-  width: ${(props) =>
+  width: ${props =>
     typeof props.width === "number"
       ? `${props.width}px`
       : pixelProofing(props.width)};
-  height: ${(props) =>
+  height: ${props =>
     typeof props.height === "number"
       ? `${props.height}px`
       : pixelProofing(props.height)};
-  text-align: ${(props) => props.center && "center"};
-  font-size: ${(props) =>
+  text-align: ${props => props.center && "center"};
+  font-size: ${props =>
     typeof props.fontSize === "number"
       ? `${props.fontSize}px`
       : pixelProofing(props.fontSize)};
-  line-height: ${(props) =>
+  line-height: ${props =>
     typeof props.fontSize === "number"
       ? `${props.fontSize}px`
       : pixelProofing(props.fontSize)};
   box-sizing: border-box;
-  background: #F6F6F6;
+  background: #f6f6f6;
   border-radius: 6px;
   resize: none;
   padding: 1rem 1.5rem;
@@ -40,5 +41,5 @@ export const InputBox = styled.textarea<{
   line-height: 22px;
   color: #999999;
 
-  ${(props) => props.css}
+  ${props => props.css}
 `;

@@ -1,5 +1,4 @@
-import { pixelProofing } from "@/utils";
-import styled, { FlattenSimpleInterpolation } from "styled-components";
+import styled from "styled-components";
 
 export const SwitchButton = styled.button<{
   size: string;
@@ -20,7 +19,7 @@ export const SwitchButton = styled.button<{
   height: 22px;
   line-height: 22px;
   vertical-align: middle;
-  background-color: ${(props) => (props.checked ? "#1890ff" : "#00000040")};
+  background-color: ${props => (props.checked ? "#1890ff" : "#00000040")};
   border: 0;
   border-radius: 100px;
   cursor: pointer;
@@ -29,7 +28,7 @@ export const SwitchButton = styled.button<{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  ${(props) =>
+  ${props =>
     props.size === "small" &&
     `
         min-width: 28px;
@@ -45,10 +44,10 @@ export const SwitchDot = styled.div<{
 }>`
   position: absolute;
   top: 2px;
-  left: ${(props) => (props.checked ? props.checkedLeft : "2px")};
+  left: ${props => (props.checked ? props.checkedLeft : "2px")};
   width: 18px;
   height: 18px;
-  ${(props) =>
+  ${props =>
     props.size === "small" &&
     `
           width: 12px;

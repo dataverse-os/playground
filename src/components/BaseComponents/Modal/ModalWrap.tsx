@@ -6,16 +6,18 @@ export const ModalWrap = styled.div<{
   cssStyle?: FlattenSimpleInterpolation;
 }>`
   .modalContainer {
-    width: ${(props) => `${props.width}px`};
+    width: ${props => `${props.width}px`};
     background-color: #fff;
     background-clip: padding-box;
     border: 0;
     border-radius: 8px;
-    box-shadow: 0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%),
+    box-shadow:
+      0 6px 16px 0 rgb(0 0 0 / 8%),
+      0 3px 6px -4px rgb(0 0 0 / 12%),
       0 9px 28px 8px rgb(0 0 0 / 5%);
     pointer-events: auto;
     padding: 20px 24px;
-    ${(props) => props.cssStyle}
+    ${props => props.cssStyle}
   }
 
   .maskContainer {
@@ -28,18 +30,18 @@ export const ModalWrap = styled.div<{
     display: flex;
     align-items: center;
     justify-content: center;
-    visibility: ${(props) => (props.visible ? "visible" : "hidden")};
+    visibility: ${props => (props.visible ? "visible" : "hidden")};
     background: rgba(1, 1, 1, 0.6);
-    opacity: ${(props) => (props.visible ? 1 : 0)};
+    opacity: ${props => (props.visible ? 1 : 0)};
     transition: opacity 0.15s;
   }
 
   .childrenContainer {
     max-width: 100%;
     max-height: 100%;
-    opacity: ${(props) => (props.visible ? 1 : 0)};
+    opacity: ${props => (props.visible ? 1 : 0)};
     /* transition: all 0.3s; */
-    transform: ${(props) => (props.visible ? "scale(1)" : "scale(0.3)")};
+    transform: ${props => (props.visible ? "scale(1)" : "scale(0.3)")};
   }
 
   .headerContainer {

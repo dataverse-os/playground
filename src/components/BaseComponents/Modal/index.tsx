@@ -1,11 +1,14 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+
 import { createPortal } from "react-dom";
-import Button from "../Button";
+import { css, FlattenSimpleInterpolation } from "styled-components";
+
 import { ModalWrap } from "./ModalWrap";
+import Button from "../Button";
+
+import { useClickOutside } from "@/hooks/useClickOutSide";
 import usePortal from "@/hooks/usePortal";
 import { uuid } from "@/utils";
-import { useClickOutside } from "@/hooks/useClickOutSide";
-import { css, FlattenSimpleInterpolation } from "styled-components";
 
 export interface ModalProps {
   title?: string;
@@ -90,10 +93,10 @@ const Modal: React.FC<ModalProps> = ({
   const target = usePortal(parentId);
   const elements = (
     <ModalWrap visible={visible} width={width} cssStyle={cssStyle}>
-      <div id={id} className="maskContainer">
-        <div className="modalContainer" ref={modalRef}>
-          <div className="headerContainer">
-            <div className="placeholder" />
+      <div id={id} className='maskContainer'>
+        <div className='modalContainer' ref={modalRef}>
+          <div className='headerContainer'>
+            <div className='placeholder' />
             <div>{title}</div>
             {showCloseButton && (
               <Button
@@ -111,20 +114,20 @@ const Modal: React.FC<ModalProps> = ({
             )}
           </div>
           <div
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
             }}
-            className="childrenContainer"
+            className='childrenContainer'
           >
             {children}
           </div>
 
-          <div className="footerContainer">
+          <div className='footerContainer'>
             <Button
               onClick={() => {
                 onOk?.();
               }}
-              type="gray"
+              type='gray'
             >
               ok
             </Button>

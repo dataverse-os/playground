@@ -1,6 +1,5 @@
-import React, { memo, useContext, useEffect, useState } from "react";
-import { getAddressFromDid } from "./utils";
-import userIcon from "@/assets/icons/userIcon.svg";
+import React, { memo, useEffect, useState } from "react";
+
 import {
   AvatarContainer,
   AvatarContextMenuContainer,
@@ -8,6 +7,9 @@ import {
   DefaultAvatarImg,
   Mask,
 } from "./styles";
+import { getAddressFromDid } from "./utils";
+
+import userIcon from "@/assets/icons/userIcon.svg";
 import { usePlaygroundStore } from "@/context";
 
 interface AvatarProps {
@@ -30,9 +32,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const [avatar, setAvatar] = useState<string>(userIcon);
   const [open, setOpen] = useState(false);
   // const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
-  const {
-      sortedStreamIds
-  } = usePlaygroundStore();
+  const { sortedStreamIds } = usePlaygroundStore();
   const load = async () => {
     setAvatarSrc(contextAvatar(getAddressFromDid(did)));
   };

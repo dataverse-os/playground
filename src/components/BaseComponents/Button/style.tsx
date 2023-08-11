@@ -1,5 +1,6 @@
-import { pixelProofing } from "@/utils";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const ButtonContainerWrap = styled.div<{
   width: number | string;
@@ -20,13 +21,13 @@ export const ButtonContainerWrap = styled.div<{
   height: 45px;
   padding: 12px 42px;
   width: fit-content;
-  min-width: ${(props) =>
+  min-width: ${props =>
     typeof props.width === "number"
       ? `${props.width}px`
       : pixelProofing(props.width)};
 
   // primary
-  ${(props) =>
+  ${props =>
     props.type === "primary" &&
     css`
       color: rgb(255, 255, 255);
@@ -34,7 +35,7 @@ export const ButtonContainerWrap = styled.div<{
     `}
 
   // text
-  ${(props) =>
+  ${props =>
     props.type === "text" &&
     css`
       color: black;
@@ -43,7 +44,7 @@ export const ButtonContainerWrap = styled.div<{
     `}
 
   // icon
-  ${(props) =>
+  ${props =>
     props.type === "icon" &&
     css`
       width: 1.75rem;
@@ -53,7 +54,7 @@ export const ButtonContainerWrap = styled.div<{
       padding: 0;
     `}
 
-  ${(props) =>
+  ${props =>
     props.type === "gray" &&
     css`
       background-color: #f8f7f7;
@@ -63,7 +64,7 @@ export const ButtonContainerWrap = styled.div<{
     `}
 
   transition: box-shadow 0.1s;
-  ${(props) => props.css}
+  ${props => props.css}
   font-family: Poppins-SemiBold;
   font-style: normal;
   font-weight: 500;

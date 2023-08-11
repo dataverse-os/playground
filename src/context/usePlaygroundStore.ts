@@ -1,8 +1,9 @@
-import { PlaygroundActionType, PlaygroundContextType } from "@/types";
 import { createContext, useContext } from "react";
 
+import { PlaygroundActionType, PlaygroundContextType } from "@/types";
+
 export const PlaygroundContext = createContext<PlaygroundContextType>(
-  {} as PlaygroundContextType
+  {} as PlaygroundContextType,
 );
 
 export const usePlaygroundStore = () => {
@@ -12,6 +13,13 @@ export const usePlaygroundStore = () => {
   }
 
   const { state, dispatch } = context;
+
+  const newBrowserStorage = (pkh: string) => {
+    dispatch({
+      type: PlaygroundActionType.NewBrowserStorage,
+      payload: pkh,
+    });
+  };
 
   const setSortedStreamIds = (streamIds: string[]) => {
     dispatch({
@@ -43,6 +51,7 @@ export const usePlaygroundStore = () => {
 
   return {
     ...state,
+    newBrowserStorage,
     setIsDataverseExtension,
     setSortedStreamIds,
     setNoExtensionModalVisible,

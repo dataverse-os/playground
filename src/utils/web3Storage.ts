@@ -1,26 +1,26 @@
-import { Web3Storage as Web3StorageSDK } from 'web3.storage';
+import { Web3Storage as Web3StorageSDK } from "web3.storage";
 
 export class Web3Storage {
   private accessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg5NkQ1YjhCNmJBM0IwNDEzNDdlQmNDRUQzMDkxMTQ4NDc2MEZEMEIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2MjgwMTQwMDg2NTgsIm5hbWUiOiJscWIifQ.jvEWmpMHWEvg49nZs1L-Rd0EOwGIGALkMwu2ng4beFY';
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg5NkQ1YjhCNmJBM0IwNDEzNDdlQmNDRUQzMDkxMTQ4NDc2MEZEMEIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2MjgwMTQwMDg2NTgsIm5hbWUiOiJscWIifQ.jvEWmpMHWEvg49nZs1L-Rd0EOwGIGALkMwu2ng4beFY";
 
   getAccessToken() {
     return this.accessToken;
   }
 
   makeFileObjects() {
-    const obj = { hello: 'world' };
-    const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' });
+    const obj = { hello: "world" };
+    const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
 
     const files = [
-      new File(['contents-of-file-1'], 'plain-utf8.txt'),
-      new File([blob], 'hello.json'),
+      new File(["contents-of-file-1"], "plain-utf8.txt"),
+      new File([blob], "hello.json"),
     ];
     return files;
   }
 
   makeStorageClient() {
-    return new Web3StorageSDK({ token: this.getAccessToken() ?? '' });
+    return new Web3StorageSDK({ token: this.getAccessToken() ?? "" });
   }
 
   async storeFiles(files: any) {
@@ -48,8 +48,8 @@ export class Web3Storage {
     const client = this.makeStorageClient();
     const status = await client.status(cid);
     console.log(status);
-    if (status) {
-    }
+    // if (status) {
+    // }
   }
 }
 

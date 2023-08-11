@@ -1,11 +1,12 @@
-import { ReactNode, useReducer } from "react";
+import React, { useReducer } from "react";
+
 import { initialState, reducer } from "./state";
 import { PlaygroundContext } from "./usePlaygroundStore";
 
 export const PlaygroundContextProvider = ({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 

@@ -1,26 +1,38 @@
-import AccountStatus from "@/components/AccountStatus";
-import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
-import { PropsWithRef, useEffect, useMemo, useState } from "react";
-import { FileType } from "@dataverse/dataverse-connector";
-import { Wrapper, Content, CreatedAt, Footer } from "./styled";
+import { PropsWithRef, useEffect, useState } from "react";
 import React from "react";
-import Text from "./Text";
-import Images from "./Images";
-import UnlockInfo from "./UnlockInfo";
-import { Header } from "./styled";
-import { FlexRow } from "@/styled";
+
+import { Message } from "@arco-design/web-react";
+import { Chain, FileType, WALLET } from "@dataverse/dataverse-connector";
 import {
-  useApp,
+  MutationStatus,
+  useAction,
   useDatatokenInfo,
   useStore,
   useUnlockStream,
 } from "@dataverse/hooks";
+
+import Images from "./Images";
+import { Wrapper, Content, CreatedAt } from "./styled";
+import { Header } from "./styled";
+import Text from "./Text";
+import UnlockInfo from "./UnlockInfo";
+
+import AccountStatus from "@/components/AccountStatus";
 import { usePlaygroundStore } from "@/context";
-import { Message } from "@arco-design/web-react";
+import { FlexRow } from "@/styled";
+import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
   streamId: string;
-  connectApp: Function;
+  connectApp?: (args?: {
+    wallet?: WALLET | undefined;
+    provider?: any;
+  }) => Promise<{
+    pkh: string;
+    address: string;
+    chain: Chain;
+    wallet: WALLET;
+  }>;
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
@@ -31,32 +43,84 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
 
-  const { modelParser, isDataverseExtension, setNoExtensionModalVisible } =
+  const { browserStorage } = usePlaygroundStore();
+
+  const { actionUpdateDatatokenInfo, actionUpdateStream } = useAction();
+
+  const { isDataverseExtension, setNoExtensionModalVisible } =
     usePlaygroundStore();
   const { pkh, streamsMap } = useStore();
-  const streamRecord = useMemo(() => {
-    return streamsMap![streamId];
-  }, [streamsMap]);
 
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
-    useDatatokenInfo();
+    useDatatokenInfo({
+      onSuccess: result => {
+        const storedDatatokenInfo = browserStorage?.getDatatokenInfo(streamId);
+        if (
+          !storedDatatokenInfo ||
+          JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
+        ) {
+          browserStorage?.setDatatokenInfo({ streamId, datatokenInfo: result });
+        }
+      },
+    });
 
-  const { isPending, isSucceed, unlockStream } = useUnlockStream({
+  const {
+    isSucceed: isUnlockSucceed,
+    setStatus: setUnlockStatus,
+    unlockStream,
+  } = useUnlockStream({
     onError: (error: any) => {
       console.error(error);
       Message.error(error?.message ?? error);
+    },
+    onSuccess: result => {
+      if (!browserStorage?.getDecryptedStreamContent(streamId)) {
+        browserStorage?.setDecryptedStreamContent({
+          streamId,
+          ...result,
+        });
+      }
+      getDatatokenInfo(streamId);
     },
   });
 
   useEffect(() => {
     if (
       !isGettingDatatokenInfo &&
-      streamRecord.streamContent.file.fileType === FileType.Datatoken &&
-      !streamRecord.datatokenInfo
+      streamsMap![streamId].streamContent.file.fileType ===
+        FileType.Datatoken &&
+      !streamsMap![streamId].datatokenInfo
     ) {
+      const datatokenInfo = browserStorage?.getDatatokenInfo(streamId);
+      if (datatokenInfo) {
+        // assign state from local storage cache
+        actionUpdateDatatokenInfo({
+          streamId,
+          datatokenInfo,
+        });
+      }
+      // refresh sold_num
       getDatatokenInfo(streamId);
     }
-  }, [streamsMap]);
+
+    if (
+      browserStorage &&
+      isDataverseExtension &&
+      !isUnlocking &&
+      !isUnlockSucceed &&
+      streamsMap![streamId].streamContent.file.fileType !== FileType.Public
+    ) {
+      const streamContent = browserStorage.getDecryptedStreamContent(streamId);
+      if (
+        streamContent &&
+        (streamContent.content as any).updatedAt ===
+          streamsMap![streamId].streamContent.content.updatedAt
+      ) {
+        actionUpdateStream({ streamId, streamContent });
+        setUnlockStatus(MutationStatus.Succeed);
+      }
+    }
+  }, [browserStorage, streamsMap![streamId]]);
 
   const unlock = async () => {
     setIsUnlocking(true);
@@ -67,10 +131,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       }
 
       if (!pkh) {
-        await connectApp({ appId: modelParser.appId });
+        await connectApp!();
       }
 
-      if (isUnlocking || isSucceed) {
+      if (isUnlocking) {
         throw new Error("cannot unlock");
       }
 
@@ -89,40 +153,45 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           <FlexRow>
             <AccountStatus
               name={
-                addressAbbreviation(getAddressFromDid(streamRecord.pkh)) ?? ""
+                addressAbbreviation(
+                  getAddressFromDid(streamsMap![streamId].pkh),
+                ) ?? ""
               }
-              did={streamRecord.pkh}
+              did={streamsMap![streamId].pkh}
             />
             <CreatedAt>
               {"• " +
                 timeAgo(
-                  Date.parse(streamRecord.streamContent.content.createdAt)
+                  Date.parse(
+                    streamsMap![streamId].streamContent.content.createdAt,
+                  ),
                 )}
             </CreatedAt>
           </FlexRow>
-          {streamRecord.streamContent.file.fileType !== FileType.Public && (
+          {streamsMap![streamId].streamContent.file.fileType !==
+            FileType.Public && (
             <UnlockInfo
-              streamRecord={streamRecord}
-              isPending={isPending}
-              isSucceed={isSucceed}
+              streamRecord={streamsMap![streamId]}
+              isPending={isUnlocking}
+              isSucceed={isUnlockSucceed}
               unlock={unlock}
             />
           )}
         </Header>
 
         <Text
-          streamRecord={streamRecord}
-          isUnlockSucceed={isSucceed}
+          streamRecord={streamsMap![streamId]}
+          isUnlockSucceed={isUnlockSucceed}
           onClick={() => {
-            // navigate("/post/" + streamRecord.streamId);
+            // navigate("/post/" + streamsMap![streamId].streamId);
           }}
         />
         <Images
-          streamRecord={streamRecord}
-          isUnlockSucceed={isSucceed}
+          streamRecord={streamsMap![streamId]}
+          isUnlockSucceed={isUnlockSucceed}
           isGettingDatatokenInfo={isGettingDatatokenInfo}
           onClick={() => {
-            // navigate("/post/" + streamRecord.streamId);
+            // navigate("/post/" + streamsMap![streamId].streamId);
           }}
         />
         {/* <Footer>

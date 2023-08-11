@@ -1,5 +1,6 @@
-import { pixelProofing } from "@/utils";
 import styled from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const Wrapper = styled.div`
   margin: 0.35rem;
@@ -17,7 +18,7 @@ export const Content = styled.div`
 export const PostWapper = styled.div<{ marginTop: number | string }>`
   display: flex;
   flex-direction: column;
-  margin-top: ${(props) =>
+  margin-top: ${props =>
     typeof props.marginTop === "number"
       ? `${props.marginTop}px`
       : pixelProofing(props.marginTop)};

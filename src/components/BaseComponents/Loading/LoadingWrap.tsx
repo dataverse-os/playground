@@ -10,8 +10,8 @@ export const LoadingWrap = styled.div<{
 
   .iconSpinner {
     pointer-events: none;
-    width: ${(props) => props.size}px;
-    height: ${(props) => props.size}px;
+    width: ${props => props.size}px;
+    height: ${props => props.size}px;
     transition: opacity 0.3s;
   }
 
@@ -22,8 +22,8 @@ export const LoadingWrap = styled.div<{
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
     border-radius: 50px;
-    width: ${(props) => props.size - 24}px;
-    height: ${(props) => props.size - 22}px;
+    width: ${props => props.size - 24}px;
+    height: ${props => props.size - 22}px;
     position: absolute;
   }
 
@@ -38,7 +38,7 @@ export const LoadingWrap = styled.div<{
 
   .check {
     opacity: 0;
-    width: ${(props) => props.size - 10}px;
+    width: ${props => props.size - 10}px;
   }
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;

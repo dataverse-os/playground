@@ -9,9 +9,9 @@ export const SelectWrap = styled.div<{
   .selectContainer {
     box-sizing: border-box;
     position: relative;
-    width: ${(props) =>
+    width: ${props =>
       typeof props.width === "number" ? `${props.width}px` : props.width};
-    margin-left: ${(props) =>
+    margin-left: ${props =>
       typeof props.width === "string"
         ? `${100 - parseInt(props.width, 10)}%`
         : ""};
@@ -32,12 +32,12 @@ export const SelectWrap = styled.div<{
 
   .icon {
     position: absolute;
-    top: ${(props) => (props.haveLabel ? "24" : "0")}px;
+    top: ${props => (props.haveLabel ? "24" : "0")}px;
     bottom: 0;
     right: 5px;
     left: unset;
     margin: auto;
-    transform: ${(props) => (props.selectorVisible ? "rotate(180deg)" : "0")};
+    transform: ${props => (props.selectorVisible ? "rotate(180deg)" : "0")};
     transition: all 0.3s;
   }
 
@@ -56,7 +56,7 @@ export const SelectWrap = styled.div<{
   .selector {
     box-sizing: border-box;
     position: absolute;
-    top: ${(props) => (props.haveLabel ? "62" : "35")}px;
+    top: ${props => (props.haveLabel ? "62" : "35")}px;
     z-index: 1;
     width: 100%;
     background-color: #f8f7f7;
@@ -72,5 +72,5 @@ export const SelectWrap = styled.div<{
   .inputBox {
     cursor: pointer;
   }
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;

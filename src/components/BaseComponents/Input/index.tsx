@@ -1,5 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { FlattenSimpleInterpolation } from "styled-components";
+
 import { checkUniqueChar, decimalPlacesLimit } from "./string";
 import { InputBox, Wrapper } from "./styled";
 
@@ -10,9 +13,9 @@ interface InputProps {
   min?: number;
   readOnly?: boolean;
   onChange?: (value: string) => void;
-  onKeyDown?: Function;
-  onBlur?: Function;
-  onClick?: Function;
+  onKeyDown?: (...args: any) => any;
+  onBlur?: (...args: any) => any;
+  onClick?: (...args: any) => any;
   canBeEmpty?: boolean;
   reg?: RegExp;
   decimalPlaces?: number;
@@ -34,7 +37,7 @@ const Input = function ({
   reg,
   decimalPlaces,
   positive = false,
-  cssStyles
+  cssStyles,
 }: InputProps) {
   const [currentValue, setCurrentValue] = useState(value || "");
   const [regCheck, setRegCheck] = useState(false);
@@ -66,11 +69,11 @@ const Input = function ({
         type={type}
         min={min}
         readOnly={readOnly}
-        onChange={(event) => {
+        onChange={event => {
           if (type === "number" && event.currentTarget.value !== "") {
             event.currentTarget.value = checkUniqueChar(
               event.currentTarget.value.match(/[0-9|.]+/)?.[0] || currentValue,
-              "."
+              ".",
             );
             if (
               decimalPlaces !== undefined &&
@@ -85,7 +88,7 @@ const Input = function ({
           setCurrentValue(event.currentTarget.value);
           onChange?.(event.currentTarget.value);
         }}
-        onKeyDown={(event) => {
+        onKeyDown={event => {
           if (
             (type === "number" && event.key === "+") ||
             event.key === "-" ||
@@ -98,13 +101,13 @@ const Input = function ({
             onKeyDown?.(event.currentTarget.value);
           }
         }}
-        onInput={(event) => {
+        onInput={event => {
           if (type === "number" && !validKey.current) {
             event.currentTarget.value = currentValue;
           }
         }}
-        onBlur={(event) => onBlur?.(event.currentTarget.value)}
-        onClick={(event) => onClick?.(event)}
+        onBlur={event => onBlur?.(event.currentTarget.value)}
+        onClick={event => onClick?.(event)}
         canBeEmpty={canBeEmpty}
         reg={reg}
         regCheck={regCheck}

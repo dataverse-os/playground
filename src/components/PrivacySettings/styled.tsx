@@ -1,12 +1,13 @@
-import { pixelProofing } from "@/utils";
 import styled, { FlattenSimpleInterpolation } from "styled-components";
+
+import { pixelProofing } from "@/utils";
 
 export const Wrapper = styled.div``;
 
 export const PostWapper = styled.div<{ marginTop: number | string }>`
   display: flex;
   flex-direction: column;
-  margin-top: ${(props) =>
+  margin-top: ${props =>
     typeof props.marginTop === "number"
       ? `${props.marginTop}px`
       : pixelProofing(props.marginTop)};
@@ -23,7 +24,7 @@ export const Title = styled.div<{ cssStyles?: FlattenSimpleInterpolation }>`
   line-height: 1.3125rem;
   margin-top: 30px;
   margin-bottom: 6px;
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;
 
 export const ItemWrapper = styled.div`

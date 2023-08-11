@@ -1,6 +1,8 @@
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
-import { TextWrapper } from "./styled";
 import React from "react";
+
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+
+import { TextWrapper } from "./styled";
 
 interface TextProps {
   streamRecord: StreamRecord;
@@ -8,7 +10,11 @@ interface TextProps {
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Text: React.FC<TextProps> = ({ streamRecord, isUnlockSucceed, onClick }) => {
+const Text: React.FC<TextProps> = ({
+  streamRecord,
+  isUnlockSucceed,
+  onClick,
+}) => {
   const getContent = () => {
     if (streamRecord.streamContent.file.fileType === FileType.Public) {
       return streamRecord.streamContent.content.text;

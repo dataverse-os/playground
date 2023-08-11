@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import styled from "styled-components";
 
 interface CommentEditorProps {
@@ -51,7 +52,7 @@ const CommentEditor: React.FC<CommentEditorProps> = ({ onSubmit }) => {
   };
 
   const handleContentChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setContent(event.target.value);
   };
@@ -62,9 +63,9 @@ const CommentEditor: React.FC<CommentEditorProps> = ({ onSubmit }) => {
         <EditorTextarea
           value={content}
           onChange={handleContentChange}
-          placeholder="Leave your comment here."
+          placeholder='Leave your comment here.'
         />
-        <EditorButton type="submit">Submit</EditorButton>
+        <EditorButton type='submit'>Submit</EditorButton>
       </EditorForm>
     </EditorWrapper>
   );

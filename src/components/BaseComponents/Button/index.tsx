@@ -1,7 +1,9 @@
 import React, { ReactNode } from "react";
-import { CSSProperties, FlattenSimpleInterpolation } from "styled-components";
-import Loading from "../Loading";
+
+import { FlattenSimpleInterpolation } from "styled-components";
+
 import { ButtonContainerWrap } from "./style";
+import Loading from "../Loading";
 
 export interface ButtonType {
   type?: "primary" | "ghost" | "link" | "text" | "default" | "icon" | "gray";

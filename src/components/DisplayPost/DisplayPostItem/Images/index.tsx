@@ -1,6 +1,9 @@
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
-import { Secret, Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 import React, { useEffect, useState } from "react";
+
+import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+
+import { Image, ImgWrapper, ImageWrapperGrid } from "./styled";
+
 import question from "@/assets/icons/question.png";
 
 interface ImagesProps {
@@ -10,7 +13,12 @@ interface ImagesProps {
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Images: React.FC<ImagesProps> = ({ streamRecord, isUnlockSucceed, isGettingDatatokenInfo, onClick }) => {
+const Images: React.FC<ImagesProps> = ({
+  streamRecord,
+  isUnlockSucceed,
+  isGettingDatatokenInfo,
+  onClick,
+}) => {
   const [images, setImages] = useState<string[]>([]);
   const showImage = (streamRecord: StreamRecord) => {
     if (streamRecord.streamContent.file.fileType === FileType.Public) {

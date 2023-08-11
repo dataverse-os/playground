@@ -18,7 +18,7 @@ export const Title = styled.div<{ cssStyles?: FlattenSimpleInterpolation }>`
   margin: 20px 0;
   font-size: 0.875rem;
   line-height: 1.3125rem;
-  ${(props) => props.cssStyles}
+  ${props => props.cssStyles}
 `;
 
 export const Content = styled.div`
@@ -42,13 +42,13 @@ export const UploadImg = styled.img`
   height: 100%;
   width: 100%;
   cursor: pointer;
-`
+`;
 
 export const UploadImgWrapper = styled.div`
   height: 25%;
   width: 25%;
   position: relative;
-`
+`;
 
 export const UploadImgCross = styled.img`
   cursor: pointer;
@@ -57,4 +57,4 @@ export const UploadImgCross = styled.img`
   top: 10%;
   width: 1.5rem;
   height: 1.5rem;
-`
+`;
