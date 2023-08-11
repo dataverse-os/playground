@@ -36,6 +36,7 @@ const DisplayPost = () => {
 
   const { connectApp } = useApp({
     appId: modelParser.appId,
+    autoConnect: true,
     onPending: () => {
       setIsConnecting(true);
     },

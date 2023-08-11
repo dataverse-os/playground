@@ -54,7 +54,11 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
     useDatatokenInfo({
       onSuccess: result => {
-        if (!browserStorage?.getDatatokenInfo(streamId)) {
+        const storedDatatokenInfo = browserStorage?.getDatatokenInfo(streamId);
+        if (
+          !storedDatatokenInfo ||
+          JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
+        ) {
           browserStorage?.setDatatokenInfo({ streamId, datatokenInfo: result });
         }
       },
@@ -88,13 +92,14 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     ) {
       const datatokenInfo = browserStorage?.getDatatokenInfo(streamId);
       if (datatokenInfo) {
+        // assign state from local storage cache
         actionUpdateDatatokenInfo({
           streamId,
           datatokenInfo,
         });
-      } else {
-        getDatatokenInfo(streamId);
       }
+      // refresh sold_num
+      getDatatokenInfo(streamId);
     }
 
     if (
