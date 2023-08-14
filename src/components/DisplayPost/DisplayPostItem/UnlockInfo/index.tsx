@@ -9,7 +9,6 @@ import { DatatokenInfoWrapper, Wrapper } from "./styled";
 import lockSVG from "@/assets/icons/lock.svg";
 import unlockSVG from "@/assets/icons/unlock.svg";
 import Loading from "@/components/BaseComponents/Loading";
-import { getCurrencyNameByCurrencyAddress } from "@/utils";
 
 interface DisplayPostItemProps {
   streamRecord: StreamRecord & { datatokenInfo?: DatatokenInfo };
@@ -50,11 +49,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
             {streamRecord.datatokenInfo?.collect_info?.price.amount || 0}
           </span>
           <span className='currency'>
-            {streamRecord.datatokenInfo?.collect_info?.price.currency
-              ? getCurrencyNameByCurrencyAddress(
-                  streamRecord.datatokenInfo?.collect_info?.price.currency,
-                )
-              : ""}
+            {streamRecord.datatokenInfo?.collect_info?.price.currency || ""}
           </span>
           <br />
           <span className='boughtNum'>
