@@ -54,12 +54,12 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
     useDatatokenInfo({
       onSuccess: result => {
-        const storedDatatokenInfo = browserStorage?.getDatatokenInfo(streamId);
+        const storedDatatokenInfo = browserStorage.getDatatokenInfo(streamId);
         if (
           !storedDatatokenInfo ||
           JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
         ) {
-          browserStorage?.setDatatokenInfo({ streamId, datatokenInfo: result });
+          browserStorage.setDatatokenInfo({ streamId, datatokenInfo: result });
         }
       },
     });
@@ -74,8 +74,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       Message.error(error?.message ?? error);
     },
     onSuccess: result => {
-      if (!browserStorage?.getDecryptedStreamContent(streamId)) {
-        browserStorage?.setDecryptedStreamContent({
+      if (!browserStorage.getDecryptedStreamContent({ pkh, streamId })) {
+        browserStorage.setDecryptedStreamContent({
+          pkh,
           streamId,
           ...result,
         });
@@ -91,7 +92,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         FileType.Datatoken &&
       !streamsMap![streamId].datatokenInfo
     ) {
-      const datatokenInfo = browserStorage?.getDatatokenInfo(streamId);
+      const datatokenInfo = browserStorage.getDatatokenInfo(streamId);
       if (datatokenInfo) {
         // assign state from local storage cache
         actionUpdateDatatokenInfo({
@@ -110,7 +111,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       !isUnlockSucceed &&
       streamsMap![streamId].streamContent.file.fileType !== FileType.Public
     ) {
-      const streamContent = browserStorage.getDecryptedStreamContent(streamId);
+      const streamContent = browserStorage.getDecryptedStreamContent({
+        pkh,
+        streamId,
+      });
       if (
         streamContent &&
         (streamContent.content as any).updatedAt ===

@@ -83,7 +83,7 @@ export type StreamContent = StreamRecord["streamContent"];
 export type PlaygroundStateType = {
   appVersion: string;
   modelParser: ModelParser;
-  browserStorage?: BrowserStorage;
+  browserStorage: BrowserStorage;
   sortedStreamIds: string[];
   isDataverseExtension?: boolean;
   isNoExtensionModalVisible: boolean;
@@ -96,7 +96,6 @@ export type PlaygroundContextType = {
 };
 
 export enum PlaygroundActionType {
-  NewBrowserStorage,
   SetIsDataverseExtension,
   SetSortedStreamIds,
   SetNoExtensionModalVisible,

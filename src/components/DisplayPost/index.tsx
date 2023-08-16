@@ -18,7 +18,6 @@ const DisplayPost = () => {
     modelParser,
     appVersion,
     sortedStreamIds,
-    newBrowserStorage,
     setIsDataverseExtension,
     setSortedStreamIds,
     setIsConnecting,
@@ -30,7 +29,7 @@ const DisplayPost = () => {
     return modelParser.getModelByName("indexFiles");
   }, []);
 
-  const { pkh, streamsMap } = useStore();
+  const { streamsMap } = useStore();
   const { actionLoadStreams } = useAction();
   const { loadFeeds } = useFeeds();
 
@@ -60,12 +59,6 @@ const DisplayPost = () => {
       }
     });
   }, []);
-
-  useEffect(() => {
-    if (pkh) {
-      newBrowserStorage(pkh);
-    }
-  }, [pkh]);
 
   useEffect(() => {
     if (streamsMap) {

@@ -2,11 +2,10 @@ import { DatatokenInfo, UnlockStreamResult } from "@dataverse/hooks";
 
 export class BrowserStorage {
   private _datatokenInfoKey: string;
-  private _decryptedStreamContentKey: string;
+  private _decryptedStreamContentKey?: string;
 
-  constructor(pkh: string) {
-    this._datatokenInfoKey = `${pkh}-datatoken-info-map`;
-    this._decryptedStreamContentKey = `${pkh}-decrypted-stream-content-map`;
+  constructor() {
+    this._datatokenInfoKey = `datatoken-info-map`;
   }
 
   public setDatatokenInfo({
@@ -47,12 +46,22 @@ export class BrowserStorage {
   }
 
   public setDecryptedStreamContent({
+    pkh,
     streamId,
     streamContent,
   }: {
+    pkh?: string;
     streamId: string;
     streamContent: UnlockStreamResult["streamContent"];
   }) {
+    if (!pkh) {
+      return;
+    }
+
+    if (!this._decryptedStreamContentKey) {
+      this._decryptedStreamContentKey = `${pkh}-decrypted-stream-content-map`;
+    }
+
     let decryptedStreamContentMap: Record<
       string,
       UnlockStreamResult["streamContent"]
@@ -72,9 +81,21 @@ export class BrowserStorage {
     );
   }
 
-  public getDecryptedStreamContent(
-    streamId: string,
-  ): UnlockStreamResult["streamContent"] | undefined {
+  public getDecryptedStreamContent({
+    pkh,
+    streamId,
+  }: {
+    pkh?: string;
+    streamId: string;
+  }): UnlockStreamResult["streamContent"] | undefined {
+    if (!pkh) {
+      return;
+    }
+
+    if (!this._decryptedStreamContentKey) {
+      this._decryptedStreamContentKey = `${pkh}-decrypted-stream-content-map`;
+    }
+
     const decryptedStreamContentMapStr = window.localStorage.getItem(
       this._decryptedStreamContentKey,
     );

@@ -1,5 +1,4 @@
 import { ModelParser, Output } from "@dataverse/model-parser";
-import _ from "lodash";
 
 import app from "../../output/app.json";
 
@@ -9,7 +8,7 @@ import { BrowserStorage } from "@/utils";
 export const initialState: PlaygroundStateType = {
   appVersion: "0.0.1",
   modelParser: new ModelParser(app as Output),
-  browserStorage: undefined,
+  browserStorage: new BrowserStorage(),
   sortedStreamIds: [],
   isDataverseExtension: undefined,
   isNoExtensionModalVisible: false,
@@ -26,21 +25,25 @@ export const reducer = (
   const { type, payload } = action;
 
   switch (type) {
-    case PlaygroundActionType.NewBrowserStorage:
-      state.browserStorage = new BrowserStorage(payload);
-      break;
     case PlaygroundActionType.SetSortedStreamIds:
-      state.sortedStreamIds = payload;
-      break;
+      return {
+        ...state,
+        sortedStreamIds: payload,
+      };
     case PlaygroundActionType.SetIsDataverseExtension:
-      state.isDataverseExtension = payload;
-      break;
+      return {
+        ...state,
+        isDataverseExtension: payload,
+      };
     case PlaygroundActionType.SetNoExtensionModalVisible:
-      state.isNoExtensionModalVisible = payload;
-      break;
+      return {
+        ...state,
+        isNoExtensionModalVisible: payload,
+      };
     case PlaygroundActionType.SetIsConnecting:
-      state.isConnecting = payload;
-      break;
+      return {
+        ...state,
+        isConnecting: payload,
+      };
   }
-  return _.cloneDeep(state);
 };
