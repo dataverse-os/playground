@@ -54,13 +54,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
     useDatatokenInfo({
       onSuccess: result => {
-        const storedDatatokenInfo = browserStorage.getDatatokenInfo(streamId);
-        if (
-          !storedDatatokenInfo ||
-          JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
-        ) {
-          browserStorage.setDatatokenInfo({ streamId, datatokenInfo: result });
-        }
+        browserStorage.getDatatokenInfo(streamId).then(storedDatatokenInfo => {
+          if (
+            !storedDatatokenInfo ||
+            JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
+          ) {
+            browserStorage.setDatatokenInfo({
+              streamId,
+              datatokenInfo: result,
+            });
+          }
+        });
       },
     });
 
@@ -74,56 +78,60 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       Message.error(error?.message ?? error);
     },
     onSuccess: result => {
-      if (!browserStorage.getDecryptedStreamContent({ pkh, streamId })) {
-        browserStorage.setDecryptedStreamContent({
-          pkh,
-          streamId,
-          ...result,
-        });
-      }
+      browserStorage.getDecryptedStreamContent({ pkh, streamId }).then(res => {
+        if (!res) {
+          browserStorage.setDecryptedStreamContent({
+            pkh,
+            streamId,
+            ...result,
+          });
+        }
+      });
       getDatatokenInfo(streamId);
     },
   });
 
   useEffect(() => {
-    if (
-      !isGettingDatatokenInfo &&
-      streamsMap![streamId].streamContent.file.fileType ===
-        FileType.Datatoken &&
-      !streamsMap![streamId].datatokenInfo
-    ) {
-      const datatokenInfo = browserStorage.getDatatokenInfo(streamId);
-      if (datatokenInfo) {
-        // assign state from local storage cache
-        actionUpdateDatatokenInfo({
-          streamId,
-          datatokenInfo,
-        });
-      }
-      // refresh sold_num
-      getDatatokenInfo(streamId);
-    }
-
-    if (
-      browserStorage &&
-      isDataverseExtension &&
-      !isUnlocking &&
-      !isUnlockSucceed &&
-      streamsMap![streamId].streamContent.file.fileType !== FileType.Public
-    ) {
-      const streamContent = browserStorage.getDecryptedStreamContent({
-        pkh,
-        streamId,
-      });
+    (async () => {
       if (
-        streamContent &&
-        (streamContent.content as any).updatedAt ===
-          streamsMap![streamId].streamContent.content.updatedAt
+        !isGettingDatatokenInfo &&
+        streamsMap![streamId].streamContent.file.fileType ===
+          FileType.Datatoken &&
+        !streamsMap![streamId].datatokenInfo
       ) {
-        actionUpdateStream({ streamId, streamContent });
-        setUnlockStatus(MutationStatus.Succeed);
+        const datatokenInfo = await browserStorage.getDatatokenInfo(streamId);
+        if (datatokenInfo) {
+          // assign state from local storage cache
+          actionUpdateDatatokenInfo({
+            streamId,
+            datatokenInfo,
+          });
+        }
+        // refresh sold_num
+        getDatatokenInfo(streamId);
       }
-    }
+
+      if (
+        browserStorage &&
+        isDataverseExtension &&
+        !isUnlocking &&
+        !isUnlockSucceed &&
+        streamsMap![streamId].streamContent.file.fileType !== FileType.Public
+      ) {
+        const streamContent = await browserStorage.getDecryptedStreamContent({
+          pkh,
+          streamId,
+        });
+        if (
+          streamContent &&
+          (streamContent.content as any).updatedAt ===
+            streamsMap![streamId].streamContent.content.updatedAt
+        ) {
+          actionUpdateStream({ streamId, streamContent });
+          setUnlockStatus(MutationStatus.Succeed);
+        }
+      }
+    })();
   }, [browserStorage, streamsMap![streamId]]);
 
   const unlock = async () => {
