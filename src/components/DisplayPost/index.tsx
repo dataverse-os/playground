@@ -29,8 +29,8 @@ const DisplayPost = () => {
     return modelParser.getModelByName("indexFiles");
   }, []);
 
-  const { streamsMap } = useStore();
-  const { actionLoadStreams } = useAction();
+  const { filesMap } = useStore();
+  const { actionLoadFiles } = useAction();
   const { loadFeeds } = useFeeds();
 
   const { connectApp } = useApp({
@@ -61,24 +61,25 @@ const DisplayPost = () => {
   }, []);
 
   useEffect(() => {
-    if (streamsMap) {
-      const _sortedStreamIds = Object.keys(streamsMap)
+    if (filesMap) {
+      const _sortedStreamIds = Object.keys(filesMap)
         .filter(
           el =>
-            streamsMap[el].pkh &&
-            streamsMap[el].streamContent.content.appVersion === appVersion &&
-            streamsMap[el].streamContent.file &&
-            streamsMap[el].streamContent.file.fileType !== FileType.Private,
+            filesMap[el].pkh &&
+            filesMap[el].fileContent.content.modelVersion === appVersion &&
+            filesMap[el].fileContent.file &&
+            filesMap[el].fileContent.file.fileType !== FileType.PrivateFileType,
         )
         .sort(
           (a, b) =>
-            Date.parse(streamsMap[b].streamContent.content.createdAt) -
-            Date.parse(streamsMap[a].streamContent.content.createdAt),
+            Date.parse(filesMap[b].fileContent.content.createdAt) -
+            Date.parse(filesMap[a].fileContent.content.createdAt),
         );
 
       setSortedStreamIds(_sortedStreamIds);
+      // console.log(filesMap);
     }
-  }, [streamsMap]);
+  }, [filesMap]);
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
@@ -93,7 +94,7 @@ const DisplayPost = () => {
         appId: modelParser.appId,
         modelId: postModel.streams[postModel.streams.length - 1].modelId,
         pkh: content.controller,
-        streamContent: {
+        fileContent: {
           content,
         },
       };
@@ -101,11 +102,11 @@ const DisplayPost = () => {
 
     Object.values(indexedFilesStreams).forEach(file => {
       if (ceramicStreamsRecordMap[file.contentId]) {
-        ceramicStreamsRecordMap[file.contentId].streamContent.file = file;
+        ceramicStreamsRecordMap[file.contentId].fileContent.file = file;
       }
     });
 
-    actionLoadStreams(ceramicStreamsRecordMap);
+    actionLoadFiles(ceramicStreamsRecordMap);
   };
 
   return (
@@ -115,7 +116,7 @@ const DisplayPost = () => {
           modelId={postModel.streams[postModel.streams.length - 1].modelId}
           connectApp={connectApp}
         />
-        {!streamsMap ? (
+        {!filesMap ? (
           <>
             <LoadingPostItem />
             <LoadingPostItem />
@@ -126,7 +127,7 @@ const DisplayPost = () => {
           sortedStreamIds.map((streamId, index) =>
             index % 2 == 1 ? (
               <DisplayPostItem
-                streamId={streamId}
+                fileId={streamId}
                 key={streamId}
                 connectApp={connectApp}
               />
@@ -135,7 +136,7 @@ const DisplayPost = () => {
         )}
       </Wrapper>
       <Wrapper>
-        {!streamsMap ? (
+        {!filesMap ? (
           <>
             <LoadingPostItem />
             <LoadingPostItem />
@@ -147,7 +148,7 @@ const DisplayPost = () => {
           sortedStreamIds.map((streamId, index) =>
             index % 2 == 0 ? (
               <DisplayPostItem
-                streamId={streamId}
+                fileId={streamId}
                 key={streamId}
                 connectApp={connectApp}
               />

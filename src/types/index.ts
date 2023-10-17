@@ -1,11 +1,10 @@
 import {
-  StreamRecord,
-  IndexFileContentType,
   Mirror,
   MirrorFile,
   StructuredFolder,
   Currency,
 } from "@dataverse/dataverse-connector";
+import { FileRecord } from "@dataverse/dataverse-connector/dist/esm/types/fs";
 import { ModelParser } from "@dataverse/model-parser";
 
 import { BrowserStorage } from "@/utils";
@@ -52,7 +51,6 @@ export interface NativePost {
 }
 
 export interface CustomMirrorFile extends MirrorFile {
-  contentType: IndexFileContentType | string;
   appName?: string;
   modelName?: string;
   content: StructuredPost;
@@ -75,10 +73,10 @@ export type CustomFolder = Omit<StructuredFolder, "mirrors"> & {
 };
 
 export interface StreamRecordMap {
-  [streamId: string]: StreamRecord;
+  [streamId: string]: FileRecord;
 }
 
-export type StreamContent = StreamRecord["streamContent"];
+export type StreamContent = FileRecord["fileContent"];
 
 export type PlaygroundStateType = {
   appVersion: string;

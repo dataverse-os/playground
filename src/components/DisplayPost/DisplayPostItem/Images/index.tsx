@@ -1,32 +1,36 @@
 import React, { useEffect, useState } from "react";
 
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+import {
+  FileType,
+  ReturnType,
+  SYSTEM_CALL,
+} from "@dataverse/dataverse-connector";
 
 import { Image, ImgWrapper, ImageWrapperGrid } from "./styled";
 
 import question from "@/assets/icons/question.png";
 
 interface ImagesProps {
-  streamRecord: StreamRecord;
+  fileRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]>;
   isUnlockSucceed: boolean;
   isGettingDatatokenInfo: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
 const Images: React.FC<ImagesProps> = ({
-  streamRecord,
+  fileRecord,
   isUnlockSucceed,
   isGettingDatatokenInfo,
   onClick,
 }) => {
   const [images, setImages] = useState<string[]>([]);
-  const showImage = (streamRecord: StreamRecord) => {
-    if (streamRecord.streamContent.file.fileType === FileType.Public) {
-      return streamRecord.streamContent.content?.images ?? [];
+  const showImage = (fileRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]>) => {
+    if (fileRecord.fileContent.file.fileType === FileType.PublicFileType) {
+      return fileRecord.fileContent.content?.images ?? [];
     }
-    if (streamRecord.streamContent.file.fileType === FileType.Private) {
+    if (fileRecord.fileContent.file.fileType === FileType.PrivateFileType) {
       if (isUnlockSucceed) {
-        return streamRecord.streamContent.content?.images ?? [];
+        return fileRecord.fileContent.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -34,9 +38,9 @@ const Images: React.FC<ImagesProps> = ({
         }).fill("?") ?? []
       );
     }
-    if (streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+    if (fileRecord.fileContent.file.fileType === FileType.PayableFileType) {
       if (isUnlockSucceed) {
-        return streamRecord.streamContent.content?.images ?? [];
+        return fileRecord.fileContent.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -46,19 +50,20 @@ const Images: React.FC<ImagesProps> = ({
     }
     return [];
   };
+
   useEffect(() => {
     if (isGettingDatatokenInfo) return;
-    let nowImages = showImage(streamRecord);
+    let nowImages = showImage(fileRecord);
     if (
       nowImages.length === 0 &&
-      streamRecord.streamContent.file.fileType !== FileType.Public &&
+      fileRecord.fileContent.file.fileType !== FileType.PublicFileType &&
       !isUnlockSucceed
     ) {
       nowImages = ["?"];
     }
     nowImages = [...new Set(Array.from(nowImages))];
     setImages(nowImages);
-  }, [streamRecord]);
+  }, [fileRecord, isUnlockSucceed]);
 
   const CurrentImgWrapper = images.length < 4 ? ImgWrapper : ImageWrapperGrid;
   return (

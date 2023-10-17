@@ -2,13 +2,19 @@ import { PropsWithRef, useEffect, useState } from "react";
 import React from "react";
 
 import { Message } from "@arco-design/web-react";
-import { Chain, FileType, WALLET } from "@dataverse/dataverse-connector";
+import {
+  Chain,
+  FileType,
+  SYSTEM_CALL,
+  WALLET,
+} from "@dataverse/dataverse-connector";
 import {
   MutationStatus,
   useAction,
+  useCollectFile,
   useDatatokenInfo,
   useStore,
-  useUnlockStream,
+  useUnlockFile,
 } from "@dataverse/hooks";
 
 import Images from "./Images";
@@ -23,7 +29,7 @@ import { FlexRow } from "@/styled";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
-  streamId: string;
+  fileId: string;
   connectApp?: (args?: {
     wallet?: WALLET | undefined;
     provider?: any;
@@ -36,7 +42,7 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
-  streamId,
+  fileId,
   connectApp,
 }) => {
   // const navigate = useNavigate();
@@ -45,22 +51,22 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const { browserStorage } = usePlaygroundStore();
 
-  const { actionUpdateDatatokenInfo, actionUpdateStream } = useAction();
+  const { actionUpdateDatatokenInfo, actionUpdateFile } = useAction();
 
   const { isDataverseExtension, setNoExtensionModalVisible } =
     usePlaygroundStore();
-  const { pkh, streamsMap } = useStore();
+  const { pkh, filesMap, dataverseConnector, address } = useStore();
 
   const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
     useDatatokenInfo({
       onSuccess: result => {
-        browserStorage.getDatatokenInfo(streamId).then(storedDatatokenInfo => {
+        browserStorage.getDatatokenInfo(fileId).then(storedDatatokenInfo => {
           if (
             !storedDatatokenInfo ||
             JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
           ) {
             browserStorage.setDatatokenInfo({
-              streamId,
+              fileId: fileId,
               datatokenInfo: result,
             });
           }
@@ -71,23 +77,36 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const {
     isSucceed: isUnlockSucceed,
     setStatus: setUnlockStatus,
-    unlockStream,
-  } = useUnlockStream({
+    unlockFile,
+  } = useUnlockFile({
     onError: (error: any) => {
+      if ("Already unlocked" === error) {
+        setUnlockStatus(MutationStatus.Succeed);
+        return;
+      }
       console.error(error);
       Message.error(error?.message ?? error);
     },
     onSuccess: result => {
-      browserStorage.getDecryptedStreamContent({ pkh, streamId }).then(res => {
-        if (!res) {
-          browserStorage.setDecryptedStreamContent({
-            pkh,
-            streamId,
-            ...result,
-          });
-        }
-      });
-      getDatatokenInfo(streamId);
+      browserStorage
+        .getDecryptedFileContent({ pkh, fileId: fileId })
+        .then(res => {
+          if (!res) {
+            browserStorage.setDecryptedFileContent({
+              pkh,
+              fileId: fileId,
+              ...result,
+            });
+          }
+        });
+      getDatatokenInfo(fileId);
+    },
+  });
+
+  const { collectFile } = useCollectFile({
+    onError: (error: any) => {
+      console.error(error);
+      Message.error(error?.message ?? error);
     },
   });
 
@@ -95,20 +114,20 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     (async () => {
       if (
         !isGettingDatatokenInfo &&
-        streamsMap![streamId].streamContent.file.fileType ===
-          FileType.Datatoken &&
-        !streamsMap![streamId].datatokenInfo
+        filesMap![fileId].fileContent.file.fileType ===
+          FileType.PayableFileType &&
+        !filesMap![fileId].datatokenInfo
       ) {
-        const datatokenInfo = await browserStorage.getDatatokenInfo(streamId);
+        const datatokenInfo = await browserStorage.getDatatokenInfo(fileId);
         if (datatokenInfo) {
           // assign state from local storage cache
           actionUpdateDatatokenInfo({
-            streamId,
+            fileId,
             datatokenInfo,
           });
         }
         // refresh sold_num
-        getDatatokenInfo(streamId);
+        getDatatokenInfo(fileId);
       }
 
       if (
@@ -116,23 +135,23 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         isDataverseExtension &&
         !isUnlocking &&
         !isUnlockSucceed &&
-        streamsMap![streamId].streamContent.file.fileType !== FileType.Public
+        filesMap![fileId].fileContent.file.fileType !== FileType.PublicFileType
       ) {
-        const streamContent = await browserStorage.getDecryptedStreamContent({
+        const fileContent = await browserStorage.getDecryptedFileContent({
           pkh,
-          streamId,
+          fileId,
         });
         if (
-          streamContent &&
-          (streamContent.content as any).updatedAt ===
-            streamsMap![streamId].streamContent.content.updatedAt
+          fileContent &&
+          (fileContent.content as any).updatedAt ===
+            filesMap![fileId].fileContent.content.updatedAt
         ) {
-          actionUpdateStream({ streamId, streamContent });
+          actionUpdateFile({ fileId, fileContent });
           setUnlockStatus(MutationStatus.Succeed);
         }
       }
     })();
-  }, [browserStorage, streamsMap![streamId]]);
+  }, [browserStorage, filesMap![fileId]]);
 
   const unlock = async () => {
     setIsUnlocking(true);
@@ -150,7 +169,19 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         throw new Error("cannot unlock");
       }
 
-      await unlockStream(streamId);
+      const isCollected = await dataverseConnector.runOS({
+        method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+        params: {
+          datatokenId:
+            filesMap![fileId].fileContent.file.accessControl
+              .monetizationProvider.datatokenId,
+          address: address!,
+        },
+      });
+      if (!isCollected) {
+        await collectFile(filesMap![fileId].fileContent.file.fileId);
+      }
+      await unlockFile(fileId);
     } catch (error) {
       console.error(error);
     } finally {
@@ -165,25 +196,22 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           <FlexRow>
             <AccountStatus
               name={
-                addressAbbreviation(
-                  getAddressFromDid(streamsMap![streamId].pkh),
-                ) ?? ""
+                addressAbbreviation(getAddressFromDid(filesMap![fileId].pkh)) ??
+                ""
               }
-              did={streamsMap![streamId].pkh}
+              did={filesMap![fileId].pkh}
             />
             <CreatedAt>
               {"• " +
                 timeAgo(
-                  Date.parse(
-                    streamsMap![streamId].streamContent.content.createdAt,
-                  ),
+                  Date.parse(filesMap![fileId].fileContent.content.createdAt),
                 )}
             </CreatedAt>
           </FlexRow>
-          {streamsMap![streamId].streamContent.file.fileType !==
-            FileType.Public && (
+          {filesMap![fileId].fileContent.file.fileType !==
+            FileType.PublicFileType && (
             <UnlockInfo
-              streamRecord={streamsMap![streamId]}
+              streamRecord={filesMap![fileId]}
               isPending={isUnlocking}
               isSucceed={isUnlockSucceed}
               unlock={unlock}
@@ -192,14 +220,14 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         </Header>
 
         <Text
-          streamRecord={streamsMap![streamId]}
+          fileRecord={filesMap![fileId]}
           isUnlockSucceed={isUnlockSucceed}
           onClick={() => {
             // navigate("/post/" + streamsMap![streamId].streamId);
           }}
         />
         <Images
-          streamRecord={streamsMap![streamId]}
+          fileRecord={filesMap![fileId]}
           isUnlockSucceed={isUnlockSucceed}
           isGettingDatatokenInfo={isGettingDatatokenInfo}
           onClick={() => {
