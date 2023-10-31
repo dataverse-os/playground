@@ -206,7 +206,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           res = await createIndexFile({
             modelId,
             fileContent: {
-              modelVersion: appVersion,
+              appVersion,
               profileId,
               text: content,
               images: postImages,
@@ -226,7 +226,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           res = await createIndexFile({
             modelId,
             fileContent: {
-              modelVersion: appVersion,
+              appVersion,
               text: content,
               images: postImages,
               videos: [],

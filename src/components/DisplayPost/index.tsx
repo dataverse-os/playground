@@ -66,7 +66,7 @@ const DisplayPost = () => {
         .filter(
           el =>
             filesMap[el].pkh &&
-            filesMap[el].fileContent.content.modelVersion === appVersion &&
+            filesMap[el].fileContent.content.appVersion === appVersion &&
             filesMap[el].fileContent.file &&
             filesMap[el].fileContent.file.fileType !==
               FileType.PrivateFileType &&
