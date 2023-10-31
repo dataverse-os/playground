@@ -68,7 +68,12 @@ const DisplayPost = () => {
             filesMap[el].pkh &&
             filesMap[el].fileContent.content.modelVersion === appVersion &&
             filesMap[el].fileContent.file &&
-            filesMap[el].fileContent.file.fileType !== FileType.PrivateFileType,
+            filesMap[el].fileContent.file.fileType !==
+              FileType.PrivateFileType &&
+            (filesMap[el].fileContent.file.fileType !==
+              FileType.PayableFileType ||
+              filesMap[el].fileContent.file.accessControl?.monetizationProvider
+                ?.datatokenId),
         )
         .sort(
           (a, b) =>

@@ -4,6 +4,8 @@ import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
 import {
   Chain,
+  ChainId,
+  DatatokenType,
   ReturnType,
   SYSTEM_CALL,
   WALLET,
@@ -36,7 +38,7 @@ import lockIcon from "@/assets/icons/lock.svg";
 import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
 import { usePlaygroundStore } from "@/context";
-import { uploadImages } from "@/sdk";
+import { DefaultDatatokenType, uploadImages } from "@/sdk";
 import { FlexRow } from "@/styled";
 import { PostType, PrivacySettingsType } from "@/types";
 import { addressAbbreviation, uuid } from "@/utils";
@@ -79,7 +81,8 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  const { pkh, address, profileIds } = useStore();
+  const { pkh, address /* , profileIds */ } = useStore();
+  const profileIds = ["Lens profiles are not accessible for now"];
   const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType) => {
@@ -125,7 +128,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       if (needEncrypt) {
         let targetProfileIds: string[];
         if (!profileIds) {
-          const lensProfiles = await getProfiles(accountAddress);
+          const lensProfiles = await getProfiles({
+            chainId: ChainId.Mumbai,
+            accountAddress,
+          });
           targetProfileIds = lensProfiles;
         } else {
           targetProfileIds = profileIds;
@@ -236,7 +242,13 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           await monetizeFile({
             fileId: res.fileContent.file.fileId,
             datatokenVars: {
-              profileId,
+              type: DefaultDatatokenType,
+              profileId:
+                DefaultDatatokenType === DatatokenType.Profileless
+                  ? ""
+                  : profileId!,
+              chainId: ChainId.Mumbai,
+              collectModule: "LimitedFeeCollectModule",
               currency: settings.currency!,
               amount: settings.amount!,
               collectLimit: settings.collectLimit!,

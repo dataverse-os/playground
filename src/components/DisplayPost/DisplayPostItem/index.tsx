@@ -170,12 +170,13 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       }
 
       const isCollected = await dataverseConnector.runOS({
-        method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+        // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+        method: SYSTEM_CALL.isDatatokenCollectedBy,
         params: {
           datatokenId:
             filesMap![fileId].fileContent.file.accessControl
               .monetizationProvider.datatokenId,
-          address: address!,
+          collector: address!,
         },
       });
       if (!isCollected) {
