@@ -82,6 +82,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     onError: (error: any) => {
       if ("Already unlocked" === error) {
         setUnlockStatus(MutationStatus.Succeed);
+        browserStorage
+          .getDecryptedFileContent({ pkh, fileId: fileId })
+          .then(res => {
+            if (!res) {
+              browserStorage.setDecryptedFileContent({
+                pkh,
+                fileId: fileId,
+                fileContent: filesMap![fileId].fileContent as any,
+              });
+            }
+          });
         return;
       }
       console.error(error);
@@ -141,10 +152,11 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           pkh,
           fileId,
         });
+        console.log(fileContent?.file.fileName, { fileContent });
         if (
           fileContent &&
-          (fileContent.content as any).updatedAt ===
-            filesMap![fileId].fileContent.content.updatedAt
+          fileContent.file.updatedAt ===
+            filesMap![fileId].fileContent.file.updatedAt
         ) {
           actionUpdateFile({ fileId, fileContent });
           setUnlockStatus(MutationStatus.Succeed);
@@ -189,6 +201,54 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       setIsUnlocking(false);
     }
   };
+
+  useEffect(() => {
+    if (
+      filesMap![fileId].fileContent.file.fileType === FileType.PayableFileType
+    ) {
+      (async () => {
+        const res = await browserStorage.getDecryptedFileContent({
+          pkh,
+          fileId: fileId,
+        });
+        if (res) return;
+
+        try {
+          setIsUnlocking(true);
+          if (isDataverseExtension === false) {
+            setNoExtensionModalVisible(true);
+            return;
+          }
+
+          if (!pkh) {
+            await connectApp!();
+          }
+
+          if (isUnlocking) {
+            throw new Error("cannot unlock");
+          }
+
+          const isCollected = await dataverseConnector.runOS({
+            // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+            method: SYSTEM_CALL.isDatatokenCollectedBy,
+            params: {
+              datatokenId:
+                filesMap![fileId].fileContent.file.accessControl
+                  .monetizationProvider.datatokenId,
+              collector: address!,
+            },
+          });
+          if (isCollected) {
+            await unlockFile(fileId);
+          }
+        } catch (error) {
+          console.warn(error);
+        } finally {
+          setIsUnlocking(false);
+        }
+      })();
+    }
+  }, [filesMap![fileId]]);
 
   return (
     <Wrapper>
