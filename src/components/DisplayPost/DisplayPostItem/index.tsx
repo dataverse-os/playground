@@ -221,7 +221,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           }
 
           if (!pkh) {
-            await connectApp!();
+            return;
           }
 
           if (isUnlocking) {
