@@ -39,11 +39,13 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
     chain: Chain;
     wallet: WALLET;
   }>;
+  isBatchGettingDatatokenInfo?: boolean;
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   fileId,
   connectApp,
+  isBatchGettingDatatokenInfo,
 }) => {
   // const navigate = useNavigate();
 
@@ -124,6 +126,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   useEffect(() => {
     (async () => {
       if (
+        !isBatchGettingDatatokenInfo &&
         !isGettingDatatokenInfo &&
         filesMap![fileId].fileContent.file.fileType ===
           FileType.PayableFileType &&
@@ -152,7 +155,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           pkh,
           fileId,
         });
-        console.log(fileContent?.file.fileName, { fileContent });
+        // console.log(fileContent?.file.fileName, { fileContent });
         if (
           fileContent &&
           fileContent.file.updatedAt ===
@@ -194,6 +197,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       if (!isCollected) {
         await collectFile(filesMap![fileId].fileContent.file.fileId);
       }
+      if (isUnlocking) return;
       await unlockFile(fileId);
     } catch (error) {
       console.error(error);
@@ -212,6 +216,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           fileId: fileId,
         });
         if (res) return;
+        if (isUnlocking) return;
 
         try {
           setIsUnlocking(true);
