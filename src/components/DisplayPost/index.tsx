@@ -6,8 +6,8 @@ import {
   useAction,
   useFeeds,
   useStore,
-  useDatatokenDetails,
   MutationStatus,
+  useLoadDatatokens,
 } from "@dataverse/hooks";
 import { detectDataverseExtension } from "@dataverse/utils";
 
@@ -43,8 +43,8 @@ const DisplayPost = () => {
   const {
     isPending: isGettingDatatokenDetails,
     setStatus: setGettingDatatokenDetailsStatus,
-    getDatatokenDetails,
-  } = useDatatokenDetails({
+    loadDatatokens,
+  } = useLoadDatatokens({
     onPending: () => {
       setIsBatchGettingDatatokenInfo(true);
     },
@@ -144,7 +144,7 @@ const DisplayPost = () => {
           return;
         }
         // get and refresh datatoken info
-        const datatokenDetails = await getDatatokenDetails(fileIds);
+        const datatokenDetails = await loadDatatokens(fileIds);
         // save datatoken info to local storage cache
         for (
           let i = 0;

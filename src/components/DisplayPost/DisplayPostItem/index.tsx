@@ -12,7 +12,7 @@ import {
   MutationStatus,
   useAction,
   useCollectFile,
-  useDatatokenInfo,
+  useLoadDatatoken,
   useStore,
   useUnlockFile,
 } from "@dataverse/hooks";
@@ -59,8 +59,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     usePlaygroundStore();
   const { pkh, filesMap, dataverseConnector, address } = useStore();
 
-  const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
-    useDatatokenInfo({
+  const { isPending: isGettingDatatokenInfo, loadDatatoken } = useLoadDatatoken(
+    {
       onSuccess: result => {
         browserStorage.getDatatokenInfo(fileId).then(storedDatatokenInfo => {
           if (
@@ -74,7 +74,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           }
         });
       },
-    });
+    },
+  );
 
   const {
     isSucceed: isUnlockSucceed,
@@ -112,7 +113,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             });
           }
         });
-      getDatatokenInfo(fileId);
+      loadDatatoken(fileId);
     },
   });
 
@@ -141,7 +142,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           });
         }
         // refresh sold_num
-        getDatatokenInfo(fileId);
+        loadDatatoken(fileId);
       }
 
       if (
