@@ -8,7 +8,7 @@ import {
 
 import { Image, ImgWrapper, ImageWrapperGrid, NftLockedInfo } from "./styled";
 
-import iconLock from "@/assets/icons/lock-white.svg";
+// import iconLock from "@/assets/icons/lock-white.svg";
 import question from "@/assets/icons/question.png";
 import { timeCountdown } from "@/utils";
 
@@ -94,20 +94,23 @@ const Images: React.FC<ImagesProps> = ({
         })}
       {nftLocked && (
         <NftLockedInfo>
-          <div className='locked-icon'>
-            <img src={iconLock} />
-          </div>
-          <div className='info-card'>
-            <p>unlock in</p>
-            <p>
-              {fileRecord.fileContent.file.accessControl?.monetizationProvider
-                ?.unlockingTimeStamp
-                ? timeCountdown(
-                    fileRecord.fileContent.file.accessControl
-                      ?.monetizationProvider?.unlockingTimeStamp * 1000,
-                  ) || "just now"
-                : "?"}
-            </p>
+          <Image src={question} imgCount={1} />
+          <div className='mask'>
+            {/* <div className='locked-icon'>
+              <img src={iconLock} />
+            </div> */}
+            <div className='info-card'>
+              <p>unlock in</p>
+              <p>
+                {fileRecord.fileContent.file.accessControl?.monetizationProvider
+                  ?.unlockingTimeStamp
+                  ? timeCountdown(
+                      fileRecord.fileContent.file.accessControl
+                        ?.monetizationProvider?.unlockingTimeStamp * 1000,
+                    ) || "just now"
+                  : "?"}
+              </p>
+            </div>
           </div>
         </NftLockedInfo>
       )}

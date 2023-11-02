@@ -44,12 +44,26 @@ export const ImageWrapperGrid = styled.div`
 export const NftLockedInfo = styled.div`
   width: 100%;
   height: 100%;
-  padding: 13px;
-  display: flex;
-  flex-direction: column;
-  background: #00000066;
-  border-radius: 10px;
-  backdrop-filter: blur(4px);
+  position: relative;
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .mask {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    background: #00000066;
+    border-radius: 10px;
+    backdrop-filter: blur(4px);
+  }
 
   .locked-icon {
     padding: 7px 0 17px;
@@ -74,6 +88,7 @@ export const NftLockedInfo = styled.div`
     align-items: center;
 
     p {
+      margin: 5px 0;
       font-family: Lato-SemiBold;
       font-size: 12px;
       font-weight: 600;
