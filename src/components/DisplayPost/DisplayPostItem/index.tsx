@@ -1,4 +1,4 @@
-import { PropsWithRef, useEffect, useState } from "react";
+import { PropsWithRef, useCallback, useEffect, useState } from "react";
 import React from "react";
 
 import { Message } from "@arco-design/web-react";
@@ -125,6 +125,60 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   });
 
   useEffect(() => {
+    console.log({ pkh, address });
+  }, [pkh, address]);
+
+  const autoUnlock = useCallback(async () => {
+    const res = await browserStorage.getDecryptedFileContent({
+      pkh,
+      fileId: fileId,
+    });
+    if (res) return;
+    if (isUnlocking) return;
+
+    try {
+      setIsUnlocking(true);
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
+        return;
+      }
+
+      if (!pkh) {
+        return;
+      }
+
+      // if (isUnlocking) {
+      //   throw new Error("cannot unlock");
+      // }
+
+      const isCollected = await dataverseConnector.runOS({
+        // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+        method: SYSTEM_CALL.isDatatokenCollectedBy,
+        params: {
+          datatokenId:
+            filesMap![fileId].fileContent.file.accessControl
+              .monetizationProvider.datatokenId,
+          collector: address!,
+        },
+      });
+      if (isCollected) {
+        await unlockFile(fileId);
+      }
+    } catch (error) {
+      console.warn(error);
+    } finally {
+      setIsUnlocking(false);
+    }
+  }, [
+    browserStorage,
+    isUnlocking,
+    isDataverseExtension,
+    dataverseConnector,
+    pkh,
+    address,
+  ]);
+
+  useEffect(() => {
     (async () => {
       if (
         !isBatchGettingDatatokenInfo &&
@@ -167,9 +221,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         }
       }
     })();
-  }, [browserStorage, filesMap![fileId]]);
+  }, [browserStorage, filesMap![fileId], pkh]);
 
-  const unlock = async () => {
+  const unlock = useCallback(async () => {
+    if (isUnlocking) return;
     setIsUnlocking(true);
     try {
       if (isDataverseExtension === false) {
@@ -181,9 +236,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         await connectApp!();
       }
 
-      if (isUnlocking) {
-        throw new Error("cannot unlock");
-      }
+      // if (isUnlocking) {
+      //   throw new Error("cannot unlock");
+      // }
 
       const isCollected = await dataverseConnector.runOS({
         // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
@@ -205,56 +260,15 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     } finally {
       setIsUnlocking(false);
     }
-  };
+  }, [isUnlocking, isDataverseExtension, pkh, address, filesMap![fileId]]);
 
   useEffect(() => {
     if (
       filesMap![fileId].fileContent.file.fileType === FileType.PayableFileType
     ) {
-      (async () => {
-        const res = await browserStorage.getDecryptedFileContent({
-          pkh,
-          fileId: fileId,
-        });
-        if (res) return;
-        if (isUnlocking) return;
-
-        try {
-          setIsUnlocking(true);
-          if (isDataverseExtension === false) {
-            setNoExtensionModalVisible(true);
-            return;
-          }
-
-          if (!pkh) {
-            return;
-          }
-
-          if (isUnlocking) {
-            throw new Error("cannot unlock");
-          }
-
-          const isCollected = await dataverseConnector.runOS({
-            // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
-            method: SYSTEM_CALL.isDatatokenCollectedBy,
-            params: {
-              datatokenId:
-                filesMap![fileId].fileContent.file.accessControl
-                  .monetizationProvider.datatokenId,
-              collector: address!,
-            },
-          });
-          if (isCollected) {
-            await unlockFile(fileId);
-          }
-        } catch (error) {
-          console.warn(error);
-        } finally {
-          setIsUnlocking(false);
-        }
-      })();
+      autoUnlock();
     }
-  }, [filesMap![fileId]]);
+  }, [filesMap![fileId], pkh]);
 
   return (
     <Wrapper>
