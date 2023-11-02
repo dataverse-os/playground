@@ -218,6 +218,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         ) {
           actionUpdateFile({ fileId, fileContent });
           setUnlockStatus(MutationStatus.Succeed);
+        } else {
+          autoUnlock();
         }
       }
     })();
@@ -261,14 +263,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       setIsUnlocking(false);
     }
   }, [isUnlocking, isDataverseExtension, pkh, address, filesMap![fileId]]);
-
-  useEffect(() => {
-    if (
-      filesMap![fileId].fileContent.file.fileType === FileType.PayableFileType
-    ) {
-      autoUnlock();
-    }
-  }, [filesMap![fileId], pkh]);
 
   return (
     <Wrapper>
