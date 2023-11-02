@@ -5,6 +5,7 @@ import { Message } from "@arco-design/web-react";
 import {
   Chain,
   FileType,
+  MirrorFile,
   SYSTEM_CALL,
   WALLET,
 } from "@dataverse/dataverse-connector";
@@ -50,6 +51,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   // const navigate = useNavigate();
 
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
+  const [nftLocked, setNftLocked] = useState<boolean>(false);
 
   const { browserStorage } = usePlaygroundStore();
 
@@ -255,8 +257,22 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       if (!isCollected) {
         await collectFile(filesMap![fileId].fileContent.file.fileId);
       }
-      if (isUnlocking) return;
-      await unlockFile(fileId);
+      try {
+        await unlockFile(fileId);
+        setNftLocked(false);
+      } catch (e) {
+        console.warn(e);
+        Message.error(e as any);
+        const file = filesMap![fileId].fileContent.file as MirrorFile;
+        const isNftLocked = !!(
+          file.accessControl?.monetizationProvider?.unlockingTimeStamp &&
+          Number(file.accessControl.monetizationProvider.unlockingTimeStamp) >
+            Date.now() / 1000
+        );
+        if (isNftLocked) {
+          setNftLocked(true);
+        }
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -305,6 +321,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           fileRecord={filesMap![fileId]}
           isUnlockSucceed={isUnlockSucceed}
           isGettingDatatokenInfo={isGettingDatatokenInfo}
+          nftLocked={nftLocked}
           onClick={() => {
             // navigate("/post/" + streamsMap![streamId].streamId);
           }}
