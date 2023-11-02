@@ -84,25 +84,25 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     setStatus: setUnlockStatus,
     unlockFile,
   } = useUnlockFile({
-    onError: (error: any) => {
-      if ("Already unlocked" === error) {
-        setUnlockStatus(MutationStatus.Succeed);
-        browserStorage
-          .getDecryptedFileContent({ pkh, fileId: fileId })
-          .then(res => {
-            if (!res) {
-              browserStorage.setDecryptedFileContent({
-                pkh,
-                fileId: fileId,
-                fileContent: filesMap![fileId].fileContent as any,
-              });
-            }
-          });
-        return;
-      }
-      console.error(error);
-      Message.error(error?.message ?? error);
-    },
+    // onError: (error: any) => {
+    //   if ("Already unlocked" === error) {
+    //     setUnlockStatus(MutationStatus.Succeed);
+    //     browserStorage
+    //       .getDecryptedFileContent({ pkh, fileId: fileId })
+    //       .then(res => {
+    //         if (!res) {
+    //           browserStorage.setDecryptedFileContent({
+    //             pkh,
+    //             fileId: fileId,
+    //             fileContent: filesMap![fileId].fileContent as any,
+    //           });
+    //         }
+    //       });
+    //     return;
+    //   }
+    //   console.error(error);
+    //   Message.error(error?.message ?? error);
+    // },
     onSuccess: result => {
       browserStorage
         .getDecryptedFileContent({ pkh, fileId: fileId })
