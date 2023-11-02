@@ -249,7 +249,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           datatokenId:
             filesMap![fileId].fileContent.file.accessControl
               .monetizationProvider.datatokenId,
-          collector: address!,
+          collector: address ?? dataverseConnector.address!,
         },
       });
       if (!isCollected) {
