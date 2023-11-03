@@ -1,0 +1,75 @@
+{
+  "id": "5d2a715d-6601-47bd-8108-21e62b8d9205",
+  "createdAt": 1680612633,
+  "updatedAt": 1680612633,
+  "deletedAt": null,
+  "name": "Playground",
+  "logo": "https://bafkreibeb7b33ellnot6ltu3petnh3x2pkbpblakkqig3gq26mi3jnme7y.ipfs.w3s.link",
+  "website": ["https://playground.dataverse-os.com"],
+  "defaultFolderName": "Untitled",
+  "description": "A demonstration application developed based on Dataverse SDK",
+  "models": [
+    {
+      "modelName": "indexFolders",
+      "internal": true,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "createdAt": 1680612632,
+          "schema": "type playground_indexFolders @createModel(accountRelation: LIST, description: \"Dataverse:playground | IndexFolder\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  folderType: Int!\n  contentFolderIds: [String!]! @list(minLength: 1, maxLength: 10000) @string(maxLength: 2000)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  options: String @string(maxLength: 300000000)\n  parentFolderId: String @string(maxLength: 1000)\n  childFolderIds: [String] @list(maxLength: 10000) @string(maxLength: 2000)\n  deleted: Boolean\n}",
+          "isPublicDomain": false,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "contentFolders",
+      "internal": true,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "createdAt": 1680612633,
+          "schema": "type playground_contentFolders @createModel(accountRelation: LIST, description: \"Dataverse:playground | ContentFolder\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  indexFolderId: String! @string(maxLength: 1000)\n  mirrors: String! @string(maxLength: 300000000)\n}",
+          "isPublicDomain": false,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "indexFiles",
+      "internal": true,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "createdAt": 1680612632,
+          "schema": "type playground_indexFiles @createModel(accountRelation: LIST, description: \"Dataverse:playground | IndexFile\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  contentId: String! @string(maxLength: 1000)\n  contentType: String! @string(maxLength: 100)\n  comment: String! @string(maxLength: 300000000)\n  relation: String @string(maxLength: 300000000)\n  additional: String @string(maxLength: 300000000)\n  datatokenId: String @string(maxLength: 1000)\n  fileType: Int!\n  encryptedSymmetricKey: String @string(maxLength: 300000000)\n  decryptionConditions: String @string(maxLength: 300000000)\n  decryptionConditionsType: String @string(maxLength: 100)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  deleted: Boolean\n}",
+          "isPublicDomain": false,
+          "encryptable": [],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    },
+    {
+      "modelName": "post",
+      "internal": false,
+      "streams": [
+        {
+          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "createdAt": 1680612633,
+          "schema": "type playground_post @createModel(accountRelation: LIST, description: \"Dataverse:playground | PlaygroundPost_test3\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  text: String @string(maxLength: 300000000)\n  images: [String] @list(maxLength: 10000000) @string(maxLength: 2000000)\n  videos: [String] @list(maxLength: 10000000) @string(maxLength: 2000000)\n  options: String @string(maxLength: 300000000)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  encrypted: String @string(maxLength: 300000000)\n}",
+          "isPublicDomain": false,
+          "encryptable": ["text", "images", "videos"],
+          "version": 0,
+          "latest": true
+        }
+      ]
+    }
+  ],
+  "address": "0x29761660d6Cb26a08e9A9c7de12E0038eE9cb623",
+  "ceramic": "https://dataverseceramicdaemon.com"
+}

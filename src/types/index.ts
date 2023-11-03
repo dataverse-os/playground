@@ -5,6 +5,7 @@ import {
   Currency,
 } from "@dataverse/dataverse-connector";
 import { FileRecord } from "@dataverse/dataverse-connector/dist/esm/types/fs";
+import { ModelParser } from "@dataverse/model-parser";
 
 import { BrowserStorage } from "@/utils";
 
@@ -16,7 +17,7 @@ export enum PostType {
 
 export interface StructuredPost {
   controller: string;
-  modelVersion: string;
+  appVersion: string;
   text?: string;
   images?: string[];
   videos?: string[];
@@ -25,7 +26,7 @@ export interface StructuredPost {
   createdAt: string;
   updatedAt?: string;
   encrypted?: {
-    modelVersion?: boolean;
+    appVersion?: boolean;
     text?: boolean;
     images?: boolean;
     videos?: boolean;
@@ -38,7 +39,7 @@ export interface StructuredPost {
 
 export interface NativePost {
   controller: string;
-  modelVersion: string;
+  appVersion: string;
   text?: string;
   images?: string[];
   videos?: string[];
@@ -78,7 +79,8 @@ export interface StreamRecordMap {
 export type StreamContent = FileRecord["fileContent"];
 
 export type PlaygroundStateType = {
-  modelVersion: string;
+  appVersion: string;
+  modelParser: ModelParser;
   browserStorage: BrowserStorage;
   sortedStreamIds: string[];
   isDataverseExtension?: boolean;

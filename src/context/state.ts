@@ -1,8 +1,13 @@
+import { ModelParser, Output } from "@dataverse/model-parser";
+
+import app from "../../output/app.json";
+
 import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import { BrowserStorage } from "@/utils";
 
 export const initialState: PlaygroundStateType = {
-  modelVersion: "0.0.1",
+  appVersion: "0.0.1",
+  modelParser: new ModelParser(app as Output),
   browserStorage: new BrowserStorage(),
   sortedStreamIds: [],
   isDataverseExtension: undefined,
