@@ -52,6 +52,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
   const [nftLocked, setNftLocked] = useState<boolean>(false);
+  const [autoUnlocking, setAutoUnlocking] = useState<boolean>(false);
 
   const { browserStorage } = usePlaygroundStore();
 
@@ -139,7 +140,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     if (isUnlocking) return;
 
     try {
-      setIsUnlocking(true);
       if (isDataverseExtension === false) {
         setNoExtensionModalVisible(true);
         return;
@@ -152,6 +152,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       // if (isUnlocking) {
       //   throw new Error("cannot unlock");
       // }
+      setAutoUnlocking(true);
+      setIsUnlocking(true);
 
       const isCollected = await dataverseConnector.runOS({
         // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
@@ -169,6 +171,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     } catch (error) {
       console.warn(error);
     } finally {
+      setAutoUnlocking(false);
       setIsUnlocking(false);
     }
   }, [
@@ -303,7 +306,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             FileType.PublicFileType && (
             <UnlockInfo
               streamRecord={filesMap![fileId]}
-              isPending={isUnlocking}
+              isPending={!autoUnlocking && isUnlocking}
               isSucceed={isUnlockSucceed}
               unlock={unlock}
             />
