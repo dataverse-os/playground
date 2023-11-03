@@ -40,3 +40,63 @@ export const ImageWrapperGrid = styled.div`
   grid-template-rows: repeat(2, 50%);
   cursor: pointer;
 `;
+
+export const NftLockedInfo = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .mask {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    /* background: #00000066; */
+    border-radius: 10px;
+    /* backdrop-filter: blur(4px); */
+  }
+
+  .locked-icon {
+    padding: 7px 0 17px;
+    width: 100%;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .info-card {
+    padding: 32px 15px;
+    /* background: #ffffffb2; */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    p {
+      margin: 5px 0;
+      font-family: Lato-SemiBold;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 18px;
+      letter-spacing: 0px;
+      text-align: center;
+      /* color: #f33a2b; */
+      color: #000000;
+    }
+  }
+`;

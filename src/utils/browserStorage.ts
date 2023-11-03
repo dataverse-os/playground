@@ -1,4 +1,4 @@
-import { DatatokenInfo, UnlockStreamResult } from "@dataverse/hooks";
+import { DatatokenInfo, UnlockFileResult } from "@dataverse/hooks";
 import localforage from "localforage";
 
 export class BrowserStorage {
@@ -10,10 +10,10 @@ export class BrowserStorage {
   }
 
   public async setDatatokenInfo({
-    streamId,
+    fileId,
     datatokenInfo,
   }: {
-    streamId: string;
+    fileId: string;
     datatokenInfo: DatatokenInfo;
   }) {
     let dataTokenInfoMap: Record<string, DatatokenInfo>;
@@ -25,7 +25,7 @@ export class BrowserStorage {
     } else {
       dataTokenInfoMap = {};
     }
-    dataTokenInfoMap[streamId] = datatokenInfo;
+    dataTokenInfoMap[fileId] = datatokenInfo;
     await localforage.setItem(
       this._datatokenInfoKey,
       JSON.stringify(dataTokenInfoMap),
@@ -33,7 +33,7 @@ export class BrowserStorage {
   }
 
   public async getDatatokenInfo(
-    streamId: string,
+    fileId: string,
   ): Promise<DatatokenInfo | undefined> {
     const datatokenInfoMapStr = await localforage.getItem<string>(
       this._datatokenInfoKey,
@@ -44,18 +44,18 @@ export class BrowserStorage {
     } else {
       const datatokenInfoMap: Record<string, DatatokenInfo> =
         JSON.parse(datatokenInfoMapStr);
-      return datatokenInfoMap[streamId];
+      return datatokenInfoMap[fileId];
     }
   }
 
-  public async setDecryptedStreamContent({
+  public async setDecryptedFileContent({
     pkh,
-    streamId,
-    streamContent,
+    fileId,
+    fileContent,
   }: {
     pkh?: string;
-    streamId: string;
-    streamContent: UnlockStreamResult["streamContent"];
+    fileId: string;
+    fileContent: UnlockFileResult["fileContent"];
   }) {
     if (!pkh) {
       return;
@@ -67,7 +67,7 @@ export class BrowserStorage {
 
     let decryptedStreamContentMap: Record<
       string,
-      UnlockStreamResult["streamContent"]
+      UnlockFileResult["fileContent"]
     >;
     const decryptedStreamContentMapStr = await localforage.getItem<string>(
       this._decryptedStreamContentKey,
@@ -77,20 +77,20 @@ export class BrowserStorage {
     } else {
       decryptedStreamContentMap = {};
     }
-    decryptedStreamContentMap[streamId] = streamContent;
+    decryptedStreamContentMap[fileId] = fileContent;
     await localforage.setItem(
       this._decryptedStreamContentKey,
       JSON.stringify(decryptedStreamContentMap),
     );
   }
 
-  public async getDecryptedStreamContent({
+  public async getDecryptedFileContent({
     pkh,
-    streamId,
+    fileId,
   }: {
     pkh?: string;
-    streamId: string;
-  }): Promise<UnlockStreamResult["streamContent"] | undefined> {
+    fileId: string;
+  }): Promise<UnlockFileResult["fileContent"] | undefined> {
     if (!pkh) {
       return;
     }
@@ -108,9 +108,9 @@ export class BrowserStorage {
     } else {
       const decryptedStreamContentMap: Record<
         string,
-        UnlockStreamResult["streamContent"]
+        UnlockFileResult["fileContent"]
       > = JSON.parse(decryptedStreamContentMapStr);
-      return decryptedStreamContentMap[streamId];
+      return decryptedStreamContentMap[fileId];
     }
   }
 }

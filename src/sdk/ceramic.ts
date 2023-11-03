@@ -1,10 +1,7 @@
 import { IndexApi, Page, StreamState } from "@ceramicnetwork/common";
 import { CeramicClient } from "@ceramicnetwork/http-client";
 import { ModelInstanceDocument } from "@ceramicnetwork/stream-model-instance";
-import {
-  IndexFileContentType,
-  StructuredFiles,
-} from "@dataverse/dataverse-connector";
+import { StructuredFiles } from "@dataverse/dataverse-connector";
 
 import { decode } from "../utils";
 
@@ -93,16 +90,15 @@ class Ceramic {
 
     structuredFiles &&
       Object.values(structuredFiles).forEach(structuredFile => {
-        const { contentId, contentType, controller } = structuredFile;
+        const { contentId, controller } = structuredFile;
         if (
           streams[contentId] &&
           streams[contentId].controller === controller
         ) {
           streams[contentId] = {
-            ...(!(contentType in IndexFileContentType) &&
-              streams[contentId] && {
-                content: streams[contentId],
-              }),
+            ...(streams[contentId] && {
+              content: streams[contentId],
+            }),
             ...structuredFile,
           };
         }

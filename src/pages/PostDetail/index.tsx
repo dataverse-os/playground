@@ -19,7 +19,7 @@ const PostDetail: React.FC = () => {
       </div>
       <div className='main'>
         <div className='post'>
-          <DisplayPostItem streamId={streamId!} />
+          <DisplayPostItem fileId={streamId!} />
           <div className='comment-list'>
             <CommentEditor onSubmit={content => console.log(content)} />
             <Hint text='Be the first one to comment' />

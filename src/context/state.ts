@@ -6,7 +6,7 @@ import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import { BrowserStorage } from "@/utils";
 
 export const initialState: PlaygroundStateType = {
-  appVersion: "0.0.1",
+  modelVersion: "0.0.1",
   modelParser: new ModelParser(app as Output),
   browserStorage: new BrowserStorage(),
   sortedStreamIds: [],

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { Message } from "@arco-design/web-react";
+import { ChainId } from "@dataverse/dataverse-connector";
 import { useCreateProfile } from "@dataverse/hooks";
 
 import { buttonStyle, inputStyle, modelWrapper } from "./styled";
@@ -22,7 +23,7 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
   const [handle, setHandle] = useState("");
 
   const { isPending, createProfile } = useCreateProfile({
-    onPending: handle => {
+    onPending: ({ handle }) => {
       if (!/^[\da-z]{5,26}$/.test(handle!) || handle!.length > 26) {
         Message.info(
           "Only supports lower case characters, numbers, must be minimum of 5 length and maximum of 26 length",
@@ -41,7 +42,7 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
   });
 
   const submit = async () => {
-    await createProfile(handle);
+    await createProfile({ chainId: ChainId.Mumbai, handle });
   };
 
   const closeModel = () => {

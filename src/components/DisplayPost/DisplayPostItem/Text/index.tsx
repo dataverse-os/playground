@@ -1,33 +1,37 @@
 import React from "react";
 
-import { FileType, StreamRecord } from "@dataverse/dataverse-connector";
+import {
+  FileType,
+  ReturnType,
+  SYSTEM_CALL,
+} from "@dataverse/dataverse-connector";
 
 import { TextWrapper } from "./styled";
 
 interface TextProps {
-  streamRecord: StreamRecord;
+  fileRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]>;
   isUnlockSucceed: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
 const Text: React.FC<TextProps> = ({
-  streamRecord,
+  fileRecord,
   isUnlockSucceed,
   onClick,
 }) => {
   const getContent = () => {
-    if (streamRecord.streamContent.file.fileType === FileType.Public) {
-      return streamRecord.streamContent.content.text;
+    if (fileRecord.fileContent.file.fileType === FileType.PublicFileType) {
+      return fileRecord.fileContent.content.text;
     }
-    if (streamRecord.streamContent.file.fileType === FileType.Private) {
+    if (fileRecord.fileContent.file.fileType === FileType.PrivateFileType) {
       if (isUnlockSucceed) {
-        return streamRecord.streamContent.content?.text;
+        return fileRecord.fileContent.content?.text;
       }
       return "";
     }
-    if (streamRecord.streamContent.file.fileType === FileType.Datatoken) {
+    if (fileRecord.fileContent.file.fileType === FileType.PayableFileType) {
       if (isUnlockSucceed) {
-        return streamRecord.streamContent.content?.text;
+        return fileRecord.fileContent.content?.text;
       }
       return "" as string;
     }

@@ -1,14 +1,21 @@
-import { PropsWithRef, useEffect, useState } from "react";
+import { PropsWithRef, useCallback, useEffect, useState } from "react";
 import React from "react";
 
 import { Message } from "@arco-design/web-react";
-import { Chain, FileType, WALLET } from "@dataverse/dataverse-connector";
+import {
+  Chain,
+  FileType,
+  MirrorFile,
+  SYSTEM_CALL,
+  WALLET,
+} from "@dataverse/dataverse-connector";
 import {
   MutationStatus,
   useAction,
-  useDatatokenInfo,
+  useCollectFile,
+  useLoadDatatoken,
   useStore,
-  useUnlockStream,
+  useUnlockFile,
 } from "@dataverse/hooks";
 
 import Images from "./Images";
@@ -23,7 +30,7 @@ import { FlexRow } from "@/styled";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
 
 interface DisplayPostItemProps extends PropsWithRef<any> {
-  streamId: string;
+  fileId: string;
   connectApp?: (args?: {
     wallet?: WALLET | undefined;
     provider?: any;
@@ -33,82 +40,168 @@ interface DisplayPostItemProps extends PropsWithRef<any> {
     chain: Chain;
     wallet: WALLET;
   }>;
+  isBatchGettingDatatokenInfo?: boolean;
 }
 
 const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
-  streamId,
+  fileId,
   connectApp,
+  isBatchGettingDatatokenInfo,
 }) => {
   // const navigate = useNavigate();
 
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
+  const [nftLocked, setNftLocked] = useState<boolean>(false);
+  const [autoUnlocking, setAutoUnlocking] = useState<boolean>(false);
 
   const { browserStorage } = usePlaygroundStore();
 
-  const { actionUpdateDatatokenInfo, actionUpdateStream } = useAction();
+  const { actionUpdateDatatokenInfo, actionUpdateFile } = useAction();
 
   const { isDataverseExtension, setNoExtensionModalVisible } =
     usePlaygroundStore();
-  const { pkh, streamsMap } = useStore();
+  const { pkh, filesMap, dataverseConnector, address } = useStore();
 
-  const { isPending: isGettingDatatokenInfo, getDatatokenInfo } =
-    useDatatokenInfo({
+  const { isPending: isGettingDatatokenInfo, loadDatatoken } = useLoadDatatoken(
+    {
       onSuccess: result => {
-        browserStorage.getDatatokenInfo(streamId).then(storedDatatokenInfo => {
+        browserStorage.getDatatokenInfo(fileId).then(storedDatatokenInfo => {
           if (
             !storedDatatokenInfo ||
             JSON.stringify(storedDatatokenInfo) !== JSON.stringify(result)
           ) {
             browserStorage.setDatatokenInfo({
-              streamId,
+              fileId: fileId,
               datatokenInfo: result,
             });
           }
         });
       },
-    });
+    },
+  );
 
   const {
     isSucceed: isUnlockSucceed,
     setStatus: setUnlockStatus,
-    unlockStream,
-  } = useUnlockStream({
+    unlockFile,
+  } = useUnlockFile({
+    // onError: (error: any) => {
+    //   if ("Already unlocked" === error) {
+    //     setUnlockStatus(MutationStatus.Succeed);
+    //     browserStorage
+    //       .getDecryptedFileContent({ pkh, fileId: fileId })
+    //       .then(res => {
+    //         if (!res) {
+    //           browserStorage.setDecryptedFileContent({
+    //             pkh,
+    //             fileId: fileId,
+    //             fileContent: filesMap![fileId].fileContent as any,
+    //           });
+    //         }
+    //       });
+    //     return;
+    //   }
+    //   console.error(error);
+    //   Message.error(error?.message ?? error);
+    // },
+    onSuccess: result => {
+      browserStorage
+        .getDecryptedFileContent({ pkh, fileId: fileId })
+        .then(res => {
+          if (!res) {
+            browserStorage.setDecryptedFileContent({
+              pkh,
+              fileId: fileId,
+              ...result,
+            });
+          }
+        });
+      loadDatatoken(fileId);
+    },
+  });
+
+  const { collectFile } = useCollectFile({
     onError: (error: any) => {
       console.error(error);
       Message.error(error?.message ?? error);
     },
-    onSuccess: result => {
-      browserStorage.getDecryptedStreamContent({ pkh, streamId }).then(res => {
-        if (!res) {
-          browserStorage.setDecryptedStreamContent({
-            pkh,
-            streamId,
-            ...result,
-          });
-        }
-      });
-      getDatatokenInfo(streamId);
-    },
   });
+
+  useEffect(() => {
+    console.log({ pkh, address });
+  }, [pkh, address]);
+
+  const autoUnlock = useCallback(async () => {
+    const res = await browserStorage.getDecryptedFileContent({
+      pkh,
+      fileId: fileId,
+    });
+    if (res) return;
+    if (isUnlocking) return;
+
+    try {
+      if (isDataverseExtension === false) {
+        setNoExtensionModalVisible(true);
+        return;
+      }
+
+      if (!pkh) {
+        return;
+      }
+
+      // if (isUnlocking) {
+      //   throw new Error("cannot unlock");
+      // }
+      setAutoUnlocking(true);
+      setIsUnlocking(true);
+
+      const isCollected = await dataverseConnector.runOS({
+        // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+        method: SYSTEM_CALL.isDatatokenCollectedBy,
+        params: {
+          datatokenId:
+            filesMap![fileId].fileContent.file.accessControl
+              .monetizationProvider.datatokenId,
+          collector: address!,
+        },
+      });
+      if (isCollected) {
+        await unlockFile(fileId);
+      }
+    } catch (error) {
+      console.warn(error);
+    } finally {
+      setAutoUnlocking(false);
+      setIsUnlocking(false);
+    }
+  }, [
+    browserStorage,
+    isUnlocking,
+    isDataverseExtension,
+    dataverseConnector,
+    pkh,
+    address,
+  ]);
 
   useEffect(() => {
     (async () => {
       if (
+        !isBatchGettingDatatokenInfo &&
         !isGettingDatatokenInfo &&
-        streamsMap![streamId].streamContent.file.fileType ===
-          FileType.Datatoken &&
-        !streamsMap![streamId].datatokenInfo
+        filesMap![fileId].fileContent.file.fileType ===
+          FileType.PayableFileType &&
+        !filesMap![fileId].datatokenInfo
       ) {
-        const datatokenInfo = await browserStorage.getDatatokenInfo(streamId);
+        const datatokenInfo = await browserStorage.getDatatokenInfo(fileId);
         if (datatokenInfo) {
           // assign state from local storage cache
           actionUpdateDatatokenInfo({
-            streamId,
+            fileId,
             datatokenInfo,
           });
         }
         // refresh sold_num
-        getDatatokenInfo(streamId);
+        loadDatatoken(fileId);
       }
 
       if (
@@ -116,25 +209,29 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         isDataverseExtension &&
         !isUnlocking &&
         !isUnlockSucceed &&
-        streamsMap![streamId].streamContent.file.fileType !== FileType.Public
+        filesMap![fileId].fileContent.file.fileType !== FileType.PublicFileType
       ) {
-        const streamContent = await browserStorage.getDecryptedStreamContent({
+        const fileContent = await browserStorage.getDecryptedFileContent({
           pkh,
-          streamId,
+          fileId,
         });
+        // console.log(fileContent?.file.fileName, { fileContent });
         if (
-          streamContent &&
-          (streamContent.content as any).updatedAt ===
-            streamsMap![streamId].streamContent.content.updatedAt
+          fileContent &&
+          fileContent.file.updatedAt ===
+            filesMap![fileId].fileContent.file.updatedAt
         ) {
-          actionUpdateStream({ streamId, streamContent });
+          actionUpdateFile({ fileId, fileContent });
           setUnlockStatus(MutationStatus.Succeed);
+        } else {
+          autoUnlock();
         }
       }
     })();
-  }, [browserStorage, streamsMap![streamId]]);
+  }, [browserStorage, filesMap![fileId], pkh]);
 
-  const unlock = async () => {
+  const unlock = useCallback(async () => {
+    if (isUnlocking) return;
     setIsUnlocking(true);
     try {
       if (isDataverseExtension === false) {
@@ -146,17 +243,45 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         await connectApp!();
       }
 
-      if (isUnlocking) {
-        throw new Error("cannot unlock");
-      }
+      // if (isUnlocking) {
+      //   throw new Error("cannot unlock");
+      // }
 
-      await unlockStream(streamId);
+      const isCollected = await dataverseConnector.runOS({
+        // method: SYSTEM_CALL.checkIsDataTokenCollectedByAddress,
+        method: SYSTEM_CALL.isDatatokenCollectedBy,
+        params: {
+          datatokenId:
+            filesMap![fileId].fileContent.file.accessControl
+              .monetizationProvider.datatokenId,
+          collector: address ?? dataverseConnector.address!,
+        },
+      });
+      if (!isCollected) {
+        await collectFile(filesMap![fileId].fileContent.file.fileId);
+      }
+      try {
+        await unlockFile(fileId);
+        setNftLocked(false);
+      } catch (e) {
+        console.warn(e);
+        Message.error(e as any);
+        const file = filesMap![fileId].fileContent.file as MirrorFile;
+        const isNftLocked = !!(
+          file.accessControl?.monetizationProvider?.unlockingTimeStamp &&
+          Number(file.accessControl.monetizationProvider.unlockingTimeStamp) >
+            Date.now() / 1000
+        );
+        if (isNftLocked) {
+          setNftLocked(true);
+        }
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setIsUnlocking(false);
     }
-  };
+  }, [isUnlocking, isDataverseExtension, pkh, address, filesMap![fileId]]);
 
   return (
     <Wrapper>
@@ -165,26 +290,23 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           <FlexRow>
             <AccountStatus
               name={
-                addressAbbreviation(
-                  getAddressFromDid(streamsMap![streamId].pkh),
-                ) ?? ""
+                addressAbbreviation(getAddressFromDid(filesMap![fileId].pkh)) ??
+                ""
               }
-              did={streamsMap![streamId].pkh}
+              did={filesMap![fileId].pkh}
             />
             <CreatedAt>
               {"• " +
                 timeAgo(
-                  Date.parse(
-                    streamsMap![streamId].streamContent.content.createdAt,
-                  ),
+                  Date.parse(filesMap![fileId].fileContent.content.createdAt),
                 )}
             </CreatedAt>
           </FlexRow>
-          {streamsMap![streamId].streamContent.file.fileType !==
-            FileType.Public && (
+          {filesMap![fileId].fileContent.file.fileType !==
+            FileType.PublicFileType && (
             <UnlockInfo
-              streamRecord={streamsMap![streamId]}
-              isPending={isUnlocking}
+              streamRecord={filesMap![fileId]}
+              isPending={!autoUnlocking && isUnlocking}
               isSucceed={isUnlockSucceed}
               unlock={unlock}
             />
@@ -192,16 +314,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         </Header>
 
         <Text
-          streamRecord={streamsMap![streamId]}
+          fileRecord={filesMap![fileId]}
           isUnlockSucceed={isUnlockSucceed}
           onClick={() => {
             // navigate("/post/" + streamsMap![streamId].streamId);
           }}
         />
         <Images
-          streamRecord={streamsMap![streamId]}
+          fileRecord={filesMap![fileId]}
           isUnlockSucceed={isUnlockSucceed}
           isGettingDatatokenInfo={isGettingDatatokenInfo}
+          nftLocked={nftLocked}
           onClick={() => {
             // navigate("/post/" + streamsMap![streamId].streamId);
           }}

@@ -2,10 +2,17 @@ import React, { useState } from "react";
 
 import { Message } from "@arco-design/web-react";
 import { IconArrowRight } from "@arco-design/web-react/icon";
-import { Chain, WALLET } from "@dataverse/dataverse-connector";
 import {
-  StreamType,
-  useCreateStream,
+  Chain,
+  ChainId,
+  DatatokenType,
+  ReturnType,
+  SYSTEM_CALL,
+  WALLET,
+} from "@dataverse/dataverse-connector";
+import {
+  useCreateIndexFile,
+  useMonetizeFile,
   useProfiles,
   useStore,
 } from "@dataverse/hooks";
@@ -31,7 +38,7 @@ import lockIcon from "@/assets/icons/lock.svg";
 import Button from "@/components/BaseComponents/Button";
 import Textarea from "@/components/BaseComponents/Textarea";
 import { usePlaygroundStore } from "@/context";
-import { uploadImages } from "@/sdk";
+import { DefaultDatatokenType, uploadImages } from "@/sdk";
 import { FlexRow } from "@/styled";
 import { PostType, PrivacySettingsType } from "@/types";
 import { addressAbbreviation, uuid } from "@/utils";
@@ -51,7 +58,7 @@ interface PublishPostProps {
 
 const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const {
-    appVersion,
+    modelVersion,
     isDataverseExtension,
     isNoExtensionModalVisible,
     setNoExtensionModalVisible,
@@ -59,13 +66,8 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
 
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
 
-  const { createStream: createPublicStream } = useCreateStream({
-    streamType: StreamType.Public,
-  });
-
-  const { createStream: createPayableStream } = useCreateStream({
-    streamType: StreamType.Payable,
-  });
+  const { createIndexFile } = useCreateIndexFile();
+  const { monetizeFile } = useMonetizeFile();
 
   const [needEncrypt, setNeedEncrypt] = useState<boolean>(false);
   const [settings, setSettings] = useState<PrivacySettingsType>({
@@ -79,7 +81,8 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  const { pkh, address, profileIds } = useStore();
+  const { pkh, address /* , profileIds */ } = useStore();
+  const profileIds = ["Lens profiles are not accessible for now"];
   const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType) => {
@@ -125,7 +128,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       if (needEncrypt) {
         let targetProfileIds: string[];
         if (!profileIds) {
-          const lensProfiles = await getProfiles(accountAddress);
+          const lensProfiles = await getProfiles({
+            chainId: ChainId.Mumbai,
+            accountAddress,
+          });
           targetProfileIds = lensProfiles;
         } else {
           targetProfileIds = profileIds;
@@ -193,14 +199,14 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       throw new Error("settings undefined");
     }
     try {
-      let res;
+      let res: Awaited<ReturnType[SYSTEM_CALL.createIndexFile]>;
       const date = new Date().toISOString();
       switch (settings.postType) {
         case PostType.Public:
-          res = await createPublicStream({
+          res = await createIndexFile({
             modelId,
-            stream: {
-              appVersion,
+            fileContent: {
+              modelVersion,
               profileId,
               text: content,
               images: postImages,
@@ -217,24 +223,35 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
         case PostType.Encrypted:
           break;
         case PostType.Payable:
-          res = await createPayableStream({
+          res = await createIndexFile({
             modelId,
-            profileId,
-            stream: {
-              appVersion,
+            fileContent: {
+              modelVersion,
               text: content,
               images: postImages,
               videos: [],
               createdAt: date,
               updatedAt: date,
+              encrypted: {
+                text: true,
+                images: true,
+                videos: false,
+              },
             },
-            currency: settings.currency!,
-            amount: settings.amount!,
-            collectLimit: settings.collectLimit!,
-            encrypted: {
-              text: true,
-              images: true,
-              videos: false,
+          });
+          await monetizeFile({
+            fileId: res.fileContent.file.fileId,
+            datatokenVars: {
+              type: DefaultDatatokenType,
+              profileId:
+                DefaultDatatokenType === DatatokenType.Profileless
+                  ? ""
+                  : profileId!,
+              chainId: ChainId.Mumbai,
+              collectModule: "LimitedFeeCollectModule",
+              currency: settings.currency!,
+              amount: settings.amount!,
+              collectLimit: settings.collectLimit!,
             },
           });
           console.log(
