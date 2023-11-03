@@ -100,8 +100,8 @@ const Images: React.FC<ImagesProps> = ({
               <img src={iconLock} />
             </div> */}
             <div className='info-card'>
-              <p>unlock in</p>
               <p>
+                unlock in{" "}
                 {fileRecord.fileContent.file.accessControl?.monetizationProvider
                   ?.unlockingTimeStamp
                   ? timeCountdown(

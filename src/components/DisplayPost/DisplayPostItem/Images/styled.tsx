@@ -60,9 +60,9 @@ export const NftLockedInfo = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: end;
-    background: #00000066;
+    /* background: #00000066; */
     border-radius: 10px;
-    backdrop-filter: blur(4px);
+    /* backdrop-filter: blur(4px); */
   }
 
   .locked-icon {
@@ -80,8 +80,8 @@ export const NftLockedInfo = styled.div`
   }
 
   .info-card {
-    padding: 8px 15px;
-    background: #ffffffb2;
+    padding: 32px 15px;
+    /* background: #ffffffb2; */
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -90,12 +90,13 @@ export const NftLockedInfo = styled.div`
     p {
       margin: 5px 0;
       font-family: Lato-SemiBold;
-      font-size: 12px;
+      font-size: 22px;
       font-weight: 600;
       line-height: 18px;
       letter-spacing: 0px;
       text-align: center;
-      color: #f33a2b;
+      /* color: #f33a2b; */
+      color: #000000;
     }
   }
 `;
