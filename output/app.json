@@ -14,7 +14,7 @@
       "internal": true,
       "streams": [
         {
-          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "modelId": "kjzl6hvfrbw6c8ygyls3hllgnh47z50k0anyu2wdwnwlesqkb95n2afrf6pqka1",
           "createdAt": 1680612632,
           "schema": "type playground_indexFolders @createModel(accountRelation: LIST, description: \"Dataverse:playground | IndexFolder\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  folderType: Int!\n  contentFolderIds: [String!]! @list(minLength: 1, maxLength: 10000) @string(maxLength: 2000)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  options: String @string(maxLength: 300000000)\n  parentFolderId: String @string(maxLength: 1000)\n  childFolderIds: [String] @list(maxLength: 10000) @string(maxLength: 2000)\n  deleted: Boolean\n}",
           "isPublicDomain": false,
@@ -29,7 +29,7 @@
       "internal": true,
       "streams": [
         {
-          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "modelId": "kjzl6hvfrbw6c8ygyls3hllgnh47z50k0anyu2wdwnwlesqkb95n2afrf6pqka1",
           "createdAt": 1680612633,
           "schema": "type playground_contentFolders @createModel(accountRelation: LIST, description: \"Dataverse:playground | ContentFolder\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  indexFolderId: String! @string(maxLength: 1000)\n  mirrors: String! @string(maxLength: 300000000)\n}",
           "isPublicDomain": false,
@@ -44,7 +44,7 @@
       "internal": true,
       "streams": [
         {
-          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "modelId": "kjzl6hvfrbw6c8ygyls3hllgnh47z50k0anyu2wdwnwlesqkb95n2afrf6pqka1",
           "createdAt": 1680612632,
           "schema": "type playground_indexFiles @createModel(accountRelation: LIST, description: \"Dataverse:playground | IndexFile\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  contentId: String! @string(maxLength: 1000)\n  contentType: String! @string(maxLength: 100)\n  comment: String! @string(maxLength: 300000000)\n  relation: String @string(maxLength: 300000000)\n  additional: String @string(maxLength: 300000000)\n  datatokenId: String @string(maxLength: 1000)\n  fileType: Int!\n  encryptedSymmetricKey: String @string(maxLength: 300000000)\n  decryptionConditions: String @string(maxLength: 300000000)\n  decryptionConditionsType: String @string(maxLength: 100)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  deleted: Boolean\n}",
           "isPublicDomain": false,
@@ -59,7 +59,7 @@
       "internal": false,
       "streams": [
         {
-          "modelId": "kjzl6hvfrbw6c7m4ii5srejo8nzesewu867a55d8fx8lpbzkdts865skhxyw626",
+          "modelId": "kjzl6hvfrbw6c8ygyls3hllgnh47z50k0anyu2wdwnwlesqkb95n2afrf6pqka1",
           "createdAt": 1680612633,
           "schema": "type playground_post @createModel(accountRelation: LIST, description: \"Dataverse:playground | PlaygroundPost_test3\") {\n  author: DID! @documentAccount\n  version: CommitID! @documentVersion\n  appVersion: String! @string(maxLength: 100)\n  text: String @string(maxLength: 300000000)\n  images: [String] @list(maxLength: 10000000) @string(maxLength: 2000000)\n  videos: [String] @list(maxLength: 10000000) @string(maxLength: 2000000)\n  options: String @string(maxLength: 300000000)\n  createdAt: DateTime!\n  updatedAt: DateTime!\n  encrypted: String @string(maxLength: 300000000)\n}",
           "isPublicDomain": false,
