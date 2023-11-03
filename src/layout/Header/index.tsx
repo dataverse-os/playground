@@ -13,7 +13,6 @@ import { didAbbreviation } from "@/utils";
 
 const Header = (): React.ReactElement => {
   const {
-    modelParser,
     isDataverseExtension,
     isConnecting,
     setNoExtensionModalVisible,
@@ -25,7 +24,7 @@ const Header = (): React.ReactElement => {
   const { pkh } = useStore();
 
   const { connectApp } = useApp({
-    appId: modelParser.appId,
+    appId: process.env.PLAYGROUND_APP_ID!,
     onPending: () => {
       setIsConnecting(true);
     },

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { FileType } from "@dataverse/dataverse-connector";
 import {
@@ -22,20 +22,13 @@ import { StreamRecordMap } from "@/types";
 
 const DisplayPost = () => {
   const {
-    modelParser,
-    appVersion,
+    modelVersion,
     sortedStreamIds,
     setIsDataverseExtension,
     setSortedStreamIds,
     setIsConnecting,
     browserStorage,
   } = usePlaygroundStore();
-  const postModel = useMemo(() => {
-    return modelParser.getModelByName("post");
-  }, []);
-  const indexFilesModel = useMemo(() => {
-    return modelParser.getModelByName("indexFiles");
-  }, []);
 
   const { filesMap } = useStore();
   const { actionLoadFiles, actionUpdateDatatokenInfos } = useAction();
@@ -59,7 +52,7 @@ const DisplayPost = () => {
     useState<boolean>(true);
 
   const { connectApp } = useApp({
-    appId: modelParser.appId,
+    appId: process.env.PLAYGROUND_APP_ID!,
     autoConnect: true,
     onPending: () => {
       setIsConnecting(true);
@@ -77,7 +70,7 @@ const DisplayPost = () => {
       setIsDataverseExtension(res);
       if (res === true) {
         console.log("load with extension");
-        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
+        loadFeeds(process.env.PLAYGROUND_POST_MODEL_ID!);
       } else if (res === false) {
         console.log("load with ceramic");
         loadFeedsByCeramic();
@@ -91,7 +84,7 @@ const DisplayPost = () => {
         .filter(
           el =>
             filesMap[el].pkh &&
-            filesMap[el].fileContent.content.appVersion === appVersion &&
+            filesMap[el].fileContent.content.modelVersion === modelVersion &&
             filesMap[el].fileContent.file &&
             filesMap[el].fileContent.file.fileType !==
               FileType.PrivateFileType &&
@@ -172,16 +165,16 @@ const DisplayPost = () => {
 
   const loadFeedsByCeramic = async () => {
     const postStreams = await ceramic.loadStreamsByModel(
-      postModel.streams[postModel.streams.length - 1].modelId,
+      process.env.PLAYGROUND_POST_MODEL_ID!,
     );
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
-      indexFilesModel.streams[postModel.streams.length - 1].modelId,
+      process.env.PLAYGROUND_INDEX_FILE_MODEL_ID!,
     );
     const ceramicStreamsRecordMap: StreamRecordMap = {};
     Object.entries(postStreams).forEach(([streamId, content]) => {
       ceramicStreamsRecordMap[streamId] = {
-        appId: modelParser.appId,
-        modelId: postModel.streams[postModel.streams.length - 1].modelId,
+        appId: process.env.PLAYGROUND_APP_ID!,
+        modelId: process.env.PLAYGROUND_POST_MODEL_ID!,
         pkh: content.controller,
         fileContent: {
           content,
@@ -202,7 +195,7 @@ const DisplayPost = () => {
     <>
       <Wrapper>
         <PublishPost
-          modelId={postModel.streams[postModel.streams.length - 1].modelId}
+          modelId={process.env.PLAYGROUND_POST_MODEL_ID!}
           connectApp={connectApp}
         />
         {!filesMap ? (

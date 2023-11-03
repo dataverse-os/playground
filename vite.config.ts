@@ -36,6 +36,11 @@ export default defineConfig({
       DATAVERSE_GOOGLE_STORE:
         "https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead",
       CERAMIC_API: "https://dataverseceramicdaemon.com",
+      PLAYGROUND_APP_ID: "5d2a715d-6601-47bd-8108-21e62b8d9205",
+      PLAYGROUND_POST_MODEL_ID:
+        "kjzl6hvfrbw6c8ygyls3hllgnh47z50k0anyu2wdwnwlesqkb95n2afrf6pqka1",
+      PLAYGROUND_INDEX_FILE_MODEL_ID:
+        "kjzl6hvfrbw6c964mm5193nv1zs09sjcttt41nr6tg17a2335yjeg26b9nv9l4t",
     },
   },
 });
