@@ -23,7 +23,7 @@ import { StreamRecordMap } from "@/types";
 const DisplayPost = () => {
   const {
     modelParser,
-    appVersion,
+    modelVersion,
     sortedStreamIds,
     setIsDataverseExtension,
     setSortedStreamIds,
@@ -91,7 +91,7 @@ const DisplayPost = () => {
         .filter(
           el =>
             filesMap[el].pkh &&
-            filesMap[el].fileContent.content.appVersion === appVersion &&
+            filesMap[el].fileContent.content.modelVersion === modelVersion &&
             filesMap[el].fileContent.file &&
             filesMap[el].fileContent.file.fileType !==
               FileType.PrivateFileType &&

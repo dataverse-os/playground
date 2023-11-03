@@ -17,7 +17,7 @@ export enum PostType {
 
 export interface StructuredPost {
   controller: string;
-  appVersion: string;
+  modelVersion: string;
   text?: string;
   images?: string[];
   videos?: string[];
@@ -26,7 +26,7 @@ export interface StructuredPost {
   createdAt: string;
   updatedAt?: string;
   encrypted?: {
-    appVersion?: boolean;
+    modelVersion?: boolean;
     text?: boolean;
     images?: boolean;
     videos?: boolean;
@@ -39,7 +39,7 @@ export interface StructuredPost {
 
 export interface NativePost {
   controller: string;
-  appVersion: string;
+  modelVersion: string;
   text?: string;
   images?: string[];
   videos?: string[];
@@ -79,7 +79,7 @@ export interface StreamRecordMap {
 export type StreamContent = FileRecord["fileContent"];
 
 export type PlaygroundStateType = {
-  appVersion: string;
+  modelVersion: string;
   modelParser: ModelParser;
   browserStorage: BrowserStorage;
   sortedStreamIds: string[];

@@ -58,7 +58,7 @@ interface PublishPostProps {
 
 const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const {
-    appVersion,
+    modelVersion,
     isDataverseExtension,
     isNoExtensionModalVisible,
     setNoExtensionModalVisible,
@@ -206,7 +206,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           res = await createIndexFile({
             modelId,
             fileContent: {
-              appVersion,
+              modelVersion,
               profileId,
               text: content,
               images: postImages,
@@ -226,7 +226,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
           res = await createIndexFile({
             modelId,
             fileContent: {
-              appVersion,
+              modelVersion,
               text: content,
               images: postImages,
               videos: [],
