@@ -5,9 +5,13 @@ import app from "../../output/app.json";
 import { PlaygroundActionType, PlaygroundStateType } from "@/types";
 import { BrowserStorage } from "@/utils";
 
+const modelParser = new ModelParser(app as Output);
+const postModel = modelParser.getModelByName("post");
+
 export const initialState: PlaygroundStateType = {
   modelVersion: "0.0.1",
-  modelParser: new ModelParser(app as Output),
+  modelParser: modelParser,
+  postModelId: postModel.streams[postModel.streams.length - 1].modelId,
   browserStorage: new BrowserStorage(),
   sortedStreamIds: [],
   isDataverseExtension: undefined,

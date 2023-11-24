@@ -81,6 +81,7 @@ export type StreamContent = FileRecord["fileContent"];
 export type PlaygroundStateType = {
   modelVersion: string;
   modelParser: ModelParser;
+  postModelId: string;
   browserStorage: BrowserStorage;
   sortedStreamIds: string[];
   isDataverseExtension?: boolean;

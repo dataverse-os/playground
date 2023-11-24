@@ -23,6 +23,7 @@ import { StreamRecordMap } from "@/types";
 const DisplayPost = () => {
   const {
     modelParser,
+    postModelId,
     modelVersion,
     sortedStreamIds,
     setIsDataverseExtension,
@@ -37,7 +38,8 @@ const DisplayPost = () => {
     return modelParser.getModelByName("indexFiles");
   }, []);
 
-  const { filesMap } = useStore();
+  const { filesMap: _filesMap } = useStore();
+  const filesMap = _filesMap?.[postModelId];
   const { actionLoadFiles, actionUpdateDatatokenInfos } = useAction();
   const { loadFeeds } = useFeeds();
   const {
@@ -77,7 +79,7 @@ const DisplayPost = () => {
       setIsDataverseExtension(res);
       if (res === true) {
         console.log("load with extension");
-        loadFeeds(postModel.streams[postModel.streams.length - 1].modelId);
+        loadFeeds(postModelId);
       } else if (res === false) {
         console.log("load with ceramic");
         loadFeedsByCeramic();
@@ -91,23 +93,19 @@ const DisplayPost = () => {
         .filter(
           el =>
             filesMap[el].pkh &&
-            filesMap[el].fileContent.content.modelVersion === modelVersion &&
-            filesMap[el].fileContent.file &&
-            filesMap[el].fileContent.file.fileType !==
-              FileType.PrivateFileType &&
-            (filesMap[el].fileContent.file.fileType !==
-              FileType.PayableFileType ||
-              filesMap[el].fileContent.file.accessControl?.monetizationProvider
-                ?.datatokenId),
+            filesMap[el].content.modelVersion === modelVersion &&
+            filesMap[el].fileType !== FileType.PrivateFileType &&
+            (filesMap[el].fileType !== FileType.PayableFileType ||
+              filesMap[el].accessControl?.monetizationProvider?.datatokenId),
         )
         .sort(
           (a, b) =>
-            Date.parse(filesMap[b].fileContent.content.createdAt) -
-            Date.parse(filesMap[a].fileContent.content.createdAt),
+            Date.parse(filesMap[b].content.createdAt) -
+            Date.parse(filesMap[a].content.createdAt),
         );
 
       setSortedStreamIds(_sortedStreamIds);
-      // console.log(filesMap);
+      console.log({ _filesMap, filesMap, _sortedStreamIds });
     }
   }, [filesMap]);
 
@@ -115,8 +113,8 @@ const DisplayPost = () => {
     (async () => {
       const fileIds = sortedStreamIds.filter(
         fileId =>
-          filesMap![fileId].fileContent.file.fileType ===
-            FileType.PayableFileType && !filesMap![fileId].datatokenInfo,
+          filesMap![fileId].fileType === FileType.PayableFileType &&
+          !filesMap![fileId].datatokenInfo,
       );
       if (!isGettingDatatokenDetails && fileIds.length > 0) {
         setIsBatchGettingDatatokenInfo(true);
@@ -171,9 +169,7 @@ const DisplayPost = () => {
   }, [browserStorage, filesMap, sortedStreamIds]);
 
   const loadFeedsByCeramic = async () => {
-    const postStreams = await ceramic.loadStreamsByModel(
-      postModel.streams[postModel.streams.length - 1].modelId,
-    );
+    const postStreams = await ceramic.loadStreamsByModel(postModelId);
     const indexedFilesStreams = await ceramic.loadStreamsByModel(
       indexFilesModel.streams[postModel.streams.length - 1].modelId,
     );
@@ -181,7 +177,7 @@ const DisplayPost = () => {
     Object.entries(postStreams).forEach(([streamId, content]) => {
       ceramicStreamsRecordMap[streamId] = {
         appId: modelParser.appId,
-        modelId: postModel.streams[postModel.streams.length - 1].modelId,
+        modelId: postModelId,
         pkh: content.controller,
         fileContent: {
           content,
@@ -195,16 +191,13 @@ const DisplayPost = () => {
       }
     });
 
-    actionLoadFiles(ceramicStreamsRecordMap);
+    actionLoadFiles(ceramicStreamsRecordMap, postModelId);
   };
 
   return (
     <>
       <Wrapper>
-        <PublishPost
-          modelId={postModel.streams[postModel.streams.length - 1].modelId}
-          connectApp={connectApp}
-        />
+        <PublishPost modelId={postModelId} connectApp={connectApp} />
         {!filesMap ? (
           <>
             <LoadingPostItem />

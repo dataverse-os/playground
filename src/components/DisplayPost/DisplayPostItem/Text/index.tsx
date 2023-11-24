@@ -1,15 +1,13 @@
 import React from "react";
 
-import {
-  FileType,
-  ReturnType,
-  SYSTEM_CALL,
-} from "@dataverse/dataverse-connector";
+import { FileType, MirrorFile } from "@dataverse/dataverse-connector";
+import { DatatokenInfo, FileResult } from "@dataverse/hooks";
 
 import { TextWrapper } from "./styled";
 
 interface TextProps {
-  fileRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]>;
+  fileRecord: MirrorFile & Partial<FileResult>;
+  datatokenInfo?: DatatokenInfo;
   isUnlockSucceed: boolean;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
@@ -20,18 +18,18 @@ const Text: React.FC<TextProps> = ({
   onClick,
 }) => {
   const getContent = () => {
-    if (fileRecord.fileContent.file.fileType === FileType.PublicFileType) {
-      return fileRecord.fileContent.content.text;
+    if (fileRecord.fileType === FileType.PublicFileType) {
+      return fileRecord.content.text;
     }
-    if (fileRecord.fileContent.file.fileType === FileType.PrivateFileType) {
+    if (fileRecord.fileType === FileType.PrivateFileType) {
       if (isUnlockSucceed) {
-        return fileRecord.fileContent.content?.text;
+        return fileRecord.content?.text;
       }
       return "";
     }
-    if (fileRecord.fileContent.file.fileType === FileType.PayableFileType) {
+    if (fileRecord.fileType === FileType.PayableFileType) {
       if (isUnlockSucceed) {
-        return fileRecord.fileContent.content?.text;
+        return fileRecord.content?.text;
       }
       return "" as string;
     }
