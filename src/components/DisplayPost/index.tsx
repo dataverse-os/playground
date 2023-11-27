@@ -41,7 +41,7 @@ const DisplayPost = () => {
   const { filesMap: _filesMap } = useStore();
   const filesMap = _filesMap?.[postModelId];
   const { actionLoadFiles, actionUpdateDatatokenInfos } = useAction();
-  const { loadFeeds } = useFeeds();
+  const { loadFeeds } = useFeeds({ model: postModel });
   const {
     isPending: isGettingDatatokenDetails,
     setStatus: setGettingDatatokenDetailsStatus,
@@ -79,7 +79,7 @@ const DisplayPost = () => {
       setIsDataverseExtension(res);
       if (res === true) {
         console.log("load with extension");
-        loadFeeds(postModelId);
+        loadFeeds();
       } else if (res === false) {
         console.log("load with ceramic");
         loadFeedsByCeramic();
