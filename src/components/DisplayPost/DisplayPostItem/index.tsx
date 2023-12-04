@@ -13,7 +13,7 @@ import {
   MutationStatus,
   useAction,
   useCollectFile,
-  useLoadDatatoken,
+  useLoadDatatokens,
   useStore,
   useUnlockFile,
 } from "@dataverse/hooks";
@@ -64,8 +64,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const { pkh, filesMap: _filesMap, dataverseConnector, address } = useStore();
   const filesMap = _filesMap?.[postModelId];
 
-  const { isPending: isGettingDatatokenInfo, loadDatatoken } = useLoadDatatoken(
-    {
+  const { isPending: isGettingDatatokenInfo, loadDatatokens } =
+    useLoadDatatokens({
       onSuccess: result => {
         browserStorage.getDatatokenInfo(fileId).then(storedDatatokenInfo => {
           if (
@@ -74,13 +74,12 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           ) {
             browserStorage.setDatatokenInfo({
               fileId: fileId,
-              datatokenInfo: result,
+              datatokenInfo: result[0],
             });
           }
         });
       },
-    },
-  );
+    });
 
   const {
     isSucceed: isUnlockSucceed,
@@ -99,7 +98,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             });
           }
         });
-      loadDatatoken(fileId);
+      loadDatatokens([fileId]);
     },
   });
 
@@ -182,7 +181,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           });
         }
         // refresh sold_num
-        loadDatatoken(fileId);
+        loadDatatokens([fileId]);
       }
 
       if (
