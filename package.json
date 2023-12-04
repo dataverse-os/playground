@@ -22,6 +22,7 @@
     "@dataverse/hooks": "^1.0.31",
     "@dataverse/model-parser": "^1.0.2",
     "@dataverse/utils": "^1.0.9",
+    "@lighthouse-web3/sdk": "^0.3.0",
     "@reduxjs/toolkit": "1.9.0",
     "babel-plugin-macros": "^3.1.0",
     "buffer": "^6.0.3",

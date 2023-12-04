@@ -36,6 +36,8 @@ export default defineConfig({
       DATAVERSE_GOOGLE_STORE:
         "https://chrome.google.com/webstore/detail/dataverse/kcigpjcafekokoclamfendmaapcljead",
       CERAMIC_API: "https://dataverseceramicdaemon.com",
+      LIGHTHOUSE_API_KEY: "9d632fe6.e756cc9797c345dc85595a688017b226",
+      LIGHTHOUSE_IPFS_GATEWAY: "https://gateway.lighthouse.storage/ipfs",
     },
   },
 });
