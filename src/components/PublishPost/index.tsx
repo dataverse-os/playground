@@ -81,8 +81,11 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
-  const { pkh, address /* , profileIds */ } = useStore();
-  const profileIds = ["Lens profiles are not accessible for now"];
+  const { pkh, address, profileIds: _profuleIds } = useStore();
+  const profileIds =
+    DefaultDatatokenType === DatatokenType.Profileless
+      ? ["Lens profiles are not accessible for now"]
+      : _profuleIds;
   const { getProfiles } = useProfiles();
 
   const onChange = (imageList: ImageListType) => {
@@ -235,14 +238,12 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
                 type: DefaultDatatokenType,
                 profileId: profileId!,
                 chainId: ChainId.PolygonMumbai,
-                // TODO
                 collectModule: "SimpleFeeCollectModule",
                 currency: settings.currency!,
                 amount: settings.amount!,
                 collectLimit: settings.collectLimit!,
-                // TODO
-                recipient: "",
-                endTimestamp: 0,
+                recipient: address!,
+                endTimestamp: "4722366482869645213695",
               };
         await monetizeFile({
           fileId: res.fileContent.file.fileId,

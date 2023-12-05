@@ -3,6 +3,12 @@ import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+enum DatatokenType {
+  Lens = 0,
+  Cyber = 1,
+  Profileless = 2,
+}
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -38,6 +44,7 @@ export default defineConfig({
       CERAMIC_API: "https://dataverseceramicdaemon.com",
       LIGHTHOUSE_API_KEY: "9d632fe6.e756cc9797c345dc85595a688017b226",
       LIGHTHOUSE_IPFS_GATEWAY: "https://gateway.lighthouse.storage/ipfs",
+      DEFAULT_DATATOKEN_TYPE: DatatokenType.Profileless,
     },
   },
 });
