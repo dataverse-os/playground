@@ -102,8 +102,8 @@ export enum PlaygroundActionType {
 }
 
 export type PrivacySettingsType = {
-  postType: PostType;
+  needEncrypt: boolean;
   currency?: Currency;
   amount?: number;
-  collectLimit?: number;
+  collectLimit?: string;
 };

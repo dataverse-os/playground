@@ -6,6 +6,7 @@ import {
   Chain,
   ChainId,
   DatatokenType,
+  DatatokenVars,
   ReturnType,
   SYSTEM_CALL,
   WALLET,
@@ -40,7 +41,7 @@ import Textarea from "@/components/BaseComponents/Textarea";
 import { usePlaygroundStore } from "@/context";
 import { DefaultDatatokenType, uploadImages } from "@/sdk";
 import { FlexRow } from "@/styled";
-import { PostType, PrivacySettingsType } from "@/types";
+import { PrivacySettingsType } from "@/types";
 import { addressAbbreviation, uuid } from "@/utils";
 
 interface PublishPostProps {
@@ -69,9 +70,8 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   const { createIndexFile } = useCreateIndexFile();
   const { monetizeFile } = useMonetizeFile();
 
-  const [needEncrypt, setNeedEncrypt] = useState<boolean>(false);
   const [settings, setSettings] = useState<PrivacySettingsType>({
-    postType: PostType.Public,
+    needEncrypt: false,
   });
 
   const [isSettingModalVisible, setSettingModalVisible] =
@@ -125,11 +125,11 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       const postImages = await _postImages();
       if (!postImages) return;
 
-      if (needEncrypt) {
+      if (settings.needEncrypt) {
         let targetProfileIds: string[];
         if (!profileIds) {
           const lensProfiles = await getProfiles({
-            chainId: ChainId.Mumbai,
+            chainId: ChainId.PolygonMumbai,
             accountAddress,
           });
           targetProfileIds = lensProfiles;
@@ -157,7 +157,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
   };
 
   const _postImages = async () => {
-    if (needEncrypt && settings) {
+    if (settings && settings.needEncrypt) {
       const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
       const { amount, collectLimit } = settings;
       const isValid =
@@ -165,7 +165,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
         collectLimit &&
         amountReg.test(String(amount)) &&
         amount > 0 &&
-        collectLimit > 0;
+        parseFloat(collectLimit) > 0;
       if (!isValid) {
         Message.info("Incorrect privacy settings!");
         return;
@@ -201,64 +201,74 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
     try {
       let res: Awaited<ReturnType[SYSTEM_CALL.createIndexFile]>;
       const date = new Date().toISOString();
-      switch (settings.postType) {
-        case PostType.Public:
-          res = await createIndexFile({
-            modelId,
-            fileContent: {
-              modelVersion,
-              profileId,
-              text: content,
-              images: postImages,
-              videos: [],
-              createdAt: date,
-              updatedAt: date,
+      if (settings.needEncrypt) {
+        res = await createIndexFile({
+          modelId,
+          fileContent: {
+            modelVersion,
+            text: content,
+            images: postImages,
+            videos: [],
+            createdAt: date,
+            updatedAt: date,
+            encrypted: {
+              text: true,
+              images: true,
+              videos: false,
             },
-          });
-          console.log(
-            "[Branch PostType.Public]: After createPublicStream, res:",
-            res,
-          );
-          break;
-        case PostType.Encrypted:
-          break;
-        case PostType.Payable:
-          res = await createIndexFile({
-            modelId,
-            fileContent: {
-              modelVersion,
-              text: content,
-              images: postImages,
-              videos: [],
-              createdAt: date,
-              updatedAt: date,
-              encrypted: {
-                text: true,
-                images: true,
-                videos: false,
-              },
-            },
-          });
-          await monetizeFile({
-            fileId: res.fileContent.file.fileId,
-            datatokenVars: {
-              type: DefaultDatatokenType,
-              profileId:
-                DefaultDatatokenType === DatatokenType.Profileless
-                  ? ""
-                  : profileId!,
-              chainId: ChainId.Mumbai,
-              collectModule: "LimitedFeeCollectModule",
-              currency: settings.currency!,
-              amount: settings.amount!,
-              collectLimit: settings.collectLimit!,
-            },
-          });
-          console.log(
-            "[Branch PostType.Payable]: After createPayableStream, res:",
-            res,
-          );
-          break;
+          },
+        });
+        if (DefaultDatatokenType === DatatokenType.Cyber) {
+          throw new Error("Cyber type is not supported yet");
+        }
+        const datatokenVars: DatatokenVars =
+          DefaultDatatokenType === DatatokenType.Profileless
+            ? {
+                type: DefaultDatatokenType,
+                chainId: ChainId.PolygonMumbai,
+                collectModule: "LimitedFeeCollectModule",
+                currency: settings.currency!,
+                amount: settings.amount!,
+                collectLimit: settings.collectLimit!,
+              }
+            : {
+                type: DefaultDatatokenType,
+                profileId: profileId!,
+                chainId: ChainId.PolygonMumbai,
+                // TODO
+                collectModule: "SimpleFeeCollectModule",
+                currency: settings.currency!,
+                amount: settings.amount!,
+                collectLimit: settings.collectLimit!,
+                // TODO
+                recipient: "",
+                endTimestamp: 0,
+              };
+        await monetizeFile({
+          fileId: res.fileContent.file.fileId,
+          datatokenVars,
+        });
+        console.log(
+          "[Branch PostType.Payable]: After createPayableStream, res:",
+          res,
+        );
+      } else {
+        res = await createIndexFile({
+          modelId,
+          fileContent: {
+            modelVersion,
+            profileId,
+            text: content,
+            images: postImages,
+            videos: [],
+            createdAt: date,
+            updatedAt: date,
+          },
+        });
+        console.log(
+          "[Branch PostType.Public]: After createPublicStream, res:",
+          res,
+        );
       }
       Message.success({
         content: (
@@ -282,6 +292,9 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
             </a>
           </>
         ),
+      });
+      setSettings({
+        needEncrypt: false,
       });
       setContent("");
       setImages([]);
@@ -377,8 +390,7 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       <PrivacySettings
         isModalVisible={isSettingModalVisible}
         setModalVisible={setSettingModalVisible}
-        needEncrypt={needEncrypt}
-        setNeedEncrypt={setNeedEncrypt}
+        settings={settings}
         setSettings={setSettings}
       />
       <CreateLensProfile

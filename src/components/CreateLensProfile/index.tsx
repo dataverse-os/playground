@@ -42,7 +42,7 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
   });
 
   const submit = async () => {
-    await createProfile({ chainId: ChainId.Mumbai, handle });
+    await createProfile({ chainId: ChainId.PolygonMumbai, handle });
   };
 
   const closeModel = () => {
