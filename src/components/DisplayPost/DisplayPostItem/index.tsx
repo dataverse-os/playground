@@ -4,6 +4,8 @@ import React from "react";
 import { Message } from "@arco-design/web-react";
 import {
   Chain,
+  ChainId,
+  DatatokenType,
   FileType,
   MirrorFile,
   SYSTEM_CALL,
@@ -14,6 +16,7 @@ import {
   useAction,
   useCollectFile,
   useLoadDatatokens,
+  useProfiles,
   useStore,
   useUnlockFile,
 } from "@dataverse/hooks";
@@ -25,6 +28,7 @@ import Text from "./Text";
 import UnlockInfo from "./UnlockInfo";
 
 import AccountStatus from "@/components/AccountStatus";
+import { CreateLensProfile } from "@/components/CreateLensProfile";
 import { usePlaygroundStore } from "@/context";
 import { FlexRow } from "@/styled";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
@@ -54,6 +58,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
   const [nftLocked, setNftLocked] = useState<boolean>(false);
   const [autoUnlocking, setAutoUnlocking] = useState<boolean>(false);
+  const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
+    useState<boolean>(false);
 
   const { browserStorage } = usePlaygroundStore();
 
@@ -61,9 +67,16 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const { isDataverseExtension, setNoExtensionModalVisible } =
     usePlaygroundStore();
-  const { pkh, filesMap: _filesMap, dataverseConnector, address } = useStore();
+  const {
+    pkh,
+    filesMap: _filesMap,
+    dataverseConnector,
+    address,
+    profileIds,
+  } = useStore();
   const filesMap = _filesMap?.[postModelId];
 
+  const { getProfiles } = useProfiles();
   const { isPending: isGettingDatatokenInfo, loadDatatokens } =
     useLoadDatatokens({
       onSuccess: result => {
@@ -240,7 +253,28 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         },
       });
       if (!isCollected) {
-        await collectFile(filesMap![fileId].fileId);
+        let targetProfileIds: string[];
+        if (!profileIds) {
+          const lensProfiles = await getProfiles({
+            chainId: ChainId.PolygonMumbai,
+            accountAddress: address!,
+          });
+          targetProfileIds = lensProfiles;
+        } else {
+          targetProfileIds = profileIds;
+        }
+        if (targetProfileIds.length === 0) {
+          Message.info("Please create a lens profile first");
+          setCreateProfileModalVisible(true);
+          return;
+        }
+        await collectFile({
+          fileId: filesMap![fileId].fileId,
+          ...(filesMap![fileId].accessControl?.monetizationProvider
+            ?.protocol === DatatokenType.Lens && {
+            profileId: targetProfileIds[0],
+          }),
+        });
       }
       try {
         await unlockFile(fileId);
@@ -318,6 +352,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           </a>
         </Footer> */}
       </Content>
+      <CreateLensProfile
+        isModalVisible={isCreateProfileModalVisible}
+        setModalVisible={setCreateProfileModalVisible}
+      />
     </Wrapper>
   );
 };
