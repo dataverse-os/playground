@@ -243,7 +243,6 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
                 amount: settings.amount!,
                 collectLimit: settings.collectLimit!,
                 recipient: address!,
-                endTimestamp: "4722366482869645213695",
               };
         await monetizeFile({
           fileId: res.fileContent.file.fileId,
