@@ -60,6 +60,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const [autoUnlocking, setAutoUnlocking] = useState<boolean>(false);
   const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
     useState<boolean>(false);
+  const [createProfilesFn, setCreateProfilesFn] = useState<{
+    onFinished: (profileId: string) => void;
+    onCancel: () => void;
+  }>();
 
   const { browserStorage } = usePlaygroundStore();
 
@@ -266,7 +270,22 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         if (targetProfileIds.length === 0) {
           Message.info("Please create a lens profile first");
           setCreateProfileModalVisible(true);
-          return;
+          // return;
+          try {
+            await new Promise((resolve, reject) => {
+              setCreateProfilesFn({
+                onFinished: (profileId: string) => {
+                  resolve(profileId);
+                },
+                onCancel: () => {
+                  reject("user canceled");
+                },
+              });
+            });
+          } catch (e) {
+            console.warn(e);
+            return;
+          }
         }
         await collectFile({
           fileId: filesMap![fileId].fileId,
@@ -355,6 +374,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       <CreateLensProfile
         isModalVisible={isCreateProfileModalVisible}
         setModalVisible={setCreateProfileModalVisible}
+        onFinished={createProfilesFn?.onFinished}
+        onCancel={createProfilesFn?.onCancel}
       />
     </Wrapper>
   );
