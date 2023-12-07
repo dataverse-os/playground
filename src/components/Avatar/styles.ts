@@ -13,11 +13,13 @@ export const AvatarContainer = styled.div<{ haveContextMenu: boolean }>`
   }
 `;
 
-export const AvatarImg = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+export const AvatarImgContainer = styled.div`
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
 `;
 
 export const AvatarContextMenuTitle = styled.div`

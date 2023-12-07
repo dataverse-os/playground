@@ -1,9 +1,11 @@
 import React, { memo, useEffect, useState } from "react";
 
+import { Img } from "react-image";
+
 import {
   AvatarContainer,
   AvatarContextMenuContainer,
-  AvatarImg,
+  AvatarImgContainer,
   DefaultAvatarImg,
   Mask,
 } from "./styles";
@@ -33,6 +35,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const [open, setOpen] = useState(false);
   // const sortedStreamIds = useSelector((state) => state.post.sortedStreamIds);
   const { sortedStreamIds } = usePlaygroundStore();
+
   const load = async () => {
     setAvatarSrc(contextAvatar(getAddressFromDid(did)));
   };
@@ -56,7 +59,18 @@ const Avatar: React.FC<AvatarProps> = ({
       }}
       style={{ width: width, height: height }}
     >
-      {avatar ? <AvatarImg src={avatar} /> : <DefaultAvatarImg />}
+      {avatar ? (
+        <Img
+          src={avatar}
+          loader={<DefaultAvatarImg />}
+          unloader={<DefaultAvatarImg />}
+          container={children => (
+            <AvatarImgContainer>{children}</AvatarImgContainer>
+          )}
+        />
+      ) : (
+        <DefaultAvatarImg />
+      )}
 
       {open ? (
         <Mask>
