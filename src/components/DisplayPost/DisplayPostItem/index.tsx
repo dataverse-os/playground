@@ -239,8 +239,16 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         return;
       }
 
+      let connectResult:
+        | {
+            pkh: string;
+            address: string;
+            chain: Chain;
+            wallet: WALLET;
+          }
+        | undefined;
       if (!pkh) {
-        await connectApp!();
+        connectResult = await connectApp!();
       }
 
       // if (isUnlocking) {
@@ -253,7 +261,8 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         params: {
           datatokenId:
             filesMap![fileId].accessControl!.monetizationProvider!.datatokenId!,
-          collector: address ?? dataverseConnector.address!,
+          collector:
+            connectResult?.address ?? address ?? dataverseConnector.address!,
         },
       });
       if (!isCollected) {
@@ -261,7 +270,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         if (!profileIds) {
           const lensProfiles = await getProfiles({
             chainId: ChainId.PolygonMumbai,
-            accountAddress: address!,
+            accountAddress: connectResult?.address ?? address!,
           });
           targetProfileIds = lensProfiles;
         } else {
