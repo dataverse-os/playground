@@ -4,6 +4,8 @@ import React from "react";
 import { Message } from "@arco-design/web-react";
 import {
   Chain,
+  ChainId,
+  DatatokenType,
   FileType,
   MirrorFile,
   SYSTEM_CALL,
@@ -13,7 +15,8 @@ import {
   MutationStatus,
   useAction,
   useCollectFile,
-  useLoadDatatoken,
+  useLoadDatatokens,
+  useProfiles,
   useStore,
   useUnlockFile,
 } from "@dataverse/hooks";
@@ -25,6 +28,7 @@ import Text from "./Text";
 import UnlockInfo from "./UnlockInfo";
 
 import AccountStatus from "@/components/AccountStatus";
+import { CreateLensProfile } from "@/components/CreateLensProfile";
 import { usePlaygroundStore } from "@/context";
 import { FlexRow } from "@/styled";
 import { addressAbbreviation, getAddressFromDid, timeAgo } from "@/utils";
@@ -49,10 +53,13 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   isBatchGettingDatatokenInfo,
 }) => {
   // const navigate = useNavigate();
+  const { postModelId } = usePlaygroundStore();
 
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
   const [nftLocked, setNftLocked] = useState<boolean>(false);
   const [autoUnlocking, setAutoUnlocking] = useState<boolean>(false);
+  const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
+    useState<boolean>(false);
 
   const { browserStorage } = usePlaygroundStore();
 
@@ -60,10 +67,18 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
 
   const { isDataverseExtension, setNoExtensionModalVisible } =
     usePlaygroundStore();
-  const { pkh, filesMap, dataverseConnector, address } = useStore();
+  const {
+    pkh,
+    filesMap: _filesMap,
+    dataverseConnector,
+    address,
+    profileIds,
+  } = useStore();
+  const filesMap = _filesMap?.[postModelId];
 
-  const { isPending: isGettingDatatokenInfo, loadDatatoken } = useLoadDatatoken(
-    {
+  const { getProfiles } = useProfiles();
+  const { isPending: isGettingDatatokenInfo, loadDatatokens } =
+    useLoadDatatokens({
       onSuccess: result => {
         browserStorage.getDatatokenInfo(fileId).then(storedDatatokenInfo => {
           if (
@@ -72,38 +87,18 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           ) {
             browserStorage.setDatatokenInfo({
               fileId: fileId,
-              datatokenInfo: result,
+              datatokenInfo: result[0],
             });
           }
         });
       },
-    },
-  );
+    });
 
   const {
     isSucceed: isUnlockSucceed,
     setStatus: setUnlockStatus,
     unlockFile,
   } = useUnlockFile({
-    // onError: (error: any) => {
-    //   if ("Already unlocked" === error) {
-    //     setUnlockStatus(MutationStatus.Succeed);
-    //     browserStorage
-    //       .getDecryptedFileContent({ pkh, fileId: fileId })
-    //       .then(res => {
-    //         if (!res) {
-    //           browserStorage.setDecryptedFileContent({
-    //             pkh,
-    //             fileId: fileId,
-    //             fileContent: filesMap![fileId].fileContent as any,
-    //           });
-    //         }
-    //       });
-    //     return;
-    //   }
-    //   console.error(error);
-    //   Message.error(error?.message ?? error);
-    // },
     onSuccess: result => {
       browserStorage
         .getDecryptedFileContent({ pkh, fileId: fileId })
@@ -116,7 +111,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             });
           }
         });
-      loadDatatoken(fileId);
+      loadDatatokens([fileId]);
     },
   });
 
@@ -160,8 +155,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         method: SYSTEM_CALL.isDatatokenCollectedBy,
         params: {
           datatokenId:
-            filesMap![fileId].fileContent.file.accessControl
-              .monetizationProvider.datatokenId,
+            filesMap![fileId].accessControl!.monetizationProvider!.datatokenId!,
           collector: address!,
         },
       });
@@ -188,8 +182,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       if (
         !isBatchGettingDatatokenInfo &&
         !isGettingDatatokenInfo &&
-        filesMap![fileId].fileContent.file.fileType ===
-          FileType.PayableFileType &&
+        filesMap![fileId].fileType === FileType.PayableFileType &&
         !filesMap![fileId].datatokenInfo
       ) {
         const datatokenInfo = await browserStorage.getDatatokenInfo(fileId);
@@ -201,7 +194,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           });
         }
         // refresh sold_num
-        loadDatatoken(fileId);
+        loadDatatokens([fileId]);
       }
 
       if (
@@ -209,7 +202,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         isDataverseExtension &&
         !isUnlocking &&
         !isUnlockSucceed &&
-        filesMap![fileId].fileContent.file.fileType !== FileType.PublicFileType
+        filesMap![fileId].fileType !== FileType.PublicFileType
       ) {
         const fileContent = await browserStorage.getDecryptedFileContent({
           pkh,
@@ -218,10 +211,13 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         // console.log(fileContent?.file.fileName, { fileContent });
         if (
           fileContent &&
-          fileContent.file.updatedAt ===
-            filesMap![fileId].fileContent.file.updatedAt
+          fileContent.file.updatedAt === filesMap![fileId].updatedAt
         ) {
-          actionUpdateFile({ fileId, fileContent });
+          actionUpdateFile({
+            ...fileContent,
+            ...fileContent.file,
+            content: fileContent.content,
+          });
           setUnlockStatus(MutationStatus.Succeed);
         } else {
           autoUnlock();
@@ -252,13 +248,33 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
         method: SYSTEM_CALL.isDatatokenCollectedBy,
         params: {
           datatokenId:
-            filesMap![fileId].fileContent.file.accessControl
-              .monetizationProvider.datatokenId,
+            filesMap![fileId].accessControl!.monetizationProvider!.datatokenId!,
           collector: address ?? dataverseConnector.address!,
         },
       });
       if (!isCollected) {
-        await collectFile(filesMap![fileId].fileContent.file.fileId);
+        let targetProfileIds: string[];
+        if (!profileIds) {
+          const lensProfiles = await getProfiles({
+            chainId: ChainId.PolygonMumbai,
+            accountAddress: address!,
+          });
+          targetProfileIds = lensProfiles;
+        } else {
+          targetProfileIds = profileIds;
+        }
+        if (targetProfileIds.length === 0) {
+          Message.info("Please create a lens profile first");
+          setCreateProfileModalVisible(true);
+          return;
+        }
+        await collectFile({
+          fileId: filesMap![fileId].fileId,
+          ...(filesMap![fileId].accessControl?.monetizationProvider
+            ?.protocol === DatatokenType.Lens && {
+            profileId: targetProfileIds[0],
+          }),
+        });
       }
       try {
         await unlockFile(fileId);
@@ -266,7 +282,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
       } catch (e) {
         console.warn(e);
         Message.error(e as any);
-        const file = filesMap![fileId].fileContent.file as MirrorFile;
+        const file = filesMap![fileId] as MirrorFile;
         const isNftLocked = !!(
           file.accessControl?.monetizationProvider?.unlockingTimeStamp &&
           Number(file.accessControl.monetizationProvider.unlockingTimeStamp) >
@@ -290,20 +306,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           <FlexRow>
             <AccountStatus
               name={
-                addressAbbreviation(getAddressFromDid(filesMap![fileId].pkh)) ??
-                ""
+                addressAbbreviation(
+                  getAddressFromDid(filesMap![fileId].pkh!),
+                ) ?? ""
               }
-              did={filesMap![fileId].pkh}
+              did={filesMap![fileId].pkh!}
             />
             <CreatedAt>
-              {"• " +
-                timeAgo(
-                  Date.parse(filesMap![fileId].fileContent.content.createdAt),
-                )}
+              {"• " + timeAgo(Date.parse(filesMap![fileId].content.createdAt))}
             </CreatedAt>
           </FlexRow>
-          {filesMap![fileId].fileContent.file.fileType !==
-            FileType.PublicFileType && (
+          {filesMap![fileId].fileType !== FileType.PublicFileType && (
             <UnlockInfo
               streamRecord={filesMap![fileId]}
               isPending={!autoUnlocking && isUnlocking}
@@ -339,6 +352,10 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           </a>
         </Footer> */}
       </Content>
+      <CreateLensProfile
+        isModalVisible={isCreateProfileModalVisible}
+        setModalVisible={setCreateProfileModalVisible}
+      />
     </Wrapper>
   );
 };

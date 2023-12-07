@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { SwitchButton, SwitchDot } from "./styled";
 
 interface SwitchProps {
   defaultChecked?: boolean;
+  controlChecked?: boolean;
   onChange: (value: boolean) => void;
   size?: string;
 }
 
 const Switch = function ({
   defaultChecked,
+  controlChecked,
   onChange,
   size = "default",
 }: SwitchProps) {
-  const [checked, setChecked] = useState(defaultChecked);
+  const [checked, setChecked] = useState(defaultChecked || controlChecked);
 
   let checkedLeft;
   if (size === "default") {
@@ -21,6 +23,12 @@ const Switch = function ({
   } else if (size === "small") {
     checkedLeft = "calc(100% - 14px);";
   }
+
+  useEffect(() => {
+    if (controlChecked !== undefined) {
+      setChecked(controlChecked);
+    }
+  }, [controlChecked]);
 
   return (
     <SwitchButton

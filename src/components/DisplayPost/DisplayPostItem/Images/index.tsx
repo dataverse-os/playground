@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  FileType,
-  ReturnType,
-  SYSTEM_CALL,
-} from "@dataverse/dataverse-connector";
+import { FileType, MirrorFile } from "@dataverse/dataverse-connector";
+import { FileResult } from "@dataverse/hooks";
 
 import { Image, ImgWrapper, ImageWrapperGrid, NftLockedInfo } from "./styled";
 
@@ -13,7 +10,7 @@ import question from "@/assets/icons/question.png";
 import { timeCountdown } from "@/utils";
 
 interface ImagesProps {
-  fileRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]>;
+  fileRecord: MirrorFile & Partial<FileResult>;
   isUnlockSucceed: boolean;
   isGettingDatatokenInfo: boolean;
   nftLocked?: boolean;
@@ -28,13 +25,13 @@ const Images: React.FC<ImagesProps> = ({
   onClick,
 }) => {
   const [images, setImages] = useState<string[]>([]);
-  const showImage = (fileRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]>) => {
-    if (fileRecord.fileContent.file.fileType === FileType.PublicFileType) {
-      return fileRecord.fileContent.content?.images ?? [];
+  const showImage = (fileRecord: MirrorFile & Partial<FileResult>) => {
+    if (fileRecord.fileType === FileType.PublicFileType) {
+      return fileRecord.content?.images ?? [];
     }
-    if (fileRecord.fileContent.file.fileType === FileType.PrivateFileType) {
+    if (fileRecord.fileType === FileType.PrivateFileType) {
       if (isUnlockSucceed) {
-        return fileRecord.fileContent.content?.images ?? [];
+        return fileRecord.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -42,9 +39,9 @@ const Images: React.FC<ImagesProps> = ({
         }).fill("?") ?? []
       );
     }
-    if (fileRecord.fileContent.file.fileType === FileType.PayableFileType) {
+    if (fileRecord.fileType === FileType.PayableFileType) {
       if (isUnlockSucceed) {
-        return fileRecord.fileContent.content?.images ?? [];
+        return fileRecord.content?.images ?? [];
       }
       return (
         Array.from<string>({
@@ -60,7 +57,7 @@ const Images: React.FC<ImagesProps> = ({
     let nowImages = showImage(fileRecord);
     if (
       nowImages.length === 0 &&
-      fileRecord.fileContent.file.fileType !== FileType.PublicFileType &&
+      fileRecord.fileType !== FileType.PublicFileType &&
       !isUnlockSucceed
     ) {
       nowImages = ["?"];
@@ -102,11 +99,13 @@ const Images: React.FC<ImagesProps> = ({
             <div className='info-card'>
               <p>
                 unlock in{" "}
-                {fileRecord.fileContent.file.accessControl?.monetizationProvider
+                {fileRecord.accessControl?.monetizationProvider
                   ?.unlockingTimeStamp
                   ? timeCountdown(
-                      fileRecord.fileContent.file.accessControl
-                        ?.monetizationProvider?.unlockingTimeStamp * 1000,
+                      Number.parseInt(
+                        fileRecord.accessControl.monetizationProvider
+                          .unlockingTimeStamp,
+                      ) * 1000,
                     ) || "just now"
                   : "?"}
               </p>

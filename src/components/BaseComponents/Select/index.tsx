@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { css, FlattenSimpleInterpolation } from "styled-components";
 
@@ -9,14 +9,15 @@ import Input from "@/components/BaseComponents/Input";
 import { useClickOutside } from "@/hooks/useClickOutSide";
 import { uuid } from "@/utils";
 
-interface OptionProps {
+export interface OptionProps {
   name: string;
   value: string;
 }
 
 export interface SelectProps {
   label?: string;
-  defaultOptionIdx?: number;
+  defaultOption?: OptionProps | string | number | boolean;
+  controlOption?: OptionProps | string | number | boolean;
   options: OptionProps[];
   onChange: (data: OptionProps) => void;
   width?: string | number;
@@ -24,19 +25,51 @@ export interface SelectProps {
 }
 
 const Select: React.FC<SelectProps> = ({
-  defaultOptionIdx,
+  defaultOption,
+  controlOption,
   options,
   onChange,
   label,
   width = "100%",
   cssStyles,
 }) => {
+  const defaultSelectIdx =
+    typeof defaultOption === "object"
+      ? options.findIndex(option => option.value === defaultOption.value)
+      : typeof defaultOption === "string"
+      ? options.findIndex(option => option.value === defaultOption)
+      : typeof defaultOption === "number"
+      ? defaultOption
+      : defaultOption
+      ? 0
+      : -1;
+  const controlSelectIdx =
+    typeof controlOption === "object"
+      ? options.findIndex(option => option.value === controlOption.value)
+      : typeof controlOption === "string"
+      ? options.findIndex(option => option.value === controlOption)
+      : typeof controlOption === "number"
+      ? controlOption
+      : controlOption
+      ? 0
+      : -1;
+
   const [selectorVisible, setSelectorVisible] = useState(false);
-  const [selectIdx, setSelectIdx] = useState(defaultOptionIdx || 0);
+  const [selectIdx, setSelectIdx] = useState(
+    defaultSelectIdx || controlSelectIdx,
+  );
+
   const ref = useRef(null);
   useClickOutside(ref, () => {
     setSelectorVisible(false);
   });
+
+  useEffect(() => {
+    if (controlSelectIdx !== -1) {
+      setSelectIdx(controlSelectIdx);
+    }
+  }, [controlSelectIdx]);
+
   return (
     <SelectWrap
       haveLabel={label !== undefined}
@@ -56,7 +89,7 @@ const Select: React.FC<SelectProps> = ({
         {label && <div className='inputLabel'>{label}</div>}
 
         <Input
-          value={options[selectIdx].name}
+          value={selectIdx >= 0 ? options[selectIdx].name : ""}
           readOnly
           cssStyles={css`
             cursor: pointer;

@@ -81,6 +81,7 @@ export type StreamContent = FileRecord["fileContent"];
 export type PlaygroundStateType = {
   modelVersion: string;
   modelParser: ModelParser;
+  postModelId: string;
   browserStorage: BrowserStorage;
   sortedStreamIds: string[];
   isDataverseExtension?: boolean;
@@ -101,8 +102,8 @@ export enum PlaygroundActionType {
 }
 
 export type PrivacySettingsType = {
-  postType: PostType;
+  needEncrypt: boolean;
   currency?: Currency;
   amount?: number;
-  collectLimit?: number;
+  collectLimit?: string;
 };

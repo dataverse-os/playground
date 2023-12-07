@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import { Currency } from "@dataverse/dataverse-connector";
 import { css } from "styled-components";
 
 import {
@@ -14,30 +15,28 @@ import {
 } from "./styled";
 import Input from "../BaseComponents/Input";
 import Modal from "../BaseComponents/Modal";
-import Select from "../BaseComponents/Select";
+import Select, { OptionProps } from "../BaseComponents/Select";
 import Switch from "../BaseComponents/Switch/Switch";
 
 import iconTick from "@/assets/icons/tick_black_thin.svg";
-import { PostType, PrivacySettingsType } from "@/types";
+import { PrivacySettingsType } from "@/types";
 
 const amountReg = new RegExp("^([0-9][0-9]*)+(.[0-9]{1,17})?$");
 
 interface PrivacySettingsProps {
   isModalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  needEncrypt: boolean;
-  setNeedEncrypt: React.Dispatch<React.SetStateAction<boolean>>;
+  settings: PrivacySettingsType;
   setSettings: React.Dispatch<React.SetStateAction<PrivacySettingsType>>;
 }
 
 const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   isModalVisible,
   setModalVisible,
-  needEncrypt,
-  setNeedEncrypt,
+  settings,
   setSettings,
 }) => {
-  const [currency, setCurrency] = useState<any>({
+  const [currency, setCurrency] = useState<OptionProps>({
     name: "WMATIC",
     value: "WMATIC",
   });
@@ -45,6 +44,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   const [limit, setLimit] = useState("");
   const [checked, setChecked] = useState(false);
   const [inputWarn, setInputWarn] = useState(false);
+  const [needEncrypt, setNeedEncrypt] = useState(false);
   const isInputValid = () => {
     const isValid =
       amount !== "" &&
@@ -64,10 +64,10 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
       if (isInputValid()) {
         setInputWarn(false);
         setSettings({
-          postType: PostType.Payable,
-          currency: currency.value,
+          needEncrypt: true,
+          currency: currency.value as Currency,
           amount: parseFloat(amount),
-          collectLimit: checked ? 2 ** 52 : parseFloat(limit),
+          collectLimit: checked ? (2n ** 52n).toString() : limit,
         });
         setModalVisible(false);
       } else {
@@ -75,7 +75,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
       }
     } else {
       setSettings({
-        postType: PostType.Public,
+        needEncrypt: false,
       });
       setModalVisible(false);
     }
@@ -84,6 +84,24 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   const switchEncrypt = (value: boolean) => {
     setNeedEncrypt(value);
   };
+
+  useEffect(() => {
+    if (isModalVisible) {
+      setNeedEncrypt(settings.needEncrypt);
+      setAmount(settings.amount?.toString() || "");
+      if (settings.collectLimit === (2n ** 52n).toString()) {
+        setLimit("");
+        setChecked(true);
+      } else {
+        setLimit(settings.collectLimit?.toString() || "");
+        setChecked(false);
+      }
+      setCurrency({
+        name: settings.currency || "WMATIC",
+        value: settings.currency || "WMATIC",
+      });
+    }
+  }, [isModalVisible]);
 
   return (
     <Wrapper>
@@ -115,7 +133,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
           >
             Encrypt
           </Title>
-          <Switch defaultChecked={needEncrypt} onChange={switchEncrypt} />
+          <Switch controlChecked={needEncrypt} onChange={switchEncrypt} />
         </EncryptWrapper>
         {needEncrypt && (
           <>
@@ -138,7 +156,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 decimalPlaces={17}
               />
               <Select
-                defaultOptionIdx={0}
+                controlOption={currency}
                 options={[
                   {
                     name: "WMATIC",
@@ -158,6 +176,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                   },
                 ]}
                 onChange={data => {
+                  console.log(data);
                   setCurrency(data);
                 }}
                 cssStyles={css`

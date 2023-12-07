@@ -1,11 +1,7 @@
 import React from "react";
 
-import {
-  FileType,
-  ReturnType,
-  SYSTEM_CALL,
-} from "@dataverse/dataverse-connector";
-import { DatatokenInfo } from "@dataverse/hooks";
+import { FileType, MirrorFile } from "@dataverse/dataverse-connector";
+import { DatatokenInfo, FileResult } from "@dataverse/hooks";
 import { css } from "styled-components";
 
 import { DatatokenInfoWrapper, Wrapper } from "./styled";
@@ -15,9 +11,10 @@ import unlockSVG from "@/assets/icons/unlock.svg";
 import Loading from "@/components/BaseComponents/Loading";
 
 interface DisplayPostItemProps {
-  streamRecord: Awaited<ReturnType[SYSTEM_CALL.loadFile]> & {
-    datatokenInfo?: DatatokenInfo;
-  };
+  streamRecord: MirrorFile &
+    Partial<FileResult> & {
+      datatokenInfo?: DatatokenInfo;
+    };
   isPending: boolean;
   isSucceed: boolean;
   unlock: () => void;
@@ -49,7 +46,7 @@ const UnlockInfo: React.FC<DisplayPostItemProps> = ({
           onClick={unlock}
         ></img>
       )}
-      {streamRecord.fileContent.file.fileType === FileType.PayableFileType && (
+      {streamRecord.fileType === FileType.PayableFileType && (
         <DatatokenInfoWrapper>
           <span className='amount'>
             {streamRecord.datatokenInfo?.collect_info?.price.amount || 0}
