@@ -78,6 +78,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
     useState<boolean>(false);
   const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
     useState<boolean>(false);
+  const [createProfilesFn, setCreateProfilesFn] = useState<{
+    onFinished: (profileId: string) => void;
+    onCancel: () => void;
+  }>();
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
@@ -141,12 +145,27 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
         }
         if (targetProfileIds.length === 0) {
           setCreateProfileModalVisible(true);
-        } else {
-          await _post({
-            postImages,
-            profileId: targetProfileIds[0],
-          });
+          // return;
+          try {
+            await new Promise((resolve, reject) => {
+              setCreateProfilesFn({
+                onFinished: (profileId: string) => {
+                  resolve(profileId);
+                },
+                onCancel: () => {
+                  reject("user canceled");
+                },
+              });
+            });
+          } catch (e) {
+            console.warn(e);
+            return;
+          }
         }
+        await _post({
+          postImages,
+          profileId: targetProfileIds[0],
+        });
       } else {
         await _post({
           postImages,
@@ -230,9 +249,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
                 type: DefaultDatatokenType,
                 chainId: ChainId.PolygonMumbai,
                 collectModule: "LimitedFeeCollectModule",
+                collectLimit: settings.collectLimit!,
                 currency: settings.currency!,
                 amount: settings.amount!,
-                collectLimit: settings.collectLimit!,
+                recipient: address!,
               }
             : {
                 type: DefaultDatatokenType,
@@ -243,7 +263,6 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
                 amount: settings.amount!,
                 collectLimit: settings.collectLimit!,
                 recipient: address!,
-                endTimestamp: "4722366482869645213695",
               };
         await monetizeFile({
           fileId: res.fileContent.file.fileId,
@@ -397,6 +416,8 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
       <CreateLensProfile
         isModalVisible={isCreateProfileModalVisible}
         setModalVisible={setCreateProfileModalVisible}
+        onFinished={createProfilesFn?.onFinished}
+        onCancel={createProfilesFn?.onCancel}
       />
       <NoExtensionTip
         isModalVisible={isNoExtensionModalVisible}

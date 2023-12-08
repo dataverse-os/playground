@@ -14,11 +14,15 @@ import Modal from "@/components/BaseComponents/Modal";
 interface CreateLensProfileProps {
   isModalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  onFinished?: (profileId: string) => void;
+  onCancel?: () => void;
 }
 
 export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
   isModalVisible,
   setModalVisible,
+  onFinished,
+  onCancel,
 }) => {
   const [handle, setHandle] = useState("");
 
@@ -35,9 +39,10 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
       ((error as any).message ?? error) &&
         Message.error(((error as any).message ?? error).slice(0, 100));
     },
-    onSuccess: () => {
+    onSuccess: profileId => {
       Message.success("Create Lens profile successfully!");
       closeModel();
+      onFinished?.(profileId);
     },
   });
 
@@ -48,6 +53,7 @@ export const CreateLensProfile: React.FC<CreateLensProfileProps> = ({
   const closeModel = () => {
     setModalVisible(false);
     setHandle("");
+    onCancel?.();
   };
 
   return (
