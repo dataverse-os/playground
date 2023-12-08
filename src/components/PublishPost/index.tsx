@@ -249,9 +249,10 @@ const PublishPost: React.FC<PublishPostProps> = ({ modelId, connectApp }) => {
                 type: DefaultDatatokenType,
                 chainId: ChainId.PolygonMumbai,
                 collectModule: "LimitedFeeCollectModule",
+                collectLimit: settings.collectLimit!,
                 currency: settings.currency!,
                 amount: settings.amount!,
-                collectLimit: settings.collectLimit!,
+                recipient: address!,
               }
             : {
                 type: DefaultDatatokenType,

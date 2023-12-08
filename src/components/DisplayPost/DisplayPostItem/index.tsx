@@ -7,7 +7,6 @@ import {
   ChainId,
   DatatokenType,
   FileType,
-  MirrorFile,
   SYSTEM_CALL,
   WALLET,
 } from "@dataverse/dataverse-connector";
@@ -20,6 +19,7 @@ import {
   useStore,
   useUnlockFile,
 } from "@dataverse/hooks";
+import dayjs from "dayjs";
 
 import Images from "./Images";
 import { Wrapper, Content, CreatedAt } from "./styled";
@@ -55,8 +55,9 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   // const navigate = useNavigate();
   const { postModelId } = usePlaygroundStore();
 
+  const [isCollected, setIsCollected] = useState<boolean>(false);
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
-  const [nftLocked, setNftLocked] = useState<boolean>(false);
+  // const [nftLocked, setNftLocked] = useState<boolean>(false);
   const [autoUnlocking, setAutoUnlocking] = useState<boolean>(false);
   const [isCreateProfileModalVisible, setCreateProfileModalVisible] =
     useState<boolean>(false);
@@ -122,6 +123,17 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
   const { collectFile } = useCollectFile({
     onError: (error: any) => {
       console.error(error);
+      if (typeof error === "string" && error.includes("Collect Expired at")) {
+        const splitted = error.split(" ");
+        for (let i = 0; i < splitted.length; i++) {
+          if (!isNaN(Number(splitted[i]))) {
+            const time = Number(splitted[i]);
+            splitted[i] = dayjs(time * 1000).format("YYYY/MM/DD HH:mm");
+          }
+        }
+        Message.error(splitted.join(" "));
+        return;
+      }
       Message.error(error?.message ?? error);
     },
   });
@@ -163,6 +175,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           collector: address!,
         },
       });
+      setIsCollected(isCollected);
       if (isCollected) {
         await unlockFile(fileId);
       }
@@ -265,6 +278,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             connectResult?.address ?? address ?? dataverseConnector.address!,
         },
       });
+      setIsCollected(isCollected);
       if (!isCollected) {
         let targetProfileIds: string[];
         if (!profileIds) {
@@ -303,22 +317,23 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
             profileId: targetProfileIds[0],
           }),
         });
+        setIsCollected(true);
       }
       try {
         await unlockFile(fileId);
-        setNftLocked(false);
+        // setNftLocked(false);
       } catch (e) {
         console.warn(e);
         Message.error(e as any);
-        const file = filesMap![fileId] as MirrorFile;
-        const isNftLocked = !!(
-          file.accessControl?.monetizationProvider?.unlockingTimeStamp &&
-          Number(file.accessControl.monetizationProvider.unlockingTimeStamp) >
-            Date.now() / 1000
-        );
-        if (isNftLocked) {
-          setNftLocked(true);
-        }
+        // const file = filesMap![fileId] as MirrorFile;
+        // const isNftLocked = !!(
+        //   file.accessControl?.monetizationProvider?.unlockingTimeStamp &&
+        //   Number(file.accessControl.monetizationProvider.unlockingTimeStamp) >
+        //     Date.now() / 1000
+        // );
+        // if (isNftLocked) {
+        //   setNftLocked(true);
+        // }
       }
     } catch (error) {
       console.error(error);
@@ -365,7 +380,7 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
           fileRecord={filesMap![fileId]}
           isUnlockSucceed={isUnlockSucceed}
           isGettingDatatokenInfo={isGettingDatatokenInfo}
-          nftLocked={nftLocked}
+          isCollected={isCollected}
           onClick={() => {
             // navigate("/post/" + streamsMap![streamId].streamId);
           }}
