@@ -96,7 +96,11 @@ const Images: React.FC<ImagesProps> = ({
                     </div> */}
                   <div className='info-card'>
                     {!isCollected &&
-                    (fileRecord.datatokenInfo as any)?.end_timestamp ? (
+                    (fileRecord.datatokenInfo as any)?.end_timestamp &&
+                    dayjs(
+                      Number((fileRecord.datatokenInfo as any).end_timestamp) *
+                        1000,
+                    ).toString() !== "Invalid Date" ? (
                       <p>
                         End of collect time:{" "}
                         {dayjs(
@@ -105,7 +109,8 @@ const Images: React.FC<ImagesProps> = ({
                           ) * 1000,
                         ).format("YYYY/MM/DD HH:mm")}
                       </p>
-                    ) : fileRecord.accessControl?.monetizationProvider
+                    ) : isCollected &&
+                      fileRecord.accessControl?.monetizationProvider
                         ?.unlockingTimeStamp ? (
                       <p>
                         unlock in{" "}
