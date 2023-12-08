@@ -9,11 +9,11 @@ export function timeAgo(dateTimeStamp: number) {
   if (diffValue < 0) {
     return;
   }
-  const minC = Number.parseInt(String(diffValue / minute));
-  const hourC = Number.parseInt(String(diffValue / hour));
-  const dayC = Number.parseInt(String(diffValue / day));
-  const weekC = Number.parseInt(String(diffValue / week));
-  const monthC = Number.parseInt(String(diffValue / month));
+  const minC = Number.parseInt((diffValue / minute).toFixed(100));
+  const hourC = Number.parseInt((diffValue / hour).toFixed(100));
+  const dayC = Number.parseInt((diffValue / day).toFixed(100));
+  const weekC = Number.parseInt((diffValue / week).toFixed(100));
+  const monthC = Number.parseInt((diffValue / month).toFixed(100));
   let result;
   const en = true;
   if (monthC >= 1 && monthC <= 3) {
