@@ -138,10 +138,6 @@ const DisplayPostItem: React.FC<DisplayPostItemProps> = ({
     },
   });
 
-  useEffect(() => {
-    console.log({ pkh, address });
-  }, [pkh, address]);
-
   const autoUnlock = useCallback(async () => {
     const res = await browserStorage.getDecryptedFileContent({
       pkh,

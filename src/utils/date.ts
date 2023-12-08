@@ -9,11 +9,11 @@ export function timeAgo(dateTimeStamp: number) {
   if (diffValue < 0) {
     return;
   }
-  const minC = Number.parseInt((diffValue / minute).toFixed(100));
-  const hourC = Number.parseInt((diffValue / hour).toFixed(100));
-  const dayC = Number.parseInt((diffValue / day).toFixed(100));
-  const weekC = Number.parseInt((diffValue / week).toFixed(100));
-  const monthC = Number.parseInt((diffValue / month).toFixed(100));
+  const minC = Number((diffValue / minute).toFixed(0));
+  const hourC = Number((diffValue / hour).toFixed(0));
+  const dayC = Number((diffValue / day).toFixed(0));
+  const weekC = Number((diffValue / week).toFixed(0));
+  const monthC = Number((diffValue / month).toFixed(0));
   let result;
   const en = true;
   if (monthC >= 1 && monthC <= 3) {
@@ -40,18 +40,6 @@ export function timeAgo(dateTimeStamp: number) {
         : datetime.getMonth() + 1;
     const Ndate =
       datetime.getDate() < 10 ? `0${datetime.getDate()}` : datetime.getDate();
-    // const Nhour =
-    //   datetime.getHours() < 10
-    //     ? `0${datetime.getHours()}`
-    //     : datetime.getHours();
-    // const Nminute =
-    //   datetime.getMinutes() < 10
-    //     ? `0${datetime.getMinutes()}`
-    //     : datetime.getMinutes();
-    // const Nsecond =
-    //   datetime.getSeconds() < 10
-    //     ? `0${datetime.getSeconds()}`
-    //     : datetime.getSeconds();
     result = `${Nyear}-${Nmonth}-${Ndate}`;
   }
   return result;
@@ -61,19 +49,14 @@ export function timeCountdown(dateTimeStamp: number) {
   const minute = 1000 * 60;
   const hour = minute * 60;
   const day = hour * 24;
-  // const week = day * 7;
-  // const halfamonth = day * 15;
-  // const month = day * 30;
   const now = Date.now();
   const diffValue = dateTimeStamp - now;
   if (diffValue < 0 || Number.isNaN(dateTimeStamp)) {
     return;
   }
-  const minC = Number.parseInt(String(diffValue / minute));
-  const hourC = Number.parseInt(String(diffValue / hour));
-  const dayC = Number.parseInt(String(diffValue / day));
-  // const weekC = Number.parseInt(String(diffValue / week));
-  // const monthC = Number.parseInt(String(diffValue / month));
+  const minC = Number((diffValue / minute).toFixed(0));
+  const hourC = Number((diffValue / hour).toFixed(0));
+  const dayC = Number((diffValue / day).toFixed(0));
   let result;
   if (minC <= 1) {
     return "1min";
